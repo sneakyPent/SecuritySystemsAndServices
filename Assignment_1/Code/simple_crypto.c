@@ -6,19 +6,17 @@ int main() {
     char plaintext[1024];
     printf("[OTP] input:");
     fgets(plaintext,1024,stdin);
-    int textSize = sizeof(plaintext);
-    key = randomKey(sizeof(textSize));
-
-    unsigned char* encr = OTP_encrypt(plaintext, key, textSize);
+    int textSize = (int) strlen(plaintext);
+    key = randomKey(textSize);
+   
+    char* encr = (char*) OTP_encrypt(plaintext, key, textSize);
     printf("[OTP] encrypted:");
     for(int i = 0; i < textSize; ++i)
-        printf("%c", encr[i]);
-
-    unsigned char* decr = OTP_decrypt(encr, key, textSize);
-    printf("[OTP] decrypted:");
+        printf("%c", printCharacter(encr[i]));
+    char* decr = (char*)  OTP_decrypt(encr, key, textSize);
+    printf("\n[OTP] decrypted:");
     for(int i = 0; i < textSize; ++i)
-        printf("%c", decr[i]);
-    printf("\n");
+        printf("%c", printCharacter(decr[i]));
     return 0;
 }
 

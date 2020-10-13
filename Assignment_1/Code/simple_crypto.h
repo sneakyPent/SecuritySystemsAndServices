@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <ctype.h>
 
 unsigned char* randomKey(int size){
     unsigned char *buffer = (unsigned char *)malloc(sizeof(unsigned char )*size);
@@ -25,4 +26,19 @@ char* OTP_encrypt(char * str,char * key, int size){
     for (int i=0; i<strlen(str); i++)
         buffer[i] = str[i] ^ key[i];
     return buffer;
+}
+
+char printCharacter(char ch){
+    if (isprint(ch))
+        return ch;
+    else
+    {
+        switch (ch)
+        {
+        case '\n':
+            return '\n';
+        default:
+            return '*';
+        }
+    }
 }
