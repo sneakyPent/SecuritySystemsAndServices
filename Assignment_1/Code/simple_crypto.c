@@ -1,14 +1,14 @@
 #include "simple_crypto.h"
 
 
-int main() {
+void otp() {
     unsigned char* key;
     char plaintext[1024];
     printf("[OTP] input:");
-    fgets(plaintext,1024,stdin);
+    scanf("%s", plaintext);
     int textSize = (int) strlen(plaintext);
     key = randomKey(textSize);
-   
+
     char* encr = (char*) OTP_encrypt(plaintext, key, textSize);
     printf("[OTP] encrypted:");
     for(int i = 0; i < textSize; ++i)
@@ -17,6 +17,19 @@ int main() {
     printf("\n[OTP] decrypted:");
     for(int i = 0; i < textSize; ++i)
         printf("%c", printCharacter(decr[i]));
-    return 0;
+    printf("\n");
 }
 
+
+void csCipher(){
+}
+
+void vgCipher(){
+}
+
+int main() {
+    otp();
+    csCipher();
+    vgCipher();
+    return 0;
+}
