@@ -7,16 +7,19 @@ CFLAGS = -g -O2 -c
 HEADER = simple_crypto.h
 
 # Executables
-OTP = simple_crypto
+CRYPTO = simple_crypto
+DEMO = demo
 
 # Source files
-SOURCE_OTP = simple_crypto.c 
+SOURCE_CRYPTO = simple_crypto.c 
+SOURCE_DEMO = demo.c
 
-SOURCE = $(SOURCE_OTP)
+SOURCE = $(SOURCE_CRYPTO)
 
 # Object files
-OBJS_OTP = $(SOURCE_OTP:.c=.o)
-OBJS = $(OBJS_OTP)
+OBJS_CRYPTO = $(SOURCE_CRYPTO:.c=.o)
+OBJS_DEMO= $(SOURCE_DEMO:.c=.o)
+OBJS = $(OBJS_CRYPTO) $(OBJS_DEMO)
 
 
 # Help menu
@@ -29,47 +32,30 @@ HELPMENU = $(USAGE)\n$(DESCRIPTION)\nOPTIONS:
 # ----------------------------------------------------
 # 					Basic options
 
-all: otp  ## Create OneTimePad executables
+all: crypto run 
 
-otp:  ##$(OBJS_OTP) ## run only OneTimePad encryption
-	 $(CC) -o $(OTP) $(SOURCE_OTP) $?
+crypto:  $(OBJS) ## Create Crypto executable
+	 $(CC) -o $(DEMO) $?
+
 
 clean:  ## Clean Object files and executables
-	$(RM) $(OBJS) $(OTP) 
+	$(RM) $(OBJS) $(CRYPTO) 
 	$(RM) output.*.*
-# Caesar:
-#   cipher
+
 help:	## Print this help message and exit
 	@echo "$(HELPMENU)" ; grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "   %-30s %s\n", $$1, $$2}'
 
 count:	## Count number of lines
 	wc -l $(SOURCE) $(HEADER) $(MAKEFILE_LIST)
 
-
-# ------------------------------------------------
-#			DEBUG RULES
-#
-
-
-# debug: kill clean all run ## Clean, Make and Run both Client and Server for testing, giving predefined parameters
-
-# rc: ## Run Client for testing, giving predefined parameters
-# 	@./remoteClient $(DN) $(DS) $(DC) $(DI) 
-
-# rs: ## Run Server for testing, giving predefined parameters
-# 	@./remoteServer $(DS) $(DK)
-
-# run: ## Run both Client and Server for testing, giving predefined parameters
-# 	@./remoteServer $(DS) $(DK) & ./remoteClient $(DN) $(DS) $(DC) $(DI) 
-
-# kill:	## Kill all Client and Server Processes
-# 	@killall remoteServer && echo "\033[32mServer terminated successfully!\033[39m" || echo "\033[31mServer was not running.\033[39m"
-# 	@killall remoteClient && echo "\033[32mClient terminated successfully!\033[39m" || echo "\033[31mClient was not running.\033[39m"
+run: # run simple crypto executable
+	./$(DEMO)
 
 # ----------------------------------------------------
 #					Object files
 
-OTP.o: OTP.c
+CRYPTO.o: CRYPTO.c
 	$(CC) $(CFLAGS) $?
 
-	
+DEMO.o: DEMO.c
+	$(CC) $(CFLAGS) $?	
