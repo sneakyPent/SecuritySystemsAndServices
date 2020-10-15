@@ -39,7 +39,7 @@ crypto:  $(OBJS) ## Create Crypto executable
 
 
 clean:  ## Clean Object files and executables
-	$(RM) $(OBJS) $(CRYPTO) 
+	$(RM) $(OBJS) $(DEMO) 
 	$(RM) output.*.*
 
 help:	## Print this help message and exit
