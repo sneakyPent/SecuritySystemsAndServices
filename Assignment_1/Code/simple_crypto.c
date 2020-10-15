@@ -25,13 +25,7 @@ char printCharacter(char ch)
 
 // ###############################         OTP ALGORITHM FUNCTIONS           ###############################
 
-/**
-    @brief: Function to get a random key of given size for the OTP algorithm
 
-    @param: The encryption key size
-
-    @return: The encryption key
-*/
 unsigned char *randomKey(int size)
 {
     unsigned char *buffer = (unsigned char *)malloc(sizeof(unsigned char) * size);
@@ -41,13 +35,7 @@ unsigned char *randomKey(int size)
     return buffer;
 }
 
-/**
-    @brief: Fucntion to decrypt the plaintext in OTP algorithm 
 
-    @param: Encrypted plaintext, the encryption key and the user's input text size 
-
-    @return: The decrypted plaintext
-*/
 unsigned char *OTP_decrypt(unsigned char *str, unsigned char *key, int size)
 {
     // allocate memory for decrypted text
@@ -58,13 +46,6 @@ unsigned char *OTP_decrypt(unsigned char *str, unsigned char *key, int size)
     return buffer;
 }
 
-/**
-    @brief: Fucntion to encrypt the given text in OTP algorithm 
-
-    @param: User's input, the encryption key and the user's message size 
-
-    @return: The encrypted plaintext
-*/
 unsigned char *OTP_encrypt(char *str, char *key, int size)
 {
     // allocate memory for encrypted text
@@ -117,13 +98,6 @@ char shiftCharacter(char ch, int shiftIndicator, int categoryStart, int category
     return (char)returnAscii;
 }
 
-/**
-    @brief: Fucntion to encrypt the given text in caesar's  algorithm 
-
-    @param: User's input, the encryption key and the plaintext size 
-
-    @return: The encrypted plaintext
-*/
 unsigned char *CS_encrypt(char *str, int shiftIndicator, int size)
 {
     // allocate memory for encrypted text
@@ -171,13 +145,7 @@ unsigned char *CS_encrypt(char *str, int shiftIndicator, int size)
     return buffer;
 }
 
-/**
-    @brief: Fucntion to decrypt the plaintext in caesar's algorithm 
 
-    @param: The cipher-text, the positive shift indicator the uplaintext size 
-
-    @return: The decrypted plaintext
-*/
 unsigned char *CS_decrypt(unsigned char *str, int shiftIndicator, int size)
 {
     shiftIndicator = shiftIndicator % 62;
