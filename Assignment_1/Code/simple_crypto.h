@@ -57,18 +57,18 @@ char printCharacter(char ch);
 unsigned char *randomKey(int size);
 
 /**
-    @brief: Fucntion to decrypt the plaintext in OTP algorithm 
+    @brief: Fucntion to decrypt the plaintext in OTP algorithm
 
-    @param: Encrypted plaintext, the encryption key and the user's input text size 
+    @param: Encrypted plaintext, the encryption key and the user's input text size
 
     @return: The decrypted plaintext
 */
 unsigned char *OTP_decrypt(unsigned char *str, unsigned char *key, int size);
 
 /**
-    @brief: Fucntion to encrypt the given text in OTP algorithm 
+    @brief: Fucntion to encrypt the given text in OTP algorithm
 
-    @param: User's input, the encryption key and the user's message size 
+    @param: User's input, the encryption key and the user's message size
 
     @return: The encrypted plaintext
 */
@@ -82,23 +82,60 @@ char shiftCharacter(char ch, int shiftIndicator, int categoryStart, int category
                     int changeCategoryLimit, int firstGap, int secondGap);
 
 /**
-    @brief: Fucntion to encrypt the given text in caesar's  algorithm 
+    @brief: Fucntion to encrypt the given text in caesar's  algorithm
 
-    @param: User's input, the encryption key and the plaintext size 
+    @param: User's input, the encryption key and the plaintext size
 
     @return: The encrypted plaintext
 */
 unsigned char *CS_encrypt(char *str, int shiftIndicator, int size);
 
 /**
-    @brief: Fucntion to decrypt the plaintext in caesar's algorithm 
+    @brief: Fucntion to decrypt the plaintext in caesar's algorithm
 
-    @param: The cipher-text, the positive shift indicator the uplaintext size 
+    @param: The cipher-text, the positive shift indicator the uplaintext size
 
     @return: The decrypted plaintext
 */
 unsigned char *CS_decrypt(unsigned char *str, int shiftIndicator, int size);
 
 // ###############################         VIGENERE'S ALGORITHM FUNCTIONS     ###############################
+
+/**
+    @brief: Fucntion to encrypt the given text in vigenere's  algorithm
+
+    @param: User's input, the encryption key and the plaintext size
+
+    @return: The encrypted plaintext
+*/
+char shiftViaTabulaRecta(char column, char row);
+
+/**
+    @brief: Fucntion to encrypt the given text in vigenere's  algorithm
+
+    @param: User's input, the encryption key and the plaintext size
+
+    @return: The encrypted plaintext
+*/
+char findColumnTabulaRecta(char depth, char row);
+
+/**
+    @brief: Fucntion to encrypt the given text in vigenere's  algorithm
+
+    @param: User's input, the encryption key and the plaintext size
+
+    @return: The encrypted plaintext
+*/
+unsigned char *VG_encrypt(char *str, char *key);
+
+/**
+    @brief: Fucntion to decrypt the plaintext in vigenere's algorithm
+
+    @param: The cipher-text, the positive shift indicator the uplaintext size
+
+    @return: The decrypted plaintext
+*/
+unsigned char *VG_decrypt(unsigned char *str, char *key);
+
 
 #endif //SIMPLE_CRYPTO_H
