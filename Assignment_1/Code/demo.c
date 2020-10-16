@@ -5,7 +5,7 @@ void otp() {
     unsigned char* key;
     char plaintext[1024];
     printf("[OTP] input:");
-    // read user input 
+    // read user input
     scanf("%s", plaintext);
     int textSize = (int) strlen(plaintext);
     key = randomKey(textSize);  // get a random key fot encryption
@@ -23,14 +23,14 @@ void otp() {
 
 
 void csCipher(){
-    
+
     char plaintext[1024];
     int key;
     printf("[Caesars] input:");
-    // read user input 
+    // read user input
     scanf("%s", plaintext);
     printf("[Caesars] key:");
-    // read user input 
+    // read user input
     scanf("%d", &key);
     int textSize = (int) strlen(plaintext);
 
@@ -47,31 +47,31 @@ void csCipher(){
 
 
 void vgCipher(){
-      
+
     char plaintext[1024];
-    int key;
+    char key[1024];
     printf("[Vigenere] input:");
-    // read user input 
+    // read user input
     scanf("%s", plaintext);
     printf("[Vigenere] key:");
-    // read user input 
-    scanf("%d", &key);
+    // read user input
+    scanf("%s", key);
     int textSize = (int) strlen(plaintext);
 
-    char* encr = (char*) CS_encrypt(plaintext, key, textSize);
+    char* encr = (char*) VG_encrypt(plaintext, key);
     printf("[Vigenere] encrypted:");
     for(int i = 0; i < textSize; ++i)
         printf("%c", printCharacter(encr[i]));
-    char* decr = (char*)  CS_decrypt(encr, key, textSize);
+     char* decr = (char*)  VG_decrypt(encr, key);
     printf("\n[Vigenere] decrypted:");
     for(int i = 0; i < textSize; ++i)
-        printf("%c", printCharacter(decr[i]));
-    printf("\n");
+         printf("%c", printCharacter(decr[i]));
+        printf("\n");
 }
 
 int main() {
     otp();
     csCipher();
-    // vgCipher();
+    vgCipher();
     return 0;
 }
