@@ -32,7 +32,7 @@ HELPMENU = $(USAGE)\n$(DESCRIPTION)\nOPTIONS:
 # ----------------------------------------------------
 # 					Basic options
 
-all: crypto run 
+all: crypto 
 
 crypto:  $(OBJS) ## Create Crypto executable
 	 $(CC) -o $(DEMO) $?
