@@ -51,10 +51,13 @@ unsigned char *OTP_encrypt(char *str, char *key, int size) {
 
 enum category findCharacterCategory(char ch) {
     int charAscii = (int) ch;
+    // check if character belong to number ascii codes
     if (isInRange(numStart, numEnd, charAscii))
         return number;
+     // check if character belong to upper case letters ascii codes
     else if (isInRange(capitalStart, capitalEnd, charAscii))
         return capital;
+     // check if character belong to lower case letters ascii codes
     else if (isInRange(lowerStart, lowerEnd, charAscii))
         return lower;
 }
@@ -77,6 +80,7 @@ char shiftCharacter(char ch, int shiftIndicator, int categoryStart, int category
         else
             returnAscii = charAscii + firstGap + secondGap + shiftIndicator;
     } else {
+        // increment in the same category when the shifting is more than the other two categories total length
         int inCatChange = shiftIndicator - changeCategoryLimit - (categoryEnd - charAscii);
         returnAscii = categoryStart + inCatChange - 1;
     }
@@ -86,12 +90,14 @@ char shiftCharacter(char ch, int shiftIndicator, int categoryStart, int category
 unsigned char *CS_encrypt(char *str, int shiftIndicator, int size) {
     // allocate memory for encrypted text
     unsigned char *buffer = (unsigned char *) malloc(sizeof(unsigned char) * size);
-    shiftIndicator = shiftIndicator % 62;
+    // get the modulo of the shifting indicator because its like we have a cyclic shifting
+    shiftIndicator = shiftIndicator % encryptingCharacters;
 
     for (int i = 0; i < size; i++) {
         int categoryEnd, categoryStart, changeCategoryLimit, nextCategoriesSplitter, firstGap, secondGap;
         char currentChar = str[i];
 
+        //init the parameters of the shiftCharacter function depend on the character category we have
         switch (findCharacterCategory(currentChar)) {
             case number:
                 categoryStart = numStart;
@@ -128,7 +134,8 @@ unsigned char *CS_encrypt(char *str, int shiftIndicator, int size) {
 }
 
 unsigned char *CS_decrypt(unsigned char *str, int shiftIndicator, int size) {
-    shiftIndicator = shiftIndicator % 62;
+    // the decrypt function using the encrypt function given the complementary shift indicator as shift indicator
+    shiftIndicator = shiftIndicator % encryptingCharacters;
     shiftIndicator = encryptingCharacters - shiftIndicator;
     return CS_encrypt(str, shiftIndicator, size);
 }
