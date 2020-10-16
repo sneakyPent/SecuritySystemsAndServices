@@ -1,7 +1,6 @@
 #ifndef SIMPLE_CRYPTO_H
 #define SIMPLE_CRYPTO_H
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -105,7 +104,8 @@ enum category findCharacterCategory(char ch);
 
     @return The shifted character.
 */
-char shiftCharacter(char ch, int shiftIndicator, int categoryStart, int categoryEnd, int nextCategoriesSplitter, int changeCategoryLimit, int firstGap, int secondGap);
+char shiftCharacter(char ch, int shiftIndicator, int categoryStart, int categoryEnd, int nextCategoriesSplitter,
+                    int changeCategoryLimit, int firstGap, int secondGap);
 
 /**
     \brief Fucntion to encrypt the given text in caesar's algorithm.
