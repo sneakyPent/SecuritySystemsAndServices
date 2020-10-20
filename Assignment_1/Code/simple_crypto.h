@@ -36,9 +36,7 @@ enum category
 bool isInRange(int lowerLimit, int upperLimit, int no);
 
 /**
-    @function printCharacter
-
-    \brief Fucntion to print "*" in case of non-printable character.
+     \brief Fucntion to print "*" in case of non-printable character.
 
     @param ch The character about to get printed.
 
@@ -46,6 +44,9 @@ bool isInRange(int lowerLimit, int upperLimit, int no);
 */
 char printCharacter(char ch);
 
+
+
+char *inputString(FILE* fp, size_t size);
 // ###############################         OTP ALGORITHM FUNCTIONS           ###############################
 
 /**
