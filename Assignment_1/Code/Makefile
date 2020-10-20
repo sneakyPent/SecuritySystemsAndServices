@@ -31,9 +31,9 @@ HELPMENU = $(USAGE)\n$(DESCRIPTION)\nOPTIONS:
 
 # ----------------------------------------------------
 # 					Basic options
-
-all: ## Clean, create and run a new demo executable 
-	clean demo run
+default: demo
+all:  clean demo run ## Clean, create and run a new demo executable 
+	
 
 run: ## Run simple crypto executable
 	./$(DEMO)
