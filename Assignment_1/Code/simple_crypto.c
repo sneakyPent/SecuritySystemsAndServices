@@ -20,20 +20,28 @@ char printCharacter(char ch) {
 }
 
 
-char *inputString(FILE* fp, size_t size){
-//The size is extended by the input with the value of the provisional
+char *readInput(FILE* fp, size_t size){
     char *str;
     int ch;
     size_t len = 0;
-    str = realloc(NULL, sizeof(char)*size);//size is start size
-    if(!str)return str;
+    str = realloc(NULL, sizeof(char)*size);
+    if(!str){
+        printf("%s" , str);
+        return str;
+    }
+    //until get the \0 ,the termination of a character string, or the newline one
     while(EOF!=(ch=fgetc(fp)) && ch != '\n'){
         str[len++]=ch;
+        //when the string reaches the allocated space, we reallocate space with 16 more.
         if(len==size){
             str = realloc(str, sizeof(char)*(size+=16));
-            if(!str)return str;
+            if(!str){
+                printf("%s" , str);
+                return str;
+            }
         }
     }
+    //add the terminal character
     str[len++]='\0';
 
     return realloc(str, sizeof(char)*len);
