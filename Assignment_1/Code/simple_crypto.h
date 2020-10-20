@@ -36,7 +36,7 @@ enum category
 bool isInRange(int lowerLimit, int upperLimit, int no);
 
 /**
-     \brief Fucntion to print "*" in case of non-printable character.
+    \brief Fucntion to print "*" in case of non-printable character.
 
     @param ch The character about to get printed.
 
@@ -45,8 +45,15 @@ bool isInRange(int lowerLimit, int upperLimit, int no);
 char printCharacter(char ch);
 
 
+/**
+    \brief Function to read user input with unlimited size.
 
-char *inputString(FILE* fp, size_t size);
+    @param fp The input. (stdin, file, redirection...),
+    @param size The initial size for space allocation.
+
+    @return The user's input.
+*/
+char *readInput(FILE* fp, size_t size);
 // ###############################         OTP ALGORITHM FUNCTIONS           ###############################
 
 /**
