@@ -48,14 +48,12 @@ void csCipher()
     int key;
     if (isatty(fileno(stdin)))
     {
-        char plaintext[1024];
-        int key;
         printf("[Caesars] input:");
         // read user input
-        scanf("%s", plaintext);
+        plaintext = readInput(stdin, 10);
         printf("[Caesars] key:");
         // read user input
-        scanf("%d", &key);
+        key = atoi(readInput(stdin, 10));
         int textSize = (int)strlen(plaintext);
 
         char *encr = (char *)CS_encrypt(plaintext, key, textSize);
@@ -101,10 +99,10 @@ void vgCipher()
     {
         printf("[Vigenere] input:");
         // read user input
-        scanf("%s", plaintext);
+        plaintext = readInput(stdin, 10);
         printf("[Vigenere] key:");
         // read user input
-        scanf("%s", key);
+        key = readInput(stdin, 10);
         int textSize = (int)strlen(plaintext);
 
         char *encr = (char *)VG_encrypt(plaintext, key);
