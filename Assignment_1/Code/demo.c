@@ -9,7 +9,7 @@ void otp()
 
         printf("[OTP] input:");
         // read user input
-        plaintext = inputString(stdin, 10);
+        plaintext = readInput(stdin, 10);
         int textSize = (int)strlen(plaintext);
         key = randomKey(textSize); // get a random key fot encryption
 
@@ -25,7 +25,7 @@ void otp()
     }
     else
     {
-        plaintext = inputString(stdin, 10);
+        plaintext = readInput(stdin, 10);
         printf("[OTP] input: %s\n", plaintext);
         int textSize = (int)strlen(plaintext);
         key = randomKey(textSize); // get a random key for encryption
@@ -72,10 +72,10 @@ void csCipher()
     {
 
         // read user input
-        plaintext = inputString(stdin, 10);
+        plaintext = readInput(stdin, 10);
         printf("[Caesars] input: %s\n", plaintext);
         // read user input
-        key = atoi(inputString(stdin, 10));
+        key = atoi(readInput(stdin, 10));
         printf("[Caesars] key: %d\n", key);
 
         int textSize = (int)strlen(plaintext);
@@ -120,10 +120,10 @@ void vgCipher()
     else
     {
         // read user input
-        plaintext = inputString(stdin, 10);
+        plaintext = readInput(stdin, 10);
         printf("[Vigenere] input: %s\n", plaintext);
         // read user input
-        key = inputString(stdin, 10);
+        key = readInput(stdin, 10);
         printf("[Vigenere] key: %s\n", key);
 
         int textSize = (int)strlen(plaintext);
