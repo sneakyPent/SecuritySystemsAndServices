@@ -32,9 +32,13 @@ HELPMENU = $(USAGE)\n$(DESCRIPTION)\nOPTIONS:
 # ----------------------------------------------------
 # 					Basic options
 
-all: crypto 
+all: ## Clean, create and run a new demo executable 
+	clean demo run
 
-crypto:  $(OBJS) ## Create Crypto executable
+run: ## Run simple crypto executable
+	./$(DEMO)
+
+demo:  $(OBJS) ## Create Crypto executable
 	 $(CC) -o $(DEMO) $?
 
 
@@ -48,8 +52,6 @@ help:	## Print this help message and exit
 count:	## Count number of lines
 	wc -l $(SOURCE) $(HEADER) $(MAKEFILE_LIST)
 
-run: # run simple crypto executable
-	./$(DEMO)
 
 # ----------------------------------------------------
 #					Object files
