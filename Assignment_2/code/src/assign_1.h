@@ -136,6 +136,17 @@ const EVP_CIPHER * getAesCipher(int bit_mode);
 EVP_CIPHER_CTX *contextInit(unsigned char *key, int bit_mode, char mode);
 
 /**
+ * @brief Initialize the context will be used in CMAC_Update or CMAC_Final
+ * 
+ * @param key The generated key from keygen.
+ * @param bit_mode to give as argument in getAesCipher() function to get the aes evp cipher in the current bit mode.
+ * @return CMAC_CTX*  The initialized context.
+ */
+CMAC_CTX *cmacContextInit( unsigned char *key, int bit_mode);
+
+
+
+/**
  * @brief Function to read and write files.
  * 
  * @param fileName          The filename want to interact with.

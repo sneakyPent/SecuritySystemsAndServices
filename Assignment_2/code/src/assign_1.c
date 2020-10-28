@@ -157,18 +157,17 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, u
 
     plaintext_len = 0;
     
-    EVP_CIPHER_CTX *context;
+    EVP_CIPHER_CTX *context=NULL;
     context = contextInit(key, bit_mode, 'd');
-      
-    if (EVP_DecryptUpdate(context, plaintext,&len, ciphertext, ciphertext_len) != 1)
+    if (EVP_DecryptUpdate(context, plaintext, &len, ciphertext, ciphertext_len) != 1)
     {
         print("EVP_DecryptUpdate failure", error);
         exit(1);
     }
     plaintext_len = len;
-    if (EVP_DecryptFinal_ex(context, plaintext + len, &len) != 1)
+    if (EVP_DecryptFinal(context, plaintext + len, &len) != 1)
     {
-        print( "EVP_DecryptFinal_ex failure. Probably not encrypted file.", error);
+        print( "EVP_DecryptFinal failure", error);
         exit(1);
     }
     plaintext_len += len;
@@ -182,8 +181,23 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, u
 void gen_cmac(unsigned char *data, size_t data_len, unsigned char *key,
               unsigned char *cmac, int bit_mode)
 {
+    CMAC_CTX *context;
+    context = cmacContextInit(key,bit_mode);
+    size_t cmacLen;
 
-    /* TODO Task D */
+    if (1!=CMAC_Update(context, data, data_len))
+    {
+        print("CMAC_Update failure", error);
+        exit(1);
+    }
+
+    if (1!=CMAC_Final(context, cmac, &cmacLen))
+    {
+        print("CMAC_Final failure", error);
+        exit(1);
+    }
+
+    CMAC_CTX_free(context);
 }
 
 /*
@@ -195,7 +209,14 @@ int verify_cmac(unsigned char *cmac1, unsigned char *cmac2)
 
     verify = 0;
 
-    /* TODO Task E */
+    if (memcmp((const char *)cmac1, (const char *)cmac2, BLOCK_SIZE) == 0)
+    {
+        verify = 1;
+    }
+    else
+    {
+        verify = 0;
+    }
 
     return verify;
 }
@@ -285,16 +306,20 @@ const EVP_CIPHER *getAesCipher(int bit_mode)
 void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *plaintextLength)
 {
 
-    print("Opening file.", info);
-    FILE *fp = fopen(fileName, mode);
-    if (fp == NULL)
-    {
-        char msg[50] = "Cannot find file!";
-        strcat(msg, fileName);
-        print(msg, error);
-        exit(1);
+   
+    FILE *fp=NULL;
+    if (strcmp(mode, "cmac") != 0){
+        print("Opening file.", info);
+        fp= fopen(fileName, mode);
+        if (fp == NULL)
+        {
+            char msg[50] = "Cannot find file ";
+            strcat(msg, fileName);
+            print(msg, error);
+            exit(1);
+        }
     }
-    if (strcmp(mode, "rb") == 0)
+    if (strcmp(mode, "r") == 0)
     {
         long flen;
 
@@ -316,15 +341,54 @@ void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *pla
         print("Read file.", success);
 
     }
-    else if (strcmp(mode, "wb") == 0)
+    else if (strcmp(mode, "w") == 0)
     {
         long writelength = fwrite(plaintext, sizeof(char), *plaintextLength, fp);
         if (writelength != *plaintextLength)
         {
-            print("Reading error",error);
+            print("writing error",error);
             exit(1);
         }
         print("write file.", success);
+    }
+    else if (strcmp(mode, "a") == 0)
+    {
+        long writelength = fwrite(plaintext, sizeof(char), *plaintextLength, fp);
+        if (writelength != *plaintextLength)
+        {
+            print("writing error",error);
+            exit(1);
+        }
+        print("write file.", success);
+    }
+    else if (strcmp(mode, "cmac") == 0)
+    {   
+        print("Opening file.", info);
+        fp = fopen(fileName, "r");
+        if (fp == NULL)
+        {
+            char msg[50] = "Cannot find file ";
+            strcat(msg, fileName);
+            print(msg, error);
+            exit(1);
+        }
+        long flen=BLOCK_SIZE;
+
+        /*Calculate the size of the plaintext*/
+        fseek(fp,-BLOCK_SIZE, SEEK_END);
+    
+        plaintext = realloc(plaintext, sizeof(char)*flen);
+        /* allocate memory for plaintext storing*/
+        /*read plaintext*/
+        print("Reading file...", info);
+        long readlength = fread(plaintext, sizeof(char), flen, fp);
+        if (readlength != flen)
+        {
+            print("Reading error",error);
+            exit(1);
+        }
+        *plaintextLength = flen;
+        print("Read file.", success);
     }
     else
     {
@@ -334,6 +398,28 @@ void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *pla
     fclose(fp);
     print("File closed.", info);
 }
+
+
+CMAC_CTX *cmacContextInit( unsigned char *key, int bit_mode)
+{
+
+    const EVP_CIPHER *cipher = NULL;
+    cipher = getAesCipher(bit_mode);
+    CMAC_CTX *context;
+
+    if (!(context = CMAC_CTX_new()))
+    {
+        print("CMAC_CTX_new failure!", error);
+        exit(1);
+    }
+    if (1 != CMAC_Init(context,key,BLOCK_SIZE, cipher, NULL))
+    {
+        print("CMAC_Init failure!", error);
+        exit(1);
+    }
+    return context;
+}
+
 
 /*
  * Encrypts the input file and stores the ciphertext to the output file
@@ -356,9 +442,11 @@ int main(int argc, char **argv)
     unsigned char *password; /* the user defined password */
     unsigned char *key;
     unsigned char *plaintext;
+    long cmacSize; 
     long plaintextLength;
     unsigned char *ciphertxt;
     long ciphertextLength;
+    unsigned char *cmac;
 
     /* Init arguments */
     input_file = NULL;
@@ -366,6 +454,7 @@ int main(int argc, char **argv)
     password = NULL;
     plaintext = NULL;
     ciphertxt = NULL;
+    cmacSize = BLOCK_SIZE;
     bit_mode = -1;
     op_mode = -1;
     
@@ -414,10 +503,6 @@ int main(int argc, char **argv)
             /* if op_mode == 3 the tool verifies */
             op_mode = 3;
             break;
-        case 't':
-            /* if op_mode == 4 the tool tests */
-            op_mode = 4;
-            break;
         case 'h':
         default:
             usage();
@@ -446,28 +531,62 @@ int main(int argc, char **argv)
     case 0:     /* encrypt */
         print("Start encrypting...", info);
         plaintext = malloc(sizeof(unsigned char*));
-        fileManager(input_file, "rb", plaintext, &plaintextLength);
+        fileManager(input_file, "r", plaintext, &plaintextLength);
         ciphertextLength = ((plaintextLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;
         ciphertxt = malloc(ciphertextLength * sizeof(char));
         encrypt(plaintext,plaintextLength,key,ciphertxt,bit_mode);
-        fileManager(output_file, "wb", ciphertxt, &ciphertextLength);
+        fileManager(output_file, "w", ciphertxt, &ciphertextLength);
         print("File encrypted.", success);
         break;
     case 1:     /* decrypt */
         print("Start decrypting...", info);
         ciphertxt = malloc(sizeof(unsigned char*));
-        fileManager(input_file, "rb", ciphertxt, &ciphertextLength);
+        fileManager(input_file, "r", ciphertxt, &ciphertextLength);
         plaintextLength = ((ciphertextLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;
         plaintext = malloc(plaintextLength * sizeof(char));
         decrypt(ciphertxt,ciphertextLength,key,plaintext,bit_mode);
-        fileManager(output_file, "wb", plaintext, &plaintextLength);
+        fileManager(output_file, "w", plaintext, &plaintextLength);
         print("File decrypted.", success);
         break;
     case 2:     /* sign */
+        print("Start signing...", info);
+        plaintext = malloc(sizeof(unsigned char*));
+        fileManager(input_file, "r", plaintext, &plaintextLength);
+        ciphertextLength = ((plaintextLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;
+        ciphertxt = malloc(ciphertextLength * sizeof(char));
+        encrypt(plaintext,plaintextLength,key,ciphertxt,bit_mode);
+        cmac = malloc(BLOCK_SIZE * sizeof(char));
+        gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
+        print_hex(cmac, BLOCK_SIZE);
+        long csize = BLOCK_SIZE;
+        fileManager(output_file, "w", ciphertxt, &ciphertextLength);
+        fileManager(output_file, "a", cmac, &csize);
+        print("File signed.", success);
         break;
     case 3:      /* verify */
-        break;
-    case 4:      /* tests */
+
+        print("Start verifying...", info);
+        ciphertxt = malloc(sizeof(unsigned char*));
+        fileManager(input_file, "r", ciphertxt, &ciphertextLength);
+        plaintext = malloc(sizeof(char));
+        long plaintextLength = (long) decrypt(ciphertxt,ciphertextLength-BLOCK_SIZE,key,plaintext,bit_mode);
+        cmac = malloc(BLOCK_SIZE * sizeof(char));
+        gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
+        print_hex(cmac, BLOCK_SIZE);
+        unsigned char *txtCMAC = malloc(sizeof(unsigned char*));
+
+        fileManager(input_file, "cmac", txtCMAC, &cmacSize);
+        print("Verifications Completed", info);
+        if (verify_cmac(cmac,txtCMAC) == 1)
+        {
+            print("Verified!", success);
+            fileManager(output_file, "w", plaintext, &plaintextLength);
+        }
+        else
+        {
+            print("Not verified!", error);
+        }
+        print("File verified.", success);
         break;
     }
         
