@@ -446,7 +446,8 @@ int main(int argc, char **argv)
     long plaintextLength;
     unsigned char *ciphertxt;
     long ciphertextLength;
-    unsigned char *cmac;
+    unsigned char *cmac = NULL;
+    unsigned char *txtCMAC = NULL;
 
     /* Init arguments */
     input_file = NULL;
@@ -573,7 +574,7 @@ int main(int argc, char **argv)
         cmac = malloc(BLOCK_SIZE * sizeof(char));
         gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
         print_hex(cmac, BLOCK_SIZE);
-        unsigned char *txtCMAC = malloc(sizeof(unsigned char*));
+        txtCMAC = malloc(BLOCK_SIZE * sizeof(char));
 
         fileManager(input_file, "cmac", txtCMAC, &cmacSize);
         print("Verifications Completed", info);
