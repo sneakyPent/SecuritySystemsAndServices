@@ -412,7 +412,7 @@ CMAC_CTX *cmacContextInit( unsigned char *key, int bit_mode)
         print("CMAC_CTX_new failure!", error);
         exit(1);
     }
-    if (1 != CMAC_Init(context,key,BLOCK_SIZE, cipher, NULL))
+    if (1 != CMAC_Init(context,key,BLOCK_SIZE*2, cipher, NULL))
     {
         print("CMAC_Init failure!", error);
         exit(1);
