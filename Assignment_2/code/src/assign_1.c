@@ -267,14 +267,14 @@ EVP_CIPHER_CTX *contextInit( unsigned char *key, int bit_mode, char mode)
     }
 
     if ( mode== 'e'){
-        if (1 != EVP_EncryptInit(context, cipher, key, NULL))
+        if (1 != EVP_EncryptInit_ex(context, cipher, NULL, key, NULL))
             {
                 print("EVP_EncryptInit failure!", error);
                 exit(1);
             }
     }
     else if (mode=='d'){
-        if (1 != EVP_DecryptInit(context, cipher, key, NULL))
+        if (1 != EVP_DecryptInit_ex(context, cipher, NULL, key, NULL))
         {
             print("EVP_DecryptInit failure!", error);
             exit(1);
