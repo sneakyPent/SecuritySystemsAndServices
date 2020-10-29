@@ -24,6 +24,8 @@ make tasks          # Run the whole TASK F
 
 ## TASK F
 
+Files for 1,2 and 3 are located in myResults directory.
+
 4.1 File hpy414_verifyme_128.txt was read succesfully but NOT verified.
 
 4.2 File hpy414_verifyme_256.txt was read succesfully but NOT verified.
