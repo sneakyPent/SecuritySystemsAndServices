@@ -118,7 +118,7 @@ void keygen(unsigned char *password, unsigned char *key, int bit_mode)
         print("EVP_BytesToKey failure", error);
         exit(1);
     }
-    print("Key generated successfully", success);
+    printf("Key generated successfully.Generated key:\n");
     print_hex(key, bit_mode);
 }
 
@@ -145,6 +145,7 @@ void encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key, un
     ciphertext_len += len;
     
     /* Print message as hex*/
+    printf("Encrypted message:\n");
     print_hex(ciphertext, ciphertext_len);
 
     /* Clean up*/
@@ -165,13 +166,15 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, u
         exit(1);
     }
     plaintext_len = len;
-    if (EVP_DecryptFinal(context, plaintext + len, &len) != 1)
+    if (EVP_DecryptFinal_ex(context, plaintext + len, &len) != 1)
     {
-        print( "EVP_DecryptFinal failure", error);
+        print( "EVP_DecryptFinal_ex failure", error);
         exit(1);
     }
     plaintext_len += len;
     
+    /* Print message as hex*/
+    printf("Decrypted message:\n");
     print_string(plaintext, plaintext_len);
     EVP_CIPHER_CTX_free(context);
 
@@ -196,7 +199,8 @@ void gen_cmac(unsigned char *data, size_t data_len, unsigned char *key,
         print("CMAC_Final failure", error);
         exit(1);
     }
-
+    printf("CMAC generated successfully.Generated CMAC:\n");
+    print_hex(cmac, cmacLen);
     CMAC_CTX_free(context);
 }
 
@@ -211,10 +215,12 @@ int verify_cmac(unsigned char *cmac1, unsigned char *cmac2)
 
     if (memcmp((const char *)cmac1, (const char *)cmac2, BLOCK_SIZE) == 0)
     {
+        printf("File verified.\n");
         verify = 1;
     }
     else
     {
+        printf("File not verified.\n");
         verify = 0;
     }
 
@@ -543,9 +549,8 @@ int main(int argc, char **argv)
         print("Start decrypting...", info);
         ciphertxt = malloc(sizeof(unsigned char*));
         fileManager(input_file, "r", ciphertxt, &ciphertextLength);
-        plaintextLength = ((ciphertextLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;
-        plaintext = malloc(plaintextLength * sizeof(char));
-        decrypt(ciphertxt,ciphertextLength,key,plaintext,bit_mode);
+        plaintext = malloc(sizeof(char));
+        plaintextLength = decrypt(ciphertxt,ciphertextLength,key,plaintext,bit_mode);
         fileManager(output_file, "w", plaintext, &plaintextLength);
         print("File decrypted.", success);
         break;
@@ -558,7 +563,6 @@ int main(int argc, char **argv)
         encrypt(plaintext,plaintextLength,key,ciphertxt,bit_mode);
         cmac = malloc(BLOCK_SIZE * sizeof(char));
         gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
-        print_hex(cmac, BLOCK_SIZE);
         long csize = BLOCK_SIZE;
         fileManager(output_file, "w", ciphertxt, &ciphertextLength);
         fileManager(output_file, "a", cmac, &csize);
@@ -573,7 +577,6 @@ int main(int argc, char **argv)
         long plaintextLength = (long) decrypt(ciphertxt,ciphertextLength-BLOCK_SIZE,key,plaintext,bit_mode);
         cmac = malloc(BLOCK_SIZE * sizeof(char));
         gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
-        print_hex(cmac, BLOCK_SIZE);
         txtCMAC = malloc(BLOCK_SIZE * sizeof(char));
 
         fileManager(input_file, "cmac", txtCMAC, &cmacSize);
@@ -587,7 +590,11 @@ int main(int argc, char **argv)
         {
             print("Not verified!", error);
         }
-        print("File verified.", success);
+        print("File verification completed.", success);
+        printf("GENERATED CMAC:\n");
+        print_hex(cmac, BLOCK_SIZE);
+        printf("FILE'S CMAC:\n");
+        print_hex(txtCMAC, BLOCK_SIZE);
         break;
     }
         
