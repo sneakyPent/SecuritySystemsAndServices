@@ -101,8 +101,15 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, u
 void gen_cmac(unsigned char *data, size_t data_len, unsigned char *key,
               unsigned char *cmac, int bit_mode);
 
-
-int verify_cmac(unsigned char *, unsigned char *);
+/**
+ * @brief Check if cmac1 and cmac2 match
+ * 
+ * @param cmac1 
+ * @param cmac2 
+ * 
+ * @return int 1 when matcing, otherwise 0 
+ */
+int verify_cmac(unsigned char * cmac1, unsigned char * cmac2);
 
 /* TODO Declare your function prototypes here... */
 
@@ -145,9 +152,8 @@ EVP_CIPHER_CTX *contextInit(unsigned char *key, int bit_mode, char mode);
 CMAC_CTX *cmacContextInit( unsigned char *key, int bit_mode);
 
 
-
 /**
- * @brief Function to read and write files.
+ * @brief Function to read, write and append files.
  * 
  * @param fileName          The filename want to interact with.
  * @param mode              rb for reading or wb for writting
@@ -156,6 +162,12 @@ CMAC_CTX *cmacContextInit( unsigned char *key, int bit_mode);
  */
 void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *plaintextLength);
 
+/**
+ * @brief Function to print messages in debug mode
+ * 
+ * @param str 
+ * @param mode The mode in which we want to print (info, success, error) 
+ */
 void print(char * str, enum mode );
 
 #endif //SECURITY_SYSTEMS_ASSIGN_1_H
