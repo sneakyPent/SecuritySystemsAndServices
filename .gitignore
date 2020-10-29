@@ -50,3 +50,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+Assignment_2/code/myResults/decryptme_256.txt
+Assignment_2/code/myResults/hpy414_encryptme_128.txt
+Assignment_2/code/myResults/verifyme_128.txt
