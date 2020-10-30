@@ -118,8 +118,7 @@ void keygen(unsigned char *password, unsigned char *key, int bit_mode)
         print("EVP_BytesToKey failure", error);
         exit(1);
     }
-    printf("Key generated successfully.Generated key:\n");
-    print_hex(key, bit_mode);
+
 }
 
 void encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key, unsigned char *ciphertext, int bit_mode)
@@ -144,11 +143,6 @@ void encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key, un
     }
     ciphertext_len += len;
     
-    /* Print message as hex*/
-    printf("Encrypted message:\n");
-    print_hex(ciphertext, ciphertext_len);
-
-    /* Clean up*/
     EVP_CIPHER_CTX_free(context);
 }
 
@@ -165,17 +159,17 @@ int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, u
         print("EVP_DecryptUpdate failure", error);
         exit(1);
     }
+
+    
+    
     plaintext_len = len;
-    if (EVP_DecryptFinal_ex(context, plaintext + len, &len) != 1)
+    if (EVP_DecryptFinal_ex(context, plaintext + plaintext_len, &len) != 1)
     {
         print( "EVP_DecryptFinal_ex failure", error);
         exit(1);
     }
     plaintext_len += len;
-    
-    /* Print message as hex*/
-    printf("Decrypted message:\n");
-    print_string(plaintext, plaintext_len);
+
     EVP_CIPHER_CTX_free(context);
 
     return plaintext_len;
@@ -199,8 +193,7 @@ void gen_cmac(unsigned char *data, size_t data_len, unsigned char *key,
         print("CMAC_Final failure", error);
         exit(1);
     }
-    printf("CMAC generated successfully.Generated CMAC:\n");
-    print_hex(cmac, cmacLen);
+    
     CMAC_CTX_free(context);
 }
 
@@ -214,15 +207,9 @@ int verify_cmac(unsigned char *cmac1, unsigned char *cmac2)
     verify = 0;
 
     if (memcmp((const char *)cmac1, (const char *)cmac2, BLOCK_SIZE) == 0)
-    {
-        printf("File verified.\n");
         verify = 1;
-    }
     else
-    {
-        printf("File not verified.\n");
         verify = 0;
-    }
 
     return verify;
 }
@@ -309,8 +296,10 @@ const EVP_CIPHER *getAesCipher(int bit_mode)
     return aes_cipher;
 }
 
-void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *plaintextLength)
+unsigned char * fileManager(char *fileName, char *mode, unsigned char *plaintext, long *plaintextLength)
 {
+
+    unsigned char * retext = NULL;
 
    
     FILE *fp=NULL;
@@ -333,11 +322,11 @@ void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *pla
         fseek(fp, 0L, SEEK_END);
         flen = ftell(fp);
         fseek(fp, 0L, SEEK_SET);
-        plaintext = realloc(plaintext, sizeof(char)*flen);
         /* allocate memory for plaintext storing*/
+        retext = malloc(sizeof(char)*flen);
         /*read plaintext*/
         print("Reading file...", info);
-        long readlength = fread(plaintext, sizeof(char), flen, fp);
+        long readlength = fread(retext, sizeof(char), flen, fp);
         if (readlength != flen)
         {
             print("Reading error",error);
@@ -383,11 +372,11 @@ void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *pla
         /*Calculate the size of the plaintext*/
         fseek(fp,-BLOCK_SIZE, SEEK_END);
     
-        plaintext = realloc(plaintext, sizeof(char)*flen);
+        retext = malloc(sizeof(char)*flen);
         /* allocate memory for plaintext storing*/
         /*read plaintext*/
         print("Reading file...", info);
-        long readlength = fread(plaintext, sizeof(char), flen, fp);
+        long readlength = fread(retext, sizeof(char), flen, fp);
         if (readlength != flen)
         {
             print("Reading error",error);
@@ -403,6 +392,7 @@ void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *pla
     print("Closing File...", info);
     fclose(fp);
     print("File closed.", info);
+    return retext;
 }
 
 
@@ -531,70 +521,73 @@ int main(int argc, char **argv)
     /* Keygen from password */
     key = malloc(bit_mode * sizeof(char));
     keygen(password, key, bit_mode);
-
+    printf("\033[0;32m-Key generated successfully.\n Generated key:\033[0m\n");
+    print_hex(key, bit_mode);
     /* Operate on the data according to the mode */
     switch (op_mode)
     {
     case 0:     /* encrypt */
-        print("Start encrypting...", info);
-        plaintext = malloc(sizeof(unsigned char*));
-        fileManager(input_file, "r", plaintext, &plaintextLength);
+
+        printf("\033[0;32m-Start encrypting...\033[0m\n");
+        plaintext = fileManager(input_file, "r", plaintext, &plaintextLength);
         ciphertextLength = ((plaintextLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;
         ciphertxt = malloc(ciphertextLength * sizeof(char));
         encrypt(plaintext,plaintextLength,key,ciphertxt,bit_mode);
+        printf("\033[0;32m  Encrypted message:\033[0m\n");
+        print_hex(ciphertxt, ciphertextLength);
         fileManager(output_file, "w", ciphertxt, &ciphertextLength);
-        print("File encrypted.", success);
+        printf("\033[0;32m-File encrypted.\033[0m\n");
         break;
     case 1:     /* decrypt */
-        print("Start decrypting...", info);
-        ciphertxt = malloc(sizeof(unsigned char*));
-        fileManager(input_file, "r", ciphertxt, &ciphertextLength);
-        plaintext = malloc(sizeof(char));
+        printf("\033[0;32m-Start decrypting...\033[0m\n");
+        ciphertxt = fileManager(input_file, "r", ciphertxt, &ciphertextLength);
+        plaintext = malloc(sizeof(char)*ciphertextLength);
         plaintextLength = decrypt(ciphertxt,ciphertextLength,key,plaintext,bit_mode);
         fileManager(output_file, "w", plaintext, &plaintextLength);
-        print("File decrypted.", success);
+        printf("\033[0;32m  Decrypted message:\033[0m\n");
+        print_string(plaintext, plaintextLength);
+        printf("\033[0;32m-File decrypted.\033[0m\n");
         break;
     case 2:     /* sign */
-        print("Start signing...", info);
-        plaintext = malloc(sizeof(unsigned char*));
-        fileManager(input_file, "r", plaintext, &plaintextLength);
+        printf("\033[0;32m-Start signing...\033[0m\n");  
+        plaintext = fileManager(input_file, "r", plaintext, &plaintextLength);
         ciphertextLength = ((plaintextLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;
         ciphertxt = malloc(ciphertextLength * sizeof(char));
         encrypt(plaintext,plaintextLength,key,ciphertxt,bit_mode);
+        printf("\033[0;32m  Encrypted message:\033[0m\n");
+        print_hex(ciphertxt, ciphertextLength);
         cmac = malloc(BLOCK_SIZE * sizeof(char));
         gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
-        long csize = BLOCK_SIZE;
+        printf("\033[0;32m-CMAC generated successfully.\n  Generated CMAC:\033[0m\n");
+        print_hex(cmac, cmacSize);
         fileManager(output_file, "w", ciphertxt, &ciphertextLength);
-        fileManager(output_file, "a", cmac, &csize);
-        print("File signed.", success);
+        fileManager(output_file, "a", cmac, &cmacSize);
+        printf("\033[0;32m-File signed.\033[0m\n");
         break;
     case 3:      /* verify */
 
-        print("Start verifying...", info);
-        ciphertxt = malloc(sizeof(unsigned char*));
-        fileManager(input_file, "r", ciphertxt, &ciphertextLength);
-        plaintext = malloc(sizeof(char));
-        long plaintextLength = (long) decrypt(ciphertxt,ciphertextLength-BLOCK_SIZE,key,plaintext,bit_mode);
+        printf("\033[0;32m-Start verifying...\033[0m\n");
+        ciphertxt = fileManager(input_file, "r", ciphertxt, &ciphertextLength);
+        plaintext = malloc(sizeof(char)*ciphertextLength);
+        plaintextLength = decrypt(ciphertxt,ciphertextLength-cmacSize,key,plaintext,bit_mode);
+        printf("\033[0;32m  Decrypted message:\033[0m\n");
+        print_string(plaintext, plaintextLength);
         cmac = malloc(BLOCK_SIZE * sizeof(char));
         gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
-        txtCMAC = malloc(BLOCK_SIZE * sizeof(char));
-
-        fileManager(input_file, "cmac", txtCMAC, &cmacSize);
-        print("Verifications Completed", info);
+        txtCMAC = fileManager(input_file, "cmac", txtCMAC, &cmacSize);
         if (verify_cmac(cmac,txtCMAC) == 1)
         {
-            print("Verified!", success);
+            printf("\033[0;32m File successfuly verified.\033[0m\n");
             fileManager(output_file, "w", plaintext, &plaintextLength);
         }
         else
-        {
-            print("Not verified!", error);
-        }
-        print("File verification completed.", success);
-        printf("GENERATED CMAC:\n");
-        print_hex(cmac, BLOCK_SIZE);
-        printf("FILE'S CMAC:\n");
-        print_hex(txtCMAC, BLOCK_SIZE);
+            printf("\033[0;31m File not verified.\033[0m\n");
+        
+        printf("\033[0;32m-CMAC generated successfully.\n  Generated CMAC:\033[0m\n");
+        print_hex(cmac, cmacSize);
+        printf("\033[0;32m  FILE'S CMAC:\033[0m\n");
+        print_hex(txtCMAC, cmacSize);
+        printf("\033[0;32m-File verification completed.\033[0m\n");
         break;
     }
         
