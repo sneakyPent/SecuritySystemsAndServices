@@ -56,7 +56,6 @@ void usage(void)
         " -s            Encrypt+sign input and store results to output\n"
         " -v            Decrypt+verify input and store results to output\n"
         " -h            This help message\n");
-    exit(EXIT_FAILURE);
 }
 
 void check_args(char *input_file, char *output_file, unsigned char *password,
@@ -64,34 +63,34 @@ void check_args(char *input_file, char *output_file, unsigned char *password,
 {
     if (!input_file)
     {
-        print(" No input file!", error);
         usage();
+        print(" No input file!", error);
     }
 
     if (!output_file)
     {
-        print("No output file!", error);
         usage();
+        print("No output file!", error);
     }
 
     if (!password)
     {
-        print("No user key!", error);
         usage();
+        print("No user key!", error);
     }
 
     if ((bit_mode != 128) && (bit_mode != 256))
     {
+        usage();
         char msg[50];
         sprintf(msg, "Bit Mode <%d> is invalid!", bit_mode);
         print(msg, error);
-        usage();
     }
 
     if (op_mode == -1)
     {
-        print("Error: No mode", error);
         usage();
+        print("Error: No mode", error);
     }
 }
 
@@ -114,60 +113,42 @@ void keygen(unsigned char *password, unsigned char *key, int bit_mode)
     if (!cipher)
         return;
     if (!EVP_BytesToKey(cipher, md, NULL, password, strlen((const char *)password), 1, key, NULL))
-    {
         print("EVP_BytesToKey failure", error);
-        exit(1);
-    }
-
 }
 
 void encrypt(unsigned char *plaintext, int plaintext_len, unsigned char *key, unsigned char *ciphertext, int bit_mode)
 {
-   
+
     EVP_CIPHER_CTX *context;
     int len, ciphertext_len;
     context = contextInit(key, bit_mode, 'e');
-      
+
     /*Encrypt inl bytes from the buffer in and writes the encrypted version to out.*/
     if (EVP_EncryptUpdate(context, ciphertext, &len, plaintext, plaintext_len) != 1)
-    {
         print("EVP_EncryptUpdate failure", error);
-        exit(1);
-    }
     ciphertext_len = len;
     /* Finalize the encryption. Further ciphertext bytes may be written at this stage.*/
     if (EVP_EncryptFinal_ex(context, ciphertext + len, &len) != 1)
-    {
-        print( "EVP_EncryptFinal_ex failure", error);
-        exit(1);
-    }
+        print("EVP_EncryptFinal_ex failure", error);
     ciphertext_len += len;
-    
+
     EVP_CIPHER_CTX_free(context);
 }
 
 int decrypt(unsigned char *ciphertext, int ciphertext_len, unsigned char *key, unsigned char *plaintext, int bit_mode)
 {
-    int plaintext_len,len;
+    int plaintext_len, len;
 
     plaintext_len = 0;
-    
-    EVP_CIPHER_CTX *context=NULL;
+
+    EVP_CIPHER_CTX *context = NULL;
     context = contextInit(key, bit_mode, 'd');
     if (EVP_DecryptUpdate(context, plaintext, &len, ciphertext, ciphertext_len) != 1)
-    {
         print("EVP_DecryptUpdate failure", error);
-        exit(1);
-    }
 
-    
-    
     plaintext_len = len;
     if (EVP_DecryptFinal_ex(context, plaintext + plaintext_len, &len) != 1)
-    {
-        print( "EVP_DecryptFinal_ex failure", error);
-        exit(1);
-    }
+        print("EVP_DecryptFinal_ex failure", error);
     plaintext_len += len;
 
     EVP_CIPHER_CTX_free(context);
@@ -179,21 +160,15 @@ void gen_cmac(unsigned char *data, size_t data_len, unsigned char *key,
               unsigned char *cmac, int bit_mode)
 {
     CMAC_CTX *context;
-    context = cmacContextInit(key,bit_mode);
+    context = cmacContextInit(key, bit_mode);
     size_t cmacLen;
 
-    if (1!=CMAC_Update(context, data, data_len))
-    {
+    if (1 != CMAC_Update(context, data, data_len))
         print("CMAC_Update failure", error);
-        exit(1);
-    }
 
-    if (1!=CMAC_Final(context, cmac, &cmacLen))
-    {
+    if (1 != CMAC_Final(context, cmac, &cmacLen))
         print("CMAC_Final failure", error);
-        exit(1);
-    }
-    
+
     CMAC_CTX_free(context);
 }
 
@@ -217,30 +192,32 @@ int verify_cmac(unsigned char *cmac1, unsigned char *cmac2)
 /* TODO Develop your functions here... */
 void print(char *str, enum mode md)
 {
-    if (debug == 1)
+
+    switch (md)
     {
-        switch (md)
+    case error:
+        printf("\033[1;31m");
+        printf("[ERROR]: \033[0m %s\n", str);
+        exit(EXIT_FAILURE);
+        break;
+    case info:
+        if (debug == 1)
         {
-        case error:
-            printf("\033[1;31m");
-            printf("[ERROR]: \033[0m %s\n", str);
-            break;
-        case info:
             printf("\033[0;36m");
             printf("[INFO]: \033[0m %s\n", str);
-            break;
-        case success:
-            printf("\033[0;32m");
-            printf("[SUCCESS]: \033[0m %s\n", str);
-            break;
-        default:
-            printf("%s\n", str);
-            break;
         }
+        break;
+    case success:
+        printf("\033[0;32m");
+        printf("%s\033[0m\n", str);
+        break;
+    default:
+        printf("%s\n", str);
+        break;
     }
 }
 
-EVP_CIPHER_CTX *contextInit( unsigned char *key, int bit_mode, char mode)
+EVP_CIPHER_CTX *contextInit(unsigned char *key, int bit_mode, char mode)
 {
 
     const EVP_CIPHER *cipher = NULL;
@@ -248,30 +225,21 @@ EVP_CIPHER_CTX *contextInit( unsigned char *key, int bit_mode, char mode)
     EVP_CIPHER_CTX *context;
 
     if (!(context = EVP_CIPHER_CTX_new()))
-    {
         print("EVP_CIPHER_CTX_new failure!", error);
-        exit(1);
-    }
 
-    if ( mode== 'e'){
+    if (mode == 'e')
+    {
         if (1 != EVP_EncryptInit_ex(context, cipher, NULL, key, NULL))
-            {
-                print("EVP_EncryptInit failure!", error);
-                exit(1);
-            }
+            print("EVP_EncryptInit failure!", error);
     }
-    else if (mode=='d'){
+    else if (mode == 'd')
+    {
         if (1 != EVP_DecryptInit_ex(context, cipher, NULL, key, NULL))
-        {
             print("EVP_DecryptInit failure!", error);
-            exit(1);
-        }
     }
     else
-    {
         print("Not valid mode for contextInit functions.", error);
-    }
-   
+
     return context;
 }
 
@@ -289,29 +257,26 @@ const EVP_CIPHER *getAesCipher(int bit_mode)
     }
     aes_cipher = EVP_get_cipherbyname(hash_function_name);
     if (!aes_cipher)
-    {
         print("EVP_get_cipherbyname failure!", error);
-        exit(1);
-    }
+
     return aes_cipher;
 }
 
-unsigned char * fileManager(char *fileName, char *mode, unsigned char *plaintext, long *plaintextLength)
+unsigned char *fileManager(char *fileName, char *mode, unsigned char *plaintext, long *plaintextLength)
 {
 
-    unsigned char * retext = NULL;
+    unsigned char *retext = NULL;
 
-   
-    FILE *fp=NULL;
-    if (strcmp(mode, "cmac") != 0){
+    FILE *fp = NULL;
+    if (strcmp(mode, "cmac") != 0)
+    {
         print("Opening file.", info);
-        fp= fopen(fileName, mode);
+        fp = fopen(fileName, mode);
         if (fp == NULL)
         {
             char msg[50] = "Cannot find file ";
             strcat(msg, fileName);
             print(msg, error);
-            exit(1);
         }
     }
     if (strcmp(mode, "r") == 0)
@@ -323,41 +288,31 @@ unsigned char * fileManager(char *fileName, char *mode, unsigned char *plaintext
         flen = ftell(fp);
         fseek(fp, 0L, SEEK_SET);
         /* allocate memory for plaintext storing*/
-        retext = malloc(sizeof(char)*flen);
+        retext = malloc(sizeof(char) * flen);
         /*read plaintext*/
         print("Reading file...", info);
         long readlength = fread(retext, sizeof(char), flen, fp);
         if (readlength != flen)
-        {
-            print("Reading error",error);
-            exit(1);
-        }
+            print("Reading error", error);
         *plaintextLength = flen;
-        print("Read file.", success);
-
+        print("Read file.", info);
     }
     else if (strcmp(mode, "w") == 0)
     {
         long writelength = fwrite(plaintext, sizeof(char), *plaintextLength, fp);
         if (writelength != *plaintextLength)
-        {
-            print("writing error",error);
-            exit(1);
-        }
-        print("write file.", success);
+            print("writing error", error);
+        print("write file.", info);
     }
     else if (strcmp(mode, "a") == 0)
     {
         long writelength = fwrite(plaintext, sizeof(char), *plaintextLength, fp);
         if (writelength != *plaintextLength)
-        {
-            print("writing error",error);
-            exit(1);
-        }
-        print("write file.", success);
+            print("writing error", error);
+        print("append file.", info);
     }
     else if (strcmp(mode, "cmac") == 0)
-    {   
+    {
         print("Opening file.", info);
         fp = fopen(fileName, "r");
         if (fp == NULL)
@@ -365,38 +320,31 @@ unsigned char * fileManager(char *fileName, char *mode, unsigned char *plaintext
             char msg[50] = "Cannot find file ";
             strcat(msg, fileName);
             print(msg, error);
-            exit(1);
         }
-        long flen=BLOCK_SIZE;
+        long flen = BLOCK_SIZE;
 
         /*Calculate the size of the plaintext*/
-        fseek(fp,-BLOCK_SIZE, SEEK_END);
-    
-        retext = malloc(sizeof(char)*flen);
+        fseek(fp, -BLOCK_SIZE, SEEK_END);
+
+        retext = malloc(sizeof(char) * flen);
         /* allocate memory for plaintext storing*/
         /*read plaintext*/
         print("Reading file...", info);
         long readlength = fread(retext, sizeof(char), flen, fp);
         if (readlength != flen)
-        {
-            print("Reading error",error);
-            exit(1);
-        }
+            print("Reading error", error);
         *plaintextLength = flen;
-        print("Read file.", success);
+        print("Read file.", info);
     }
     else
-    {
-        print("Give valid File manager mode (write->wb  or  read->rb)", error);
-    }
+        print("Give valid File manager mode (write->w,  read->r,    read cmac->cmac,    append->a)", error);
     print("Closing File...", info);
     fclose(fp);
     print("File closed.", info);
     return retext;
 }
 
-
-CMAC_CTX *cmacContextInit( unsigned char *key, int bit_mode)
+CMAC_CTX *cmacContextInit(unsigned char *key, int bit_mode)
 {
 
     const EVP_CIPHER *cipher = NULL;
@@ -404,18 +352,11 @@ CMAC_CTX *cmacContextInit( unsigned char *key, int bit_mode)
     CMAC_CTX *context;
 
     if (!(context = CMAC_CTX_new()))
-    {
         print("CMAC_CTX_new failure!", error);
-        exit(1);
-    }
-    if (1 != CMAC_Init(context,key,BLOCK_SIZE*(bit_mode/128), cipher, NULL))
-    {
+    if (1 != CMAC_Init(context, key, BLOCK_SIZE * (bit_mode / 128), cipher, NULL))
         print("CMAC_Init failure!", error);
-        exit(1);
-    }
     return context;
 }
-
 
 /*
  * Encrypts the input file and stores the ciphertext to the output file
@@ -438,7 +379,7 @@ int main(int argc, char **argv)
     unsigned char *password; /* the user defined password */
     unsigned char *key;
     unsigned char *plaintext;
-    long cmacSize; 
+    long cmacSize;
     long plaintextLength;
     unsigned char *ciphertxt;
     long ciphertextLength;
@@ -454,8 +395,7 @@ int main(int argc, char **argv)
     cmacSize = BLOCK_SIZE;
     bit_mode = -1;
     op_mode = -1;
-    
-    
+
     /*
     * Get arguments
     */
@@ -508,16 +448,14 @@ int main(int argc, char **argv)
 
     /* check arguments */
     check_args(input_file, output_file, password, bit_mode, op_mode);
-    
 
     /* TODO Develop the logic of your tool here... */
-
 
     /* Initialize the library */
     ERR_load_crypto_strings();
     OpenSSL_add_all_algorithms();
     OPENSSL_init_crypto(OPENSSL_INIT_LOAD_CONFIG, NULL);
-    
+
     /* Keygen from password */
     key = malloc(bit_mode * sizeof(char));
     keygen(password, key, bit_mode);
@@ -526,71 +464,69 @@ int main(int argc, char **argv)
     /* Operate on the data according to the mode */
     switch (op_mode)
     {
-    case 0:     /* encrypt */
-
-        printf("\033[0;32m-Start encrypting...\033[0m\n");
+    case 0: /* encrypt */
+        
+        print("-Start encrypting...",success);
         plaintext = fileManager(input_file, "r", plaintext, &plaintextLength);
         ciphertextLength = ((plaintextLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;
         ciphertxt = malloc(ciphertextLength * sizeof(char));
-        encrypt(plaintext,plaintextLength,key,ciphertxt,bit_mode);
-        printf("\033[0;32m  Encrypted message:\033[0m\n");
+        encrypt(plaintext, plaintextLength, key, ciphertxt, bit_mode);
+        print("  Encrypted message:",success);
         print_hex(ciphertxt, ciphertextLength);
         fileManager(output_file, "w", ciphertxt, &ciphertextLength);
-        printf("\033[0;32m-File encrypted.\033[0m\n");
+        print("-File encrypted.",success);
         break;
-    case 1:     /* decrypt */
-        printf("\033[0;32m-Start decrypting...\033[0m\n");
+    case 1: /* decrypt */
+        print("-Start decrypting...",success);
         ciphertxt = fileManager(input_file, "r", ciphertxt, &ciphertextLength);
-        plaintext = malloc(sizeof(char)*ciphertextLength);
-        plaintextLength = decrypt(ciphertxt,ciphertextLength,key,plaintext,bit_mode);
+        plaintext = malloc(sizeof(char) * ciphertextLength);
+        plaintextLength = decrypt(ciphertxt, ciphertextLength, key, plaintext, bit_mode);
         fileManager(output_file, "w", plaintext, &plaintextLength);
-        printf("\033[0;32m  Decrypted message:\033[0m\n");
+        print("  Decrypted message:",success);
         print_string(plaintext, plaintextLength);
-        printf("\033[0;32m-File decrypted.\033[0m\n");
+        print("-File decrypted.",success);
         break;
-    case 2:     /* sign */
-        printf("\033[0;32m-Start signing...\033[0m\n");  
+    case 2: /* sign */
+        print("-Start signing...",success);
         plaintext = fileManager(input_file, "r", plaintext, &plaintextLength);
         ciphertextLength = ((plaintextLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;
         ciphertxt = malloc(ciphertextLength * sizeof(char));
-        encrypt(plaintext,plaintextLength,key,ciphertxt,bit_mode);
-        printf("\033[0;32m  Encrypted message:\033[0m\n");
+        encrypt(plaintext, plaintextLength, key, ciphertxt, bit_mode);
+        print("  Encrypted message:",success);
         print_hex(ciphertxt, ciphertextLength);
         cmac = malloc(BLOCK_SIZE * sizeof(char));
         gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
-        printf("\033[0;32m-CMAC generated successfully.\n  Generated CMAC:\033[0m\n");
+        print("-CMAC generated successfully.\n  Generated CMAC:",success);
         print_hex(cmac, cmacSize);
         fileManager(output_file, "w", ciphertxt, &ciphertextLength);
         fileManager(output_file, "a", cmac, &cmacSize);
-        printf("\033[0;32m-File signed.\033[0m\n");
+        print("-File signed.",success);
         break;
-    case 3:      /* verify */
-
-        printf("\033[0;32m-Start verifying...\033[0m\n");
+    case 3: /* verify */
+        print("-Start verifying...",success);
         ciphertxt = fileManager(input_file, "r", ciphertxt, &ciphertextLength);
-        plaintext = malloc(sizeof(char)*ciphertextLength);
-        plaintextLength = decrypt(ciphertxt,ciphertextLength-cmacSize,key,plaintext,bit_mode);
-        printf("\033[0;32m  Decrypted message:\033[0m\n");
+        plaintext = malloc(sizeof(char) * ciphertextLength);
+        plaintextLength = decrypt(ciphertxt, ciphertextLength - cmacSize, key, plaintext, bit_mode);
+        print("  Decrypted message:",success);
         print_string(plaintext, plaintextLength);
         cmac = malloc(BLOCK_SIZE * sizeof(char));
         gen_cmac(plaintext, plaintextLength, key, cmac, bit_mode);
         txtCMAC = fileManager(input_file, "cmac", txtCMAC, &cmacSize);
-        if (verify_cmac(cmac,txtCMAC) == 1)
+        print("-CMAC generated successfully.\n  Generated CMAC:",success);
+        print_hex(cmac, cmacSize);
+        print("  FILE'S CMAC:",success);
+        print_hex(txtCMAC, cmacSize);
+        if (verify_cmac(cmac, txtCMAC) == 1)
         {
-            printf("\033[0;32m File successfuly verified.\033[0m\n");
+            print(" File successfuly verified.",success);
             fileManager(output_file, "w", plaintext, &plaintextLength);
         }
         else
             printf("\033[0;31m File not verified.\033[0m\n");
-        
-        printf("\033[0;32m-CMAC generated successfully.\n  Generated CMAC:\033[0m\n");
-        print_hex(cmac, cmacSize);
-        printf("\033[0;32m  FILE'S CMAC:\033[0m\n");
-        print_hex(txtCMAC, cmacSize);
-        printf("\033[0;32m-File verification completed.\033[0m\n");
+        print("-File verification completed.",success);
         break;
     }
-        
+
     /* Clean up */
     free(input_file);
     free(output_file);
