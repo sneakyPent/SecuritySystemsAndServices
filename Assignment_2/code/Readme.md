@@ -48,14 +48,3 @@ Files for 1,2 and 3 are located in myResults directory.
 * ***CMAC_Final***: Used to decrypt the "final" data after using CMAC_Update.
 * ***EVP_CIPHER_CTX_free***: Used to clears all information from a cipher context and free up any allocated memory associate with it.
 
-## SOME HINTS
-
-If you want some more info about tool proccessed while running you can run its task with argument GD=-g
-
-```bash
-make taskA GD=-g
-make taskB GD=-g
-make taskC GD=-g
-make taskD GD=-g
-make tasks GD=-g
-```
