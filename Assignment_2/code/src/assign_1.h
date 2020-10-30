@@ -160,7 +160,7 @@ CMAC_CTX *cmacContextInit( unsigned char *key, int bit_mode);
  * @param plaintext         The plaintext read from the file in read mode or the plaintext want to write in write mode
  * @param plaintextLength   The length of the plaintext
  */
-void fileManager(char *fileName, char *mode, unsigned char *plaintext, long *plaintextLength);
+unsigned char * fileManager(char *fileName, char *mode, unsigned char *plaintext, long *plaintextLength);
 
 /**
  * @brief Function to print messages in debug mode
