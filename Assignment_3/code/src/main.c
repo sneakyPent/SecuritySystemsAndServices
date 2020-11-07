@@ -22,6 +22,7 @@ main(int argc, char **argv)
 	char *input_file;		/* path to the input file          */
 	char *output_file;		/* path to the output file         */
 	char *key_file;			/* path to the key file            */
+	
 
 	/* Init arguments */
 	input_file = NULL;
@@ -33,28 +34,45 @@ main(int argc, char **argv)
 	/*
 	 * Get arguments
 	 */
-	while ((opt = getopt(argc, argv, "i:o:k:degh:")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:k:degh:b")) != -1) {
+		char msg[100] = "";
 		switch (opt) {
 		case 'i':
 			input_file = strdup(optarg);
+			strcat(msg, "Getting input file name: ");
+			strcat(msg, input_file);
+			print(msg, info);
 			break;
 		case 'o':
 			output_file = strdup(optarg);
+			strcat(msg, "Getting output file name: ");
+			strcat(msg, output_file);
+			print(msg, info);
 			break;
 		case 'k':
 			key_file = strdup(optarg);
+			strcat(msg, "Getting key file name: ");
+			strcat(msg, key_file);
+			print(msg, info);
 			break;
 		case 'd':
 			/* if op_mode == 0 the tool decrypts */
+			print("Enable decrypt mode on", info);
 			op_mode = 0;
 			break;
 		case 'e':
 			/* if op_mode == 1 the tool encrypts */
+			print("Enable encrypt mode on", info);
 			op_mode = 1;
 			break;
 		case 'g':
 			/* if op_mode == 2 the tool performs keygen */
+			print("Enable keygen mode on", info);
 			op_mode = 2;
+			break;
+		case 'b':
+			debug = 1;
+			print("Enable debug mode on", info);
 			break;
 		case 'h':
 		default:
