@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+enum mode{info,error,success};
+extern int debug;
 
 /*
  * Prints the hex value of the input, 16 values per line
@@ -42,6 +44,16 @@ usage(void);
  */
 void
 check_args(char *, char *, char *, int);
+
+
+/**
+ * @brief Function to print messages in debug mode
+ * 
+ * @param str 
+ * @param mode The mode in which we want to print (info, success, error) 
+ */
+void print(char * str, enum mode );
+
 
 
 #endif /* _UTILS_H */

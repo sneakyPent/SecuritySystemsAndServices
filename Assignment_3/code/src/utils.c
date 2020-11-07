@@ -1,5 +1,7 @@
 #include "utils.h"
 
+int debug = 0;
+
 /*
  * Prints the hex value of the input
  *
@@ -104,5 +106,33 @@ check_args(char *input_file, char *output_file, char *key_file, int op_mode)
 		usage();
 	}
 }
+
+
+void print(char *str, enum mode md)
+{
+    switch (md)
+    {
+    case error:
+        printf("\033[1;31m");
+        printf("[ERROR]: \033[0m %s\n", str);
+        exit(EXIT_FAILURE);
+        break;
+    case info:
+        if (debug == 1)
+        {
+            printf("\033[0;36m");
+            printf("[INFO]: \033[0m %s\n", str);
+        }
+        break;
+    case success:
+        printf("\033[0;32m");
+        printf("%s\033[0m\n", str);
+        break;
+    default:
+        printf("%s\n", str);
+        break;
+    }
+}
+
 
 
