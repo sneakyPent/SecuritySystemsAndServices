@@ -64,7 +64,7 @@ mod_inverse(size_t, size_t);
  * each key in a different file
  */
 void
-rsa_keygen(void);
+rsa_keygen( char *, char *);
 
 
 /*
