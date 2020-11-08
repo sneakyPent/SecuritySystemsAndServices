@@ -134,5 +134,56 @@ void print(char *str, enum mode md)
     }
 }
 
+void *fileManager(char *fileName, char *mode, void *messsage, long *plaintextLength)
+{
 
+	FILE *fp = NULL;
+	void *retext = NULL;
+	// print("Opening file.", info);
+	fp = fopen(fileName, mode);
+	if (fp == NULL)
+	{
+		char msg[50] = "Cannot find file ";
+		strcat(msg, fileName);
+		print(msg, error);
+	}
+	if (strcmp(mode, "r") == 0)
+	{
+		long flen;
 
+		/*Calculate the size of the plaintext*/
+		fseek(fp, 0L, SEEK_END);
+		flen = ftell(fp);
+		fseek(fp, 0L, SEEK_SET);
+		/* allocate memory for plaintext storing*/
+		retext = malloc(sizeof(char) * flen);
+		/*read plaintext*/
+		// print("Reading file...", info);
+		long readlength = fread(retext, sizeof(char), flen, fp);
+		// if (readlength != flen)
+		//     print("Reading error", error);
+		*plaintextLength = flen;
+		// print("Read file.", info);
+	}
+	else if (strcmp(mode, "w") == 0)
+	{
+		long writelength = fwrite(messsage, sizeof(char), *plaintextLength, fp);
+		if (writelength != *plaintextLength)
+			print("writing error", error);
+		// print("write file.", info);
+	}
+	else if (strcmp(mode, "a") == 0)
+	{
+		long writelength = fwrite(messsage, sizeof(char), *plaintextLength, fp);
+		if (writelength != *plaintextLength)
+			print("writing error", error);
+		// print("append file.", info);
+	}
+
+	else
+		print("Give valid File manager mode (write->w,  read->r,  append->a)", error);
+	// print("Closing File...", info);
+	fclose(fp);
+	// print("File closed.", info);
+	return retext;
+}

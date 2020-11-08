@@ -55,5 +55,14 @@ check_args(char *, char *, char *, int);
 void print(char * str, enum mode );
 
 
+/**
+ * @brief Function to read, write and append files.
+ * 
+ * @param fileName          The filename want to interact with.
+ * @param mode              rb for reading or wb for writting
+ * @param messsage         The message we want to write in write mode
+ * @param plaintextLength   The length of the plaintext
+ */
+void *fileManager(char *fileName, char *mode, void *messsage, long *plaintextLength);
 
 #endif /* _UTILS_H */
