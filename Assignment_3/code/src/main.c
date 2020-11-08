@@ -22,6 +22,8 @@ main(int argc, char **argv)
 	char *input_file;		/* path to the input file          */
 	char *output_file;		/* path to the output file         */
 	char *key_file;			/* path to the key file            */
+	char *public_key_file;			/* path to the key file            */
+	char *private_key_file;			/* path to the key file            */
 	
 
 	/* Init arguments */
@@ -29,6 +31,8 @@ main(int argc, char **argv)
 	output_file = NULL;
 	key_file = NULL;
 	op_mode = -1;
+	public_key_file = "../test/hpy414_public.key";
+	private_key_file = "../test/hpy414_private.key";
 
 
 	/*
@@ -94,7 +98,7 @@ main(int argc, char **argv)
 		rsa_encrypt(input_file, output_file, key_file);
 		break;
 	case 2:
-		rsa_keygen();
+		rsa_keygen(public_key_file,private_key_file);
 		break;
 	default:
 		break;
