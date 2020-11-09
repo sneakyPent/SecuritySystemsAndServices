@@ -149,6 +149,11 @@ void rsa_keygen(void)
 	printf("public key conists of n=%d, e=%d\n", n, e);
 	if (check(fi_n, d, e) == 1)
 		print("d,e are modular inverse", success);
+	long len1 = sizeof(size_t);
+	fileManager(public_key_file, "w", &n, &len1);
+	fileManager(public_key_file, "a", &e, &len1);
+	fileManager(private_key_file, "w", &n, &len1);
+	fileManager(private_key_file, "a", &d, &len1);
 }
 
 /*
