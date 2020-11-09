@@ -6,7 +6,7 @@
 
 Every part of the assignment is completed and works properly according to the given details of the assignment.
 
-If you want any specification for the implemented functions, you can find them in the header file (assign_1.h) given as function declerations.
+If you want any specification for the implemented functions, you can find them in the header files given as function declerations.
 
 ## Usage
 
