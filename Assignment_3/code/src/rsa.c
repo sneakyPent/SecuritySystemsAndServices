@@ -67,7 +67,7 @@ choose_e(size_t fi_n)
 	size_t e;
 	int primes_sz;
 	int primes_gcd1_sz = 0;
-	printf("fi_n -> %d \n", fi_n);
+	// printf("fi_n -> %d \n", fi_n);
 	// get all the primes from 2 to fi_n by calling sieve_of_eratosthenes
 	size_t *primes = sieve_of_eratosthenes(fi_n, &primes_sz);
 	size_t *primes_gcd1 = malloc(primes_sz * sizeof(size_t));
