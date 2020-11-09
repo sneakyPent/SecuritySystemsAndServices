@@ -147,8 +147,8 @@ void rsa_keygen(void)
 		d += fi_n;
 	}
 	printf("public key conists of n=%d, e=%d\n", n, e);
-	if (check(fi_n,d,e) == 1)
-		print("OK", success);
+	if (check(fi_n, d, e) == 1)
+		print("d,e are modular inverse", success);
 }
 
 /*
