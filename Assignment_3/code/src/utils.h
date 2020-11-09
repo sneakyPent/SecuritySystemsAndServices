@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 enum mode{info,error,success};
 extern int debug;
@@ -23,6 +24,8 @@ print_hex(unsigned char *, size_t);
  * @return size_t* 
  */
 size_t * splitKey(unsigned char *key);
+
+size_t myPow(size_t base, size_t power,size_t mod);
 
 /*
  * Prints the input as string

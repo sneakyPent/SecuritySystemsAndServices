@@ -47,6 +47,22 @@ size_t * splitKey(unsigned char *key)
 	nde[1] = strtoul(n_str, NULL, 16);
 	return nde;
 }
+
+size_t
+myPow(size_t base, size_t power, size_t mod)
+{
+	size_t result = 1;
+	for (size_t i = 0; i < power; i++)
+	{
+		result = result * base;
+		result = result % mod;
+		;
+	}
+
+	return result;
+}
+
+
 /*
  * Prints the input as string
  *
