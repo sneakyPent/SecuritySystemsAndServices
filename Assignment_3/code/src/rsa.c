@@ -96,16 +96,7 @@ size_t
 mod_inverse(size_t a, size_t b)
 {
 	//Implement the extended euclidean algorithm
-	size_t r;
-	size_t q;
-	size_t x;
-	size_t y;
-	size_t r0 = b;
-	size_t r1 = a;
-	size_t x0 = 0;
-	size_t x1 = 1;
-	size_t y0 = 1;
-	size_t y1 = 0;
+	size_t x0 = 0, x1 = 1, y0 = 1, y1 = 0;
 	while (r0 > 0)
 	{
 		r = r1 % r0;
