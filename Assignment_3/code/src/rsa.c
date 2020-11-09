@@ -218,6 +218,8 @@ void rsa_decrypt(char *input_file, char *output_file, char *key_file)
 	nde = splitKey(privateKey);
 	d=nde[0];
 	n=nde[1];
+	printf("d = %li\n", nde[0]);
+	printf("n = %li\n", nde[1]);
 	int bufsize = sizeof(size_t);
 	char ct;
 	unsigned char* plaintext = malloc(cipherTextLen/bufsize);
