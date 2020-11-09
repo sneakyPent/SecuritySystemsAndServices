@@ -121,7 +121,7 @@ mod_inverse(size_t a, size_t b)
  * Generates an RSA key pair and saves
  * each key in a different file
  */
-void rsa_keygen(void)
+void rsa_keygen(char *public_key_file, char *private_key_file)
 {
 	size_t p;
 	size_t q;
