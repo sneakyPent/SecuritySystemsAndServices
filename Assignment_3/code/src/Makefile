@@ -8,7 +8,7 @@ TARGET = assign_3
 TUCAM=2016030073
 
 FILESPATH = ../files/
-OUTPUTFILESPATH = ../files/
+OUTPUTFILESPATH = ../myResults/
 TESTPATH = ../test/
 
 TASKAFILE = lorem.txt
@@ -54,3 +54,4 @@ taskD: taskD1 taskD2 taskD3 taskD4
 clean:
 	rm -f $(TARGET) *.o
 	rm -rf $(TESTPATH)*
+	rm -rf $(OUTPUTFILESPATH)*
