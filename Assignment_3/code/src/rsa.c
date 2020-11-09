@@ -204,8 +204,44 @@ void rsa_encrypt(char *input_file, char *output_file, char *key_file)
  */
 void rsa_decrypt(char *input_file, char *output_file, char *key_file)
 {
+	size_t d,n ;
+	size_t *nde;
 
-	/* TODO */
+	unsigned char *privateKey, *cipherText;
+	long len, cipherTextLen;
+	privateKey = fileManager(key_file, "r", NULL, &len);
+	cipherText = fileManager(input_file, "r", NULL, &cipherTextLen);
+
+	print_hex(privateKey, len);
+	print_hex(cipherText, cipherTextLen);
+	nde = splitKey(privateKey);
+	d=nde[0];
+	n=nde[1];
+	int bufsize = sizeof(size_t);
+	char ct;
+	unsigned char* plaintext = malloc(cipherTextLen/bufsize);
+	int plaintextContent = 0;
+	for (int i = 0; i < cipherTextLen; i++)
+	{
+		unsigned char buf[bufsize], d_e_str[2*sizeof(size_t)] = "", str1[80] ;
+		buf[7-i%(bufsize)] = cipherText[i];
+		if (i%bufsize == bufsize-1 ){
+			for (size_t j = 0; j < sizeof(buf); j++)
+			{
+				sprintf(str1, "%02X", buf[j]);
+				strcat(d_e_str, str1);
+			}
+			size_t x = strtoul(d_e_str, NULL, 16);
+			char z = myPow(x, d, n);
+			long len = 1;
+			plaintext[plaintextContent]=z;
+			plaintextContent+=1;
+		}
+
+	}
+	print_string(plaintext,plaintextContent);
+	long sz = cipherTextLen/bufsize;
+	fileManager(output_file, "w", plaintext, &sz);
 }
 
 int check(size_t fi_n, size_t d, size_t e)
