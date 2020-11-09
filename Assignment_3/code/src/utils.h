@@ -16,6 +16,13 @@ extern int debug;
 void
 print_hex(unsigned char *, size_t);
 
+/**
+ * @brief Function for taking the public and private keys seperatety
+ * 
+ * @param key 
+ * @return size_t* 
+ */
+size_t * splitKey(unsigned char *key);
 
 /*
  * Prints the input as string

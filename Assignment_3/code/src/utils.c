@@ -25,7 +25,28 @@ print_hex(unsigned char *data, size_t len)
 	}
 }
 
+size_t * splitKey(unsigned char *key)
+{
 
+	int partlen = sizeof(size_t);
+	char n_str[sizeof(size_t)] = "";
+	char d_e_str[sizeof(size_t)] = "";
+	char str1[80], str2[80];
+	size_t *nde = malloc(2*sizeof(size_t));
+	for (size_t i = 2 * partlen; i > 8; i--)
+	{
+		sprintf(str2, "%02X", key[i - 1]);
+		strcat(d_e_str, str2);
+	}
+	nde[0] = strtoul(d_e_str, NULL, 16);
+	for (size_t j = partlen; j > 0; j--)
+	{
+		sprintf(str1, "%02X", key[j - 1]);
+		strcat(n_str, str1);
+	}
+	nde[1] = strtoul(n_str, NULL, 16);
+	return nde;
+}
 /*
  * Prints the input as string
  *
