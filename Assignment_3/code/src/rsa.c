@@ -173,6 +173,7 @@ void rsa_encrypt(char *input_file, char *output_file, char *key_file)
 	long len, plaintextLen;
 	publicKey = fileManager(key_file, "r", publicKey, &len);
 	plaintext = fileManager(input_file, "r", plaintext, &plaintextLen);
+	size_t *cipherText = malloc(plaintextLen*sizeof(size_t));
 	
 	// print_string(plaintext, plaintextLen);
 
@@ -182,16 +183,14 @@ void rsa_encrypt(char *input_file, char *output_file, char *key_file)
 	n=nde[1];
 	printf("e = %li\n", nde[0]);
 	printf("n = %li\n", nde[1]);
-	len = sizeof(ct);
 	
 	for (size_t i = 0; i < strlen(plaintext); i++)
 	{
 		ct = myPow(plaintext[i], e, n);
-		if (((int) i) == 0 )
-			fileManager(output_file, "w", &ct, &len);
-		else
-			fileManager(output_file, "a", &ct, &len);
+		cipherText[i] = ct;
 	}
+	len =sizeof(size_t)*plaintextLen;
+	fileManager(output_file, "w", cipherText, &len);
 	plaintext = fileManager(output_file, "r", plaintext, &plaintextLen);
 	printf("size of file is %d\n",plaintextLen);
 }
