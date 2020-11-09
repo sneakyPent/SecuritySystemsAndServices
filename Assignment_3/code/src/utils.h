@@ -18,13 +18,21 @@ void
 print_hex(unsigned char *, size_t);
 
 /**
- * @brief Function for taking the public and private keys seperatety
+ * @brief Function for taking the public and private keys seperatety.
  * 
- * @param key 
- * @return size_t* 
+ * @param key The key read from file.
+ * @return size_t* Array of private and public key.
  */
 size_t * splitKey(unsigned char *key);
 
+/**
+ * @brief Funciton to get the RSA's algorithm pow (M^e mod n) or (C^d mod n) 
+ * 
+ * @param base 
+ * @param power 
+ * @param mod 
+ * @return size_t 
+ */
 size_t myPow(size_t base, size_t power,size_t mod);
 
 /*
