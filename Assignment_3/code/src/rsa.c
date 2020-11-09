@@ -140,7 +140,12 @@ void rsa_keygen(void)
 	fi_n = (p - 1) * (q - 1);
 	e = choose_e(fi_n);
 	d = mod_inverse(e, fi_n);
-	printf("\n\npublic key conists of n=%d, d=%d\n", n, d);
+	if (((int)d) < 0)
+	{
+		print("negative", success);
+		printf("%d", d);
+		d += fi_n;
+	}
 	printf("public key conists of n=%d, e=%d\n", n, e);
 	if (check(fi_n,d,e) == 1)
 		print("OK", success);
