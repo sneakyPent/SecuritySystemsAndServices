@@ -5,7 +5,7 @@ OBJFILES = main.o rsa.o utils.o
 
 TARGET = assign_3
 
-TUCAM=2016030073
+TUCAM=TUC2016030073
 
 FILESPATH = ../files/
 OUTPUTFILESPATH = ../myResults/
