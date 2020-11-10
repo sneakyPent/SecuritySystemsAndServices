@@ -33,7 +33,7 @@ size_t * splitKey(unsigned char *key)
 	char d_e_str[sizeof(size_t)] = "";
 	char str1[80], str2[80];
 	size_t *nde = malloc(2*sizeof(size_t));
-	for (size_t i = 2 * partlen; i > 8; i--)
+	for (size_t i = 2 * partlen; i > partlen; i--)
 	{
 		sprintf(str2, "%02X", key[i - 1]);
 		strcat(d_e_str, str2);
