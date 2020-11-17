@@ -1,13 +1,6 @@
 #define _GNU_SOURCE
 
-#include <time.h>
-#include <stdio.h>
-#include <dlfcn.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <openssl/md5.h>
+#include "logger.h"
 
 FILE *
 fopen(const char *path, const char *mode) 
