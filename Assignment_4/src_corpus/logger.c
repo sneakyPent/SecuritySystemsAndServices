@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include "logger.h"
+#include "utils.h"
 
 FILE *
 fopen(const char *path, const char *mode)
@@ -97,6 +98,19 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file)
 	strcpy(le.date, dateAndTime[1]);
 	le.access = aType;
 
+	//get MD5 fingerprint
+	long lSize;
+	fseek(file,0L,SEEK_END);
+	lSize = ftell(file);
+	fseek(file, 0L, SEEK_SET);
+	unsigned char *retext=NULL;
+	retext = malloc(sizeof(char) * lSize);
+	long readlength = fread(retext, sizeof(char), lSize, file); 
+	if (readlength != lSize)
+            printf("Reading error");
+	unsigned char fingerprint[MD5_DIGEST_LENGTH];
+	MD5(retext, readlength, fingerprint);
+	strcpy(le.fileFingerprint,stringToHex(fingerprint, sizeof(fingerprint)));
 	return le;
 }
 
@@ -121,9 +135,9 @@ int logFileUpdate(logEntry log)
 			"Timestamp: %s\n"
 			"Access t​ype: %d \n"
 			"Action denied: %d\n"
-			"File fingerprint: \n"
+			"File fingerprint: %s \n"
 			"\n------------------------------------------------------------------------\n",
-			log.UID, log.filename, log.date, log.timestamp, log.access, log.isActionDenied);
+			log.UID, log.filename, log.date, log.timestamp, log.access, log.isActionDenied, log.fileFingerprint);
 
 	FILE *logFile = original_fopen(LOG_FILE_PATH, "a");
 	if (logFile == NULL)
