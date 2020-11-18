@@ -28,7 +28,7 @@ enum AccessType
  *   
  * 
  */
-struct logEntry
+typedef struct logEntry
 {
 	int UID;					   /** The unique user ID assigned by the system to a user */
 	char filename[3*BUF_LEN];		   /** The path and name of the accessed file. */
@@ -37,7 +37,7 @@ struct logEntry
 	enum AccessType access;		   /** For file creation 0. For file open 1. For file write 2 */
 	int isActionDenied;			   /** Reports if the action was denied to the user with no access privileges */
 	unsigned char fileFingerprint; /** ​ The digital fingerprint of the file the time the event occurred. */
-};
+}logEntry;
 
 /**
 * @brief Get the Current Date And Time
@@ -54,7 +54,7 @@ char **getCurrentDateAndTime();
  * @param mode The original fopen mode.
  * @return struct logEntry 
  */
-struct logEntry initLogs(const char *path, enum AccessType access);
+logEntry initLogs(const char *path, enum AccessType access);
 
 
 /**
@@ -62,5 +62,5 @@ struct logEntry initLogs(const char *path, enum AccessType access);
  * 
  * @return int 1 for success 0 for error
  */
-int logFileUpdate(struct logEntry);
+int logFileUpdate(logEntry);
 #endif /* _LOGGER_H */

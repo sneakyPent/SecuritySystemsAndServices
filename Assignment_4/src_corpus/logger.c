@@ -66,11 +66,11 @@ char **getCurrentDateAndTime()
 	return dateAndTime;
 }
 
-struct logEntry initLogs(const char *path, enum AccessType aType)
+logEntry initLogs(const char *path, enum AccessType aType)
 {
 
 	char **dateAndTime = getCurrentDateAndTime();
-	struct logEntry le;
+	logEntry le;
 
 	switch (aType)
 	{
@@ -97,7 +97,7 @@ struct logEntry initLogs(const char *path, enum AccessType aType)
 	return le;
 }
 
-int logFileUpdate(struct logEntry log)
+int logFileUpdate(logEntry log)
 {
 	// FILE *original_fopen_ret;
 	FILE *(*original_fopen)(const char *, const char *);
