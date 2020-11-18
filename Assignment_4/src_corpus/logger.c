@@ -26,18 +26,13 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
 
 	size_t original_fwrite_ret;
-	size_t (*original_fwrite)(const void*, size_t, size_t, FILE*);
+	size_t (*original_fwrite)(const void *, size_t, size_t, FILE *);
 
 	/* call the original fwrite function */
 	original_fwrite = dlsym(RTLD_NEXT, "fwrite");
 	original_fwrite_ret = (*original_fwrite)(ptr, size, nmemb, stream);
-
-
-	/* add your code here */
-	/* ... */
-	/* ... */
-	/* ... */
-	/* ... */
+	// Update log file for writing file
+	logFileUpdate(initLogs(ptr, writing));
 
 	return original_fwrite_ret;
 }
