@@ -20,9 +20,7 @@
  */
 enum AccessType
 {
-	creation = 0,
-	opening = 1,
-	writing = 2
+	creation, opening, writing
 };
 
 /**
