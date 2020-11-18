@@ -8,15 +8,18 @@ fopen(const char *path, const char *mode)
 
 	FILE *original_fopen_ret;
 	FILE *(*original_fopen)(const char *, const char *);
+	int exists=1;
 
 	// If file does not exist update log file for file creation
 	if (access(path, F_OK) == -1)
-		logFileUpdate(initLogs(path, creation));
+		exists = 0;
 	/* call the original fopen function */
 	original_fopen = dlsym(RTLD_NEXT, "fopen");
 	original_fopen_ret = (*original_fopen)(path, mode);
+	if (exists == 0)
+		logFileUpdate(initLogs(path, creation,original_fopen_ret));
 	// Update log file for opening file
-	logFileUpdate(initLogs(path, opening));
+	logFileUpdate(initLogs(path, opening,original_fopen_ret));
 	return original_fopen_ret;
 }
 
@@ -31,7 +34,7 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 	original_fwrite = dlsym(RTLD_NEXT, "fwrite");
 	original_fwrite_ret = (*original_fwrite)(ptr, size, nmemb, stream);
 	// Update log file for writing file
-	logFileUpdate(initLogs(ptr, writing));
+	logFileUpdate(initLogs(filename, writing,stream));
 
 	return original_fwrite_ret;
 }
@@ -66,7 +69,7 @@ char **getCurrentDateAndTime()
 	return dateAndTime;
 }
 
-logEntry initLogs(const char *path, enum AccessType aType)
+logEntry initLogs(const char *path, enum AccessType aType, FILE *file)
 {
 
 	char **dateAndTime = getCurrentDateAndTime();
