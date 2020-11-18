@@ -54,9 +54,7 @@ char **getCurrentDateAndTime();
  * @param mode The original fopen mode.
  * @return struct logEntry 
  */
-struct logEntry initLogs(const char *path, const char *mode);
-
-
+struct logEntry initLogs(const char *path, enum AccessType access);
 
 
 /**

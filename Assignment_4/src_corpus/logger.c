@@ -75,7 +75,7 @@ char **getCurrentDateAndTime()
 	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
 	return dateAndTime;
 }
-struct logEntry initLogs(const char *path, const char *mode)
+struct logEntry initLogs(const char *path, enum AccessType aType)
 {
 
 	char **dateAndTime = getCurrentDateAndTime();
