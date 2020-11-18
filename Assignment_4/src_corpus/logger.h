@@ -11,6 +11,8 @@
 #include <openssl/md5.h>
 
 #define BUF_LEN 256
+#define LOG_FILE_PATH "../logs/file_logging.log"
+
 /**
  * @brief Enumerator access type. For file creation, the access type is 0. For file open,
  *  the access type is 1. For file write, the access type is 2.
@@ -31,7 +33,7 @@ enum AccessType
 struct logEntry
 {
 	int UID;					   /** The unique user ID assigned by the system to a user */
-	char filename[4096];		   /** The path and name of the accessed file. */
+	char filename[3*BUF_LEN];		   /** The path and name of the accessed file. */
 	char date[BUF_LEN];			   /** The date that the action occurred. */
 	char timestamp[BUF_LEN];	   /** The time that the action occurred. */
 	enum AccessType access;		   /** For file creation 0. For file open 1. For file write 2 */
@@ -74,4 +76,10 @@ char **getCurrentDateAndTime()
 	return dateAndTime;
 }
 
+/**
+ * @brief Updates the LOG_FILE_PATH defined in logger.h with the given log entry information
+ * 
+ * @return int 1 for success 0 for error
+ */
+int logFileUpdate(struct logEntry);
 #endif /* _LOGGER_H */

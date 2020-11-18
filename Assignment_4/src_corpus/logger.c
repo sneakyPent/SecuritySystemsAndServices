@@ -43,8 +43,47 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 	/* ... */
 	/* ... */
 
-
 	return original_fwrite_ret;
 }
 
+int logFileUpdate(struct logEntry log)
+{
+	// FILE *original_fopen_ret;
+	FILE *(*original_fopen)(const char *, const char *);
 
+	/* call the original fopen function */
+	original_fopen = dlsym(RTLD_NEXT, "fopen");
+
+	char logMessage[4096];
+
+	sprintf(logMessage,
+			"\n"
+			"UID: %d\n"
+			"File name: %s\n"
+			"Date: %s\n"
+			"Timestamp: %s\n"
+			"Access t​ype: %d \n"
+			"Action denied: %d\n"
+			"File fingerprint: \n"
+			"\n------------------------------------------------------------------------\n",
+			log.UID, log.filename, log.date, log.timestamp, log.access, log.isActionDenied);
+
+	FILE *logFile = original_fopen(LOG_FILE_PATH, "a");
+	if (logFile == NULL)
+	{
+		char msg[50] = "Cannot find file ";
+		strcat(msg, LOG_FILE_PATH);
+		printf("%s", msg);
+		return 0;
+}
+
+	long writelength = fwrite(logMessage, sizeof(char), strlen(logMessage), logFile);
+	if (writelength != strlen(logMessage))
+	{
+		printf("writing error");
+		return 0;
+	}
+
+	fclose(logFile);
+	return 1;
+}
