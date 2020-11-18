@@ -46,18 +46,8 @@ struct logEntry
  * 
  * @return char** 2D array [2][BUF_LEN] char[0]=time char[1]=date
  */
-char **getCurrentDateAndTime()
-{
-	time_t current = time(NULL); /* Gets GMT time as a time_t. */
-	if (current == -1)
-	{
+char **getCurrentDateAndTime();
 
-		printf("The time() function failed");
-		exit(EXIT_FAILURE);
-	}
-	struct tm *pLocal = localtime(&current); /* Converts to local time in broken down format. */
-	if (pLocal == NULL)
-	{
 
 /**
  * @brief Init the entry logs for current event.
@@ -68,15 +58,8 @@ char **getCurrentDateAndTime()
  */
 struct logEntry initLogs(const char *path, const char *mode);
 
-	for (int i = 0; i < 2; i++)
-	{
-		dateAndTime[i] = malloc(BUF_LEN);
-	}
 
-	strftime(dateAndTime[0], BUF_LEN, "%T", pLocal);
-	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
-	return dateAndTime;
-}
+
 
 /**
  * @brief Updates the LOG_FILE_PATH defined in logger.h with the given log entry information
