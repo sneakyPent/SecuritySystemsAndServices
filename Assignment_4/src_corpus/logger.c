@@ -75,18 +75,35 @@ char **getCurrentDateAndTime()
 	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
 	return dateAndTime;
 }
+
+
 struct logEntry initLogs(const char *path, enum AccessType aType)
 {
 
 	char **dateAndTime = getCurrentDateAndTime();
 	struct logEntry le;
 
+	switch (aType)
+	{
+	case creation:
+		le.isActionDenied = 0;
+		break;
+	case opening:
+		le.isActionDenied = (access(path, R_OK) == 0) ? 0 : 1;
+		break;
+	case writing:
+		le.isActionDenied = (access(path, R_OK) == 0) ? 0 : 1;
+		break;
+	
+	default:
+		break;
+	}
+
 	le.UID = getuid();
 	strcpy(le.filename, path);
 	strcpy(le.timestamp, dateAndTime[0]);
 	strcpy(le.date, dateAndTime[1]);
-	le.access = creation;
-	le.isActionDenied = (access(path, R_OK) == 0) ? 0 : 1;
+	le.access = aType;
 
 	return le;
 }
