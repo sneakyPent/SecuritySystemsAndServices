@@ -12,15 +12,8 @@ fopen(const char *path, const char *mode)
 	/* call the original fopen function */
 	original_fopen = dlsym(RTLD_NEXT, "fopen");
 	original_fopen_ret = (*original_fopen)(path, mode);
-
-
-	/* add your code here */
-	/* ... */
-	/* ... */
-	/* ... */
-	/* ... */
-
-
+	// Update log file for opening file
+	logFileUpdate(initLogs(path, opening));
 	return original_fopen_ret;
 }
 
