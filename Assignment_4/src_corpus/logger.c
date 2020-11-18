@@ -9,6 +9,9 @@ fopen(const char *path, const char *mode)
 	FILE *original_fopen_ret;
 	FILE *(*original_fopen)(const char*, const char*);
 
+	// If file does not exist update log file for file creation
+	if (access(path, F_OK) == -1 )
+		logFileUpdate(initLogs(path, creation));
 	/* call the original fopen function */
 	original_fopen = dlsym(RTLD_NEXT, "fopen");
 	original_fopen_ret = (*original_fopen)(path, mode);
