@@ -103,9 +103,12 @@ int logFileUpdate(struct logEntry log)
 {
 	// FILE *original_fopen_ret;
 	FILE *(*original_fopen)(const char *, const char *);
+	size_t (*original_fwrite)(const void *, size_t, size_t, FILE *);
 
 	/* call the original fopen function */
 	original_fopen = dlsym(RTLD_NEXT, "fopen");
+	/* call the original fwrite function */
+	original_fwrite = dlsym(RTLD_NEXT, "fwrite");
 
 	char logMessage[4096];
 
@@ -130,7 +133,7 @@ int logFileUpdate(struct logEntry log)
 		return 0;
 }
 
-	long writelength = fwrite(logMessage, sizeof(char), strlen(logMessage), logFile);
+	long writelength = original_fwrite(logMessage, sizeof(char), strlen(logMessage), logFile);
 	if (writelength != strlen(logMessage))
 	{
 		printf("writing error");
