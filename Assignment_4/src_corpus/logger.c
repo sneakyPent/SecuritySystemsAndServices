@@ -75,6 +75,22 @@ char **getCurrentDateAndTime()
 	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
 	return dateAndTime;
 }
+struct logEntry initLogs(const char *path, const char *mode)
+{
+
+	char **dateAndTime = getCurrentDateAndTime();
+	struct logEntry le;
+
+	le.UID = getuid();
+	strcpy(le.filename, path);
+	strcpy(le.timestamp, dateAndTime[0]);
+	strcpy(le.date, dateAndTime[1]);
+	le.access = creation;
+	le.isActionDenied = (access(path, R_OK) == 0) ? 0 : 1;
+
+	return le;
+}
+
 int logFileUpdate(struct logEntry log)
 {
 	// FILE *original_fopen_ret;

@@ -59,12 +59,14 @@ char **getCurrentDateAndTime()
 	if (pLocal == NULL)
 	{
 
-		printf("The localtime() function failed");
-		exit(EXIT_FAILURE);
-	}
-	char **dateAndTime;
-
-	dateAndTime = malloc(sizeof(char *) * 2);
+/**
+ * @brief Init the entry logs for current event.
+ * 
+ * @param path Filename
+ * @param mode The original fopen mode.
+ * @return struct logEntry 
+ */
+struct logEntry initLogs(const char *path, const char *mode);
 
 	for (int i = 0; i < 2; i++)
 	{
