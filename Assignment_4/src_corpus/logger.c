@@ -27,6 +27,14 @@ fopen(const char *path, const char *mode)
 size_t
 fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
+	// Get the filename from File pointer
+	int fileDesc =  fileno(stream);
+	char buff[BUF_LEN];
+	char filename[BUF_LEN];
+	char des[25];
+	sprintf(des, "/proc/self/fd/%d",fileDesc );
+    int len = readlink(des, buff, BUF_LEN);
+	snprintf(filename, len+1, "%s", buff);
 
 	size_t original_fwrite_ret;
 	size_t (*original_fwrite)(const void *, size_t, size_t, FILE *);
