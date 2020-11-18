@@ -36,7 +36,7 @@ typedef struct logEntry
 	char timestamp[BUF_LEN];	   /** The time that the action occurred. */
 	enum AccessType access;		   /** For file creation 0. For file open 1. For file write 2 */
 	int isActionDenied;			   /** Reports if the action was denied to the user with no access privileges */
-	unsigned char fileFingerprint; /** ​ The digital fingerprint of the file the time the event occurred. */
+	char fileFingerprint[BUF_LEN]; /** ​ The digital fingerprint of the file the time the event occurred. */
 }logEntry;
 
 /**
