@@ -3,14 +3,14 @@
 #include "logger.h"
 
 FILE *
-fopen(const char *path, const char *mode) 
+fopen(const char *path, const char *mode)
 {
 
 	FILE *original_fopen_ret;
-	FILE *(*original_fopen)(const char*, const char*);
+	FILE *(*original_fopen)(const char *, const char *);
 
 	// If file does not exist update log file for file creation
-	if (access(path, F_OK) == -1 )
+	if (access(path, F_OK) == -1)
 		logFileUpdate(initLogs(path, creation));
 	/* call the original fopen function */
 	original_fopen = dlsym(RTLD_NEXT, "fopen");
@@ -20,9 +20,8 @@ fopen(const char *path, const char *mode)
 	return original_fopen_ret;
 }
 
-
-size_t 
-fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) 
+size_t
+fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
 
 	size_t original_fwrite_ret;
@@ -67,7 +66,6 @@ char **getCurrentDateAndTime()
 	return dateAndTime;
 }
 
-
 struct logEntry initLogs(const char *path, enum AccessType aType)
 {
 
@@ -85,7 +83,7 @@ struct logEntry initLogs(const char *path, enum AccessType aType)
 	case writing:
 		le.isActionDenied = (access(path, R_OK) == 0) ? 0 : 1;
 		break;
-	
+
 	default:
 		break;
 	}
@@ -131,7 +129,7 @@ int logFileUpdate(struct logEntry log)
 		strcat(msg, LOG_FILE_PATH);
 		printf("%s", msg);
 		return 0;
-}
+	}
 
 	long writelength = original_fwrite(logMessage, sizeof(char), strlen(logMessage), logFile);
 	if (writelength != strlen(logMessage))
