@@ -46,6 +46,35 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 	return original_fwrite_ret;
 }
 
+char **getCurrentDateAndTime()
+{
+	time_t current = time(NULL); /* Gets GMT time as a time_t. */
+	if (current == -1)
+	{
+
+		printf("The time() function failed");
+		exit(EXIT_FAILURE);
+	}
+	struct tm *pLocal = localtime(&current); /* Converts to local time in broken down format. */
+	if (pLocal == NULL)
+	{
+
+		printf("The localtime() function failed");
+		exit(EXIT_FAILURE);
+	}
+	char **dateAndTime;
+
+	dateAndTime = malloc(sizeof(char *) * 2);
+
+	for (int i = 0; i < 2; i++)
+	{
+		dateAndTime[i] = malloc(BUF_LEN);
+	}
+
+	strftime(dateAndTime[0], BUF_LEN, "%T", pLocal);
+	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
+	return dateAndTime;
+}
 int logFileUpdate(struct logEntry log)
 {
 	// FILE *original_fopen_ret;
