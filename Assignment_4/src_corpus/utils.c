@@ -57,3 +57,49 @@ void print_string(unsigned char *data, size_t len)
         printf("\n");
     }
 }
+void printUsers(userList *head, enum information printingInfo){
+    userList * currentUser = head;
+    switch (printingInfo)
+    {
+    case all:
+        printf("-----------------------------------------------USERS----------------------------------------------\n");
+        printf("| \t\t\t\t\t\t\t\t\t\t\t\t |\n");
+        while (currentUser != NULL) {
+            printf("|\t UID: %d \t | \t Modifications: %d \t | \t Non permitted Accesses: %d \t |\n", currentUser->user, currentUser-> mods, currentUser->filesNotAccessed);
+            currentUser = currentUser->nextUser;
+        }
+        printf("| \t\t\t\t\t\t\t\t\t\t\t\t |\n");
+        printf("--------------------------------------------------------------------------------------------------\n");
+        break;
+    case modifies:
+        printf("---------------------------USERS--------------------------\n");
+        printf("| \t\t\t\t\t\t\t |\n");
+        while (currentUser != NULL) {
+            printf("|\t UID=%d \t | \t Modifications: %d \t |\n", currentUser->user, currentUser-> mods);
+            currentUser = currentUser->nextUser;
+        }
+        printf("| \t\t\t\t\t\t\t |\n");
+        printf("----------------------------------------------------------\n");
+        break;
+    case nonPermissions:
+        printf("-----------USERS----------\n");
+        printf("| \t\t\t |\n");
+        while (currentUser != NULL) {
+            if (currentUser->filesNotAccessed > NON_PERMISSION_LIMIT)
+                printf("|\t UID=%d \t |\n", currentUser->user);
+            currentUser = currentUser->nextUser;
+        }
+        printf("| \t\t\t |\n");
+        printf("--------------------------\n");
+        break;
+    default:
+        printf("-----------------------------------------------USERS----------------------------------------------\n");
+        while (currentUser != NULL) {
+            printf("|\t UID=%d \t | \t Modifications: %d \t | \t Non permitted Accesses: %d \t |\n", currentUser->user, currentUser-> mods, currentUser->filesNotAccessed);
+            currentUser = currentUser->nextUser;
+        }
+        printf("--------------------------------------------------------------------------------------------------\n");
+        break;
+    }
+    
+}
