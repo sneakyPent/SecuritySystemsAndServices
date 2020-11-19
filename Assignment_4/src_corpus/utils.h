@@ -19,7 +19,13 @@ typedef struct userList {
     struct userList * nextUser; /** Pointer to the next users of the UserList */
 } userList;
 
+
+enum information{all, modifies, nonPermissions};
+
+userList * addUser(userList * head, int user, int modification, int notPermission);
+
 void printUsers(userList *head, enum information printingInfo);
+
 char * getLineInfo(char * str);
 
 char *trimwhitespace(char *str);

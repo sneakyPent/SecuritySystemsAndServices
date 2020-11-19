@@ -57,6 +57,47 @@ void print_string(unsigned char *data, size_t len)
         printf("\n");
     }
 }
+userList *addUser(userList *head, int user, int modification, int notPermission)
+{
+    userList *current = head;
+    if (current == NULL)
+    {
+        current = malloc(sizeof(userList));
+        current->user = user;
+        current->filesNotAccessed = notPermission;
+        current->mods = modification;
+        current->nextUser = NULL;
+        return current;
+    }
+    else
+    {
+        while (current->nextUser != NULL)
+        {
+            if (current->user == user)
+            {
+                current->mods += modification;
+                current->filesNotAccessed += notPermission;
+                return head;
+            }
+            current = current->nextUser;
+        }
+        if (current->user == user)
+        {
+            current->mods += modification;
+            current->filesNotAccessed += notPermission;
+            return head;
+        }
+    
+        // If user not found we add him
+        current->nextUser = malloc(sizeof(userList));
+        current->nextUser->user = user;
+        current->nextUser->mods = modification;
+        current->nextUser->filesNotAccessed = notPermission;
+        current->nextUser->nextUser = NULL;
+    }
+    return head;
+}
+
 void printUsers(userList *head, enum information printingInfo){
     userList * currentUser = head;
     switch (printingInfo)
