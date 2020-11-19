@@ -28,13 +28,7 @@ size_t
 fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 {
 	// Get the filename from File pointer
-	int fileDesc =  fileno(stream);
-	char buff[BUF_LEN];
-	char filename[BUF_LEN];
-	char des[25];
-	sprintf(des, "/proc/self/fd/%d",fileDesc );
-    int len = readlink(des, buff, BUF_LEN);
-	snprintf(filename, len+1, "%s", buff);
+	char *filename = getFilesName(stream);
 
 	size_t original_fwrite_ret;
 	size_t (*original_fwrite)(const void *, size_t, size_t, FILE *);
@@ -43,7 +37,7 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 	original_fwrite = dlsym(RTLD_NEXT, "fwrite");
 	original_fwrite_ret = (*original_fwrite)(ptr, size, nmemb, stream);
 	// Update log file for writing file
-	logFileUpdate(initLogs(filename, writing,stream));
+	logFileUpdate(initLogs(filename, writing,stream,"w"));
 
 	return original_fwrite_ret;
 }
