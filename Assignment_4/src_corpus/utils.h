@@ -10,6 +10,8 @@
 
 #define DELIM ":"
 #define BUF_LEN 256
+#define NON_PERMISSION_LIMIT 7
+
 /**
  * @brief Struct in list form for saving users in the
  *          Access Control Log Monitoring tool 
