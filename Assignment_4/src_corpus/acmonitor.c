@@ -18,7 +18,32 @@ int isGivenFile(char *givenFile, char *currentFile)
 	return strstr(currentFile, givenFile) == NULL ? 0 : 1;
 }
 
+logEntry getNextLogEntry(FILE *log)
+{
 
+	char line[BUF_LEN];
+	logEntry tmpLog = {-1, "", "", "", -1, -1};
+	while (fgets(line, sizeof(line), log))
+	{
+		if (strstr(line, "UID") != NULL)
+			tmpLog.UID = atoi(getLineInfo(line));
+		if (strstr(line, "File name") != NULL)
+			strcpy(tmpLog.filename, getLineInfo(line));
+		if (strstr(line, "Date") != NULL)
+			strcpy(tmpLog.date, getLineInfo(line));
+		if (strstr(line, "Timestamp") != NULL)
+			strcpy(tmpLog.timestamp, getLineInfo(line));
+		if (strstr(line, "Access t​ype") != NULL)
+			tmpLog.access = atoi(getLineInfo(line));
+		if (strstr(line, "Action denied") != NULL)
+			tmpLog.isActionDenied = atoi(getLineInfo(line));
+		if (strstr(line, "File fingerprint") != NULL)
+			strcpy(tmpLog.fileFingerprint, getLineInfo(line));
+		if (strstr(line, "----------------------------") != NULL)
+			return tmpLog;
+	}
+	return tmpLog;
+}
 
 void usage(void)
 {
