@@ -12,15 +12,28 @@ fopen(const char *path, const char *mode)
 	int exists=1;
 
 	// If file does not exist update log file for file creation
-	if (access(path, F_OK) == -1)
-		exists = 0;
+	if (access(path, F_OK) == -1){
+		print("File does not exist", info);
+		exists = 0;	
+	}
 	/* call the original fopen function */
 	original_fopen = dlsym(RTLD_NEXT, "fopen");
 	original_fopen_ret = (*original_fopen)(path, mode);
-	if (exists == 0)
-		logFileUpdate(initLogs(path, creation,original_fopen_ret));
-	// Update log file for opening file
-	logFileUpdate(initLogs(path, opening,original_fopen_ret));
+	
+	if (original_fopen_ret){
+		if (exists == 0){
+			print("File creation", info);
+			logFileUpdate(initLogs(path, creation,original_fopen_ret, mode));
+		}
+		else {
+			// Update log file for opening file
+			print("File opening", info);
+			logFileUpdate(initLogs(path, opening,original_fopen_ret, mode));
+		}
+	}
+	else
+		logFileUpdate(initLogs(path, opening,original_fopen_ret, mode));
+
 	return original_fopen_ret;
 }
 
