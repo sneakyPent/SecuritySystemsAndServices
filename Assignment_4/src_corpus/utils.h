@@ -8,6 +8,16 @@
 #include <ctype.h>
 
 #define DELIM ":"
+/**
+ * @brief Struct in list form for saving users in the
+ *          Access Control Log Monitoring tool 
+ */
+typedef struct userList {
+    int user;                   /** The user */
+    int filesNotAccessed;       /** The number of files that user tried to access with no permission */
+    int mods;                   /** The modifications the user has made on a given file */
+    struct userList * nextUser; /** Pointer to the next users of the UserList */
+} userList;
 
 char * getLineInfo(char * str);
 
