@@ -78,47 +78,40 @@ char **getCurrentDateAndTime()
 	return dateAndTime;
 }
 
-logEntry initLogs(const char *path, enum AccessType aType, FILE *file)
+logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const char *mode)
 {
 
 	char **dateAndTime = getCurrentDateAndTime();
 	logEntry le;
-
-	switch (aType)
-	{
-	case creation:
-		le.isActionDenied = 0;
-		break;
-	case opening:
-		le.isActionDenied = (access(path, R_OK) == 0) ? 0 : 1;
-		break;
-	case writing:
-		le.isActionDenied = (access(path, R_OK) == 0) ? 0 : 1;
-		break;
-
-	default:
-		break;
-	}
 
 	le.UID = getuid();
 	strcpy(le.filename, path);
 	strcpy(le.timestamp, dateAndTime[0]);
 	strcpy(le.date, dateAndTime[1]);
 	le.access = aType;
+	le.isActionDenied = getAccess(path, mode);
 
 	//get MD5 fingerprint
-	long lSize;
-	fseek(file,0L,SEEK_END);
-	lSize = ftell(file);
-	fseek(file, 0L, SEEK_SET);
-	unsigned char *retext=NULL;
-	retext = malloc(sizeof(char) * lSize);
-	long readlength = fread(retext, sizeof(char), lSize, file); 
-	if (readlength != lSize)
-            printf("Reading error");
-	unsigned char fingerprint[MD5_DIGEST_LENGTH];
-	MD5(retext, readlength, fingerprint);
-	strcpy(le.fileFingerprint,stringToHex(fingerprint, sizeof(fingerprint)));
+	if (file){
+		long lSize;
+		fseek(file, 0L, SEEK_SET);
+		fseek(file,0L,SEEK_END);
+		lSize = ftell(file);
+		fseek(file, 0L, SEEK_SET);
+		unsigned char *retext=NULL;
+		retext = malloc(sizeof(char) * lSize);
+		long readlength = fread(retext, sizeof(char), lSize, file); 
+		if (readlength == lSize){
+			unsigned char fingerprint[MD5_DIGEST_LENGTH];
+			MD5(retext, readlength, fingerprint);
+			strcpy(le.fileFingerprint,stringToHex(fingerprint, sizeof(fingerprint)));
+		}
+		else
+			strcpy(le.fileFingerprint,"0");	
+	}
+	else
+		strcpy(le.fileFingerprint,"0");
+	
 	return le;
 }
 
