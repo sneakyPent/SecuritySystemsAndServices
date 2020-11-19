@@ -74,15 +74,28 @@ void list_unauthorized_accesses(FILE *log)
 }
 
 void list_file_modifications(FILE *log, char *file_to_scan)
-
-	/* add your code here */
-	/* ... */
-	/* ... */
-	/* ... */
-	/* ... */
-
-	return;
-
+{
+	logEntry logt;
+	userList *users = NULL;
+	int modifications = 0;
+	char prevHash[BUF_LEN] = "";
+	while (1)
+	{
+		logt = getNextLogEntry(log);
+		if (logt.UID == -1)
+			break;
+		if (isGivenFile(file_to_scan, logt.filename) && logt.isActionDenied == 0)
+		{
+			users = addUser(
+				users,
+				logt.UID,
+				(isHashChanged(prevHash, logt.fileFingerprint) && (strlen(prevHash) != 0) && logt.access == writing),
+				0
+			);
+			strcpy(prevHash, logt.fileFingerprint);
+		}
+	};
+	printUsers(users, modifies);
 }
 
 int main(int argc, char *argv[])
