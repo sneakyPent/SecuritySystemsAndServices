@@ -19,6 +19,7 @@ typedef struct userList {
     struct userList * nextUser; /** Pointer to the next users of the UserList */
 } userList;
 
+enum mode{info,error,success};
 
 enum information{all, modifies, nonPermissions};
 
@@ -35,5 +36,8 @@ void print_hex(unsigned char *data, size_t len);
 char *stringToHex(unsigned char *data, size_t len);
 
 void print_string(unsigned char *data, size_t len);
+
+
+void print(char *str, enum mode md);
 
 #endif /* _UTILS_H */
