@@ -9,8 +9,8 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <openssl/md5.h>
+#include "utils.h"
 
-#define BUF_LEN 256
 #define LOG_FILE_PATH "../logs/file_logging.log"
 
 /**

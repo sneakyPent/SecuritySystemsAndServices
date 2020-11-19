@@ -142,16 +142,12 @@ int logFileUpdate(logEntry log)
 	{
 		char msg[50] = "Cannot find file ";
 		strcat(msg, LOG_FILE_PATH);
-		printf("%s", msg);
-		return 0;
+		print(msg, error);
 	}
 
 	long writelength = original_fwrite(logMessage, sizeof(char), strlen(logMessage), logFile);
 	if (writelength != strlen(logMessage))
-	{
-		printf("writing error");
-		return 0;
-	}
+		print("Writing file error", error);
 
 	fclose(logFile);
 	return 1;
