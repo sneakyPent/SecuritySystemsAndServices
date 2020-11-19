@@ -41,6 +41,8 @@ void print_string(unsigned char *data, size_t len);
 
 char *getFilesName(FILE *file);
 
+int getAccess(const char *path, const char *mode);
+
 void print(char *str, enum mode md);
 
 #endif /* _UTILS_H */

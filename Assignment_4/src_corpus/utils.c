@@ -80,6 +80,36 @@ char *getFilesName(FILE *file)
     }
     return "error";
 }
+
+int getAccess(const char *path, const char *mode)
+{
+    if (access(path, F_OK) != 0)
+        return 0;
+    if (strstr(mode, "+") != NULL)
+    {
+        int r_a = (access(path, R_OK) == 0) ? 0 : 1;
+        int w_a = (access(path, W_OK) == 0) ? 0 : 1;
+        return (r_a || w_a);
+    }
+    if (strstr(mode, "r") != NULL)
+    {
+        print("Read access", info);
+        return (access(path, R_OK) == 0) ? 0 : 1;
+    }
+    else if (strstr(mode, "w") != NULL)
+    {
+        print("Write access", info);
+        return (access(path, W_OK) == 0) ? 0 : 1;
+    }
+    else if (strstr(mode, "a") != NULL)
+    {
+        print("Append access", info);
+        return (access(path, W_OK) == 0) ? 0 : 1;
+    }
+    else
+        return -1;
+}
+
 void print(char *str, enum mode md)
 {
     switch (md)
