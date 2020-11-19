@@ -58,6 +58,28 @@ void print_string(unsigned char *data, size_t len)
     }
 }
 
+/**
+ * @brief Get the Files Name from File pointer
+ * 
+ * @param file File pointer
+ * @return char* filenName
+ */
+char *getFilesName(FILE *file)
+{
+    // Get the filename from File pointer
+    if (file)
+    {
+        int fileDesc = fileno(file);
+        char buff[BUF_LEN];
+        char *filename = malloc((sizeof(char) * BUF_LEN));
+        char des[25];
+        sprintf(des, "/proc/self/fd/%d", fileDesc);
+        int len = readlink(des, buff, BUF_LEN);
+        snprintf(filename, len + 1, "%s", buff);
+        return filename;
+    }
+    return "error";
+}
 void print(char *str, enum mode md)
 {
     switch (md)

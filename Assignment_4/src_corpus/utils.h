@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #define DELIM ":"
+#define BUF_LEN 256
 /**
  * @brief Struct in list form for saving users in the
  *          Access Control Log Monitoring tool 
@@ -37,6 +39,7 @@ char *stringToHex(unsigned char *data, size_t len);
 
 void print_string(unsigned char *data, size_t len);
 
+char *getFilesName(FILE *file);
 
 void print(char *str, enum mode md);
 
