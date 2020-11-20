@@ -13,14 +13,14 @@
 #define NON_PERMISSION_LIMIT 7
 
 /**
- * @brief Struct in list form for saving users in the
+ * @brief Struct in linked list form for saving users in the
  *          Access Control Log Monitoring tool 
  */
 typedef struct userList {
-    int user;                   /** The user */
-    int filesNotAccessed;       /** The number of files that user tried to access with no permission */
-    int mods;                   /** The modifications the user has made on a given file */
-    struct userList * nextUser; /** Pointer to the next users of the UserList */
+    int user;                                   /** The user */
+    struct filesList * filesNotAccessed;        /** List of files that user tried to access with no permission */
+    int mods;                                   /** The modifications the user has made on a given file */
+    struct userList * nextUser;                 /** Pointer to the next users of the UserList */
 } userList;
 
 /**
@@ -42,6 +42,8 @@ enum mode{info,error,success};
 enum information{all, modifies, nonPermissions};
 
 filesList *addFile(filesList *head, char *fileName);
+
+userList * addUser(userList * head, int user, int modification, int notPermission, char *fileName);
 
 void printUsers(userList *head, enum information printingInfo);
 

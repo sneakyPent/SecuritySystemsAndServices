@@ -194,43 +194,49 @@ filesList *addFile(filesList *head, char *fileName){
     }
     return head;
 
-userList *addUser(userList *head, int user, int modification, int notPermission)
+}
+
+
+userList *addUser(userList *head, int user, int modification, int notPermission, char *fileName)
 {
-    userList *current = head;
-    if (current == NULL)
+    userList *currentUser = head;
+    if (currentUser == NULL)
     {
-        current = malloc(sizeof(userList));
-        current->user = user;
-        current->filesNotAccessed = notPermission;
-        current->mods = modification;
-        current->nextUser = NULL;
-        return current;
+        currentUser = malloc(sizeof(userList));
+        currentUser->user = user;
+        currentUser->filesNotAccessed = addFile(currentUser->filesNotAccessed, fileName);
+        currentUser->mods = modification;
+        currentUser->nextUser = NULL;
+        return currentUser;
     }
     else
     {
-        while (current->nextUser != NULL)
+        while (currentUser->nextUser != NULL)
         {
-            if (current->user == user)
+            if (currentUser->user == user)
             {
-                current->mods += modification;
-                current->filesNotAccessed += notPermission;
+                currentUser->mods += modification;
+                if (notPermission == 1)
+                    currentUser->filesNotAccessed = addFile(currentUser->filesNotAccessed, fileName);
                 return head;
             }
-            current = current->nextUser;
+            currentUser = currentUser->nextUser;
         }
-        if (current->user == user)
+        if (currentUser->user == user)
         {
-            current->mods += modification;
-            current->filesNotAccessed += notPermission;
+            currentUser->mods += modification;
+            if (notPermission == 1)
+                currentUser->filesNotAccessed = addFile(currentUser->filesNotAccessed, fileName);
+            
             return head;
         }
     
-        // If user not found we add him
-        current->nextUser = malloc(sizeof(userList));
-        current->nextUser->user = user;
-        current->nextUser->mods = modification;
-        current->nextUser->filesNotAccessed = notPermission;
-        current->nextUser->nextUser = NULL;
+        // If user not found, add him
+        currentUser->nextUser = malloc(sizeof(userList));
+        currentUser->nextUser->user = user;
+        currentUser->nextUser->mods = modification;
+        currentUser->nextUser->filesNotAccessed = addFile(currentUser->filesNotAccessed, fileName);
+        currentUser->nextUser->nextUser = NULL;
     }
     return head;
 }
@@ -262,8 +268,8 @@ void printUsers(userList *head, enum information printingInfo){
     case nonPermissions:
         printf("-----------USERS----------\n");
         printf("| \t\t\t |\n");
-        while (currentUser != NULL) {
-            if (currentUser->filesNotAccessed > NON_PERMISSION_LIMIT)
+        while (currentUser != NULL) {            
+            if (currentUser->filesNotAccessed->restFiles > NON_PERMISSION_LIMIT)
                 printf("|\t UID=%d \t |\n", currentUser->user);
             currentUser = currentUser->nextUser;
         }
