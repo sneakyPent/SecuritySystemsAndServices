@@ -6,8 +6,6 @@
 #include "logger.h"
 #include "utils.h"
 
-
-
 int isHashChanged(char *prevHash, char *newHash)
 {
 	return strcmp(prevHash, newHash) == 0 ? 0 : 1;
@@ -15,13 +13,14 @@ int isHashChanged(char *prevHash, char *newHash)
 
 int isGivenFile(char *givenFile, char *currentFile)
 {
-	int rvalue = -1; 
+	int rvalue = -1;
 	int curFileLen = strlen(currentFile);
 	int givenFileLen = strlen(givenFile);
-	if(curFileLen > givenFileLen)
+	if (curFileLen > givenFileLen)
 		rvalue = strcmp(givenFile, currentFile + curFileLen - givenFileLen) == 0 ? 1 : 0;
 	else
-		rvalue = strcmp(currentFile, givenFile) == 0 ? 1 : 0;;
+		rvalue = strcmp(currentFile, givenFile) == 0 ? 1 : 0;
+	;
 	return rvalue;
 }
 
@@ -79,7 +78,7 @@ void list_unauthorized_accesses(FILE *log)
 			break;
 		if (logt.isActionDenied == 1 && logt.access == opening)
 		{
-			users = addUser(users, logt.UID, 0, 1,logt.filename);
+			users = addUser(users, logt.UID, 0, 1, logt.filename);
 		}
 	};
 	printUsers(users, nonPermissions);
@@ -103,8 +102,7 @@ void list_file_modifications(FILE *log, char *file_to_scan)
 				logt.UID,
 				(isHashChanged(prevHash, logt.fileFingerprint) && (strlen(prevHash) != 0) && logt.access == writing),
 				0,
-				""
-			);
+				"");
 			strcpy(prevHash, logt.fileFingerprint);
 		}
 	};
@@ -140,8 +138,6 @@ int main(int argc, char *argv[])
 			usage();
 		}
 	}
-
-
 
 	fclose(log);
 	argc -= optind;
