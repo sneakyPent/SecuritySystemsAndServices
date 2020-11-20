@@ -4,29 +4,60 @@ char *getLineInfo(char *str)
 {
     char *ptr = strtok(str, DELIM);
     ptr = strtok(NULL, DELIM);
-    return ptr;
+    return trimwhitespace(ptr);
 }
+
+int is_white_space(char c) {
+    return (c == ' ' || c == '\t' || c == '\n');
+}
+
+/**
+ * @brief Get the length of a string
+ */
+int get_str_len(char const *str) {
+    int len = 0;
+    while (str[len] != '\0') {
+        len += 1;
+    }
+    return (len);
+}
+
+/**
+ * @brief Returns the correct length of a trimmed string
+ */
+int get_trim_len(char const *str) {
+    int lastPosition = get_str_len(str) - 1;
+    while (is_white_space(str[lastPosition])) {
+        lastPosition -= 1;
+    }
+    int firstPosition = 0;
+    while (is_white_space(str[firstPosition])) {
+        firstPosition += 1;
+    }
+    return (lastPosition - firstPosition);
+}
+
 
 char *trimwhitespace(char *str)
 {
-    char *end;
-
-    // Trim leading space
-    while (isspace((unsigned char)*str))
-        str++;
-
-    if (*str == 0) // All spaces?
-        return str;
-
-    // Trim trailing space
-    end = str + strlen(str) - 1;
-    while (end > str && isspace((unsigned char)*end))
-        end--;
-
-    // Write new null terminator character
-    end[1] = '\0';
-
-    return str;
+    char *trim = NULL;
+    int i, len, end;
+    int start = 0;
+    while (is_white_space(str[start])) {
+        start += 1;
+    }
+    if (str != NULL) {
+        i = 0;
+        len = get_trim_len(str) + 1;
+        trim = (char *)malloc(len);
+        while (i < len) {
+            trim[i] = str[start];
+            i += 1;
+            start += 1;
+        }
+        trim[i] = '\0';
+    }
+    return (trim);
 }
 
 char *stringToHex(unsigned char *data, size_t len)
