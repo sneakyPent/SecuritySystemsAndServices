@@ -63,4 +63,5 @@ int getAccess(const char *path, const char *mode);
 
 void print(char *str, enum mode md);
 
+void printFiles(filesList *head);
 #endif /* _UTILS_H */

@@ -240,6 +240,16 @@ userList *addUser(userList *head, int user, int modification, int notPermission,
     }
     return head;
 }
+void printFiles(filesList *head){
+    filesList *currentFile = head;
+    while (currentFile != NULL)
+        {
+            if (currentFile == NULL)
+                print("error",info);
+            printf("|\t filename=%s \t |\n", currentFile->fileName);
+            currentFile = currentFile->nextFile;
+        }
+}
 
 void printUsers(userList *head, enum information printingInfo){
     userList * currentUser = head;
