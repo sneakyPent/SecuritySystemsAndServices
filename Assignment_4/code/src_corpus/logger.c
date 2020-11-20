@@ -110,10 +110,10 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const cha
 			strcpy(le.fileFingerprint, stringToHex(fingerprint, sizeof(fingerprint)));
 		}
 		else
-			strcpy(le.fileFingerprint, "0");
+			strcpy(le.fileFingerprint, "00000000000000000000000000000000");
 	}
 	else
-		strcpy(le.fileFingerprint, "0");
+		strcpy(le.fileFingerprint, "00000000000000000000000000000000");
 
 	return le;
 }
