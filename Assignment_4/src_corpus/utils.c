@@ -163,6 +163,36 @@ void print(char *str, enum mode md)
         break;
     }
 }
+filesList *addFile(filesList *head, char *fileName){
+    filesList *currentFile = head;
+    if (currentFile == NULL)
+    {
+        currentFile = malloc(sizeof(filesList));
+        strcpy(currentFile->fileName, fileName);
+        currentFile->restFiles = 1;
+        currentFile->nextFile = NULL;
+        return currentFile;
+    }
+    else
+    {
+        // Parse the list to check if fil exists
+        while (currentFile->nextFile != NULL)
+        {
+            // By the time we found the file we return the head and do nothing
+            if (strstr(currentFile->fileName, fileName) != NULL )
+                return head;
+            currentFile = currentFile->nextFile;
+        }
+        if (strstr(currentFile->fileName, fileName) != NULL )
+            return head;
+        print("File not found. Adding file.\n", success);
+        // If file not found, add it and increase restFiles 
+        currentFile->nextFile = malloc(sizeof(userList));
+        strcpy(currentFile->nextFile->fileName, fileName);
+        currentFile->restFiles += 1;
+        currentFile->nextFile->nextFile = NULL;
+    }
+    return head;
 
 userList *addUser(userList *head, int user, int modification, int notPermission)
 {

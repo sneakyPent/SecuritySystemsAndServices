@@ -41,7 +41,7 @@ enum mode{info,error,success};
 
 enum information{all, modifies, nonPermissions};
 
-userList * addUser(userList * head, int user, int modification, int notPermission);
+filesList *addFile(filesList *head, char *fileName);
 
 void printUsers(userList *head, enum information printingInfo);
 
