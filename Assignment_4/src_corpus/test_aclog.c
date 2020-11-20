@@ -2,10 +2,8 @@
 #include <string.h>
 #include "utils.h"
 
-
-
-
-void readFiles(){
+void readFiles()
+{
 	int i;
 	size_t bytes;
 	FILE *file;
@@ -31,30 +29,33 @@ void readFiles(){
 		"../testFiles/N_FILE_8.txt",
 	};
 
-	for (i = 0; i < files; i++) {
+	for (i = 0; i < files; i++)
+	{
 		file = fopen(filenames[i], "r");
 		print("Read", info);
-		if (file == NULL) 
+		if (file == NULL)
 			printf("fopen error\n");
-		else {
+		else
+		{
 			fclose(file);
 		}
-
 	}
-	for (i = 0; i < files; i++) {
+	for (i = 0; i < files; i++)
+	{
 		file = fopen(nonPermFiles[i], "r");
 		print("Read", info);
-		if (file == NULL) 
+		if (file == NULL)
 			printf("fopen error\n");
-		else {
+		else
+		{
 			fclose(file);
 		}
-
 	}
 }
 
-void writeFiles(){
-	
+void writeFiles()
+{
+
 	int i;
 	size_t bytes;
 	FILE *file;
@@ -67,7 +68,7 @@ void writeFiles(){
 		"../testFiles/FILE_5.txt",
 		"../testFiles/FILE_6.txt",
 		"../testFiles/FILE_7.txt",
-		"/lnx/sneaky/testFiles/FILE_8.txt",
+		"../testFiles/FILE_8.txt",
 	};
 	char nonPermFiles[8][BUF_LEN] = {
 		"../testFiles/N_FILE_1.txt",
@@ -80,35 +81,37 @@ void writeFiles(){
 		"../testFiles/N_FILE_8.txt",
 	};
 
-	for (i = 0; i < files; i++) {
+	for (i = 0; i < files; i++)
+	{
 		file = fopen(filenames[i], "w+");
 		print("Write", info);
-		if (file == NULL) 
+		if (file == NULL)
 			printf("fopen error\n");
-		else {
+		else
+		{
 			char msg[BUF_LEN];
-			sprintf(msg,"%d", getuid());
+			sprintf(msg, "%d", getuid());
 			bytes = fwrite(msg, strlen(msg), 1, file);
 			fclose(file);
 		}
-
 	}
-	for (i = 0; i < files; i++) {
+	for (i = 0; i < files; i++)
+	{
 		file = fopen(nonPermFiles[i], "w+");
 		print("Write", info);
-		if (file == NULL) 
+		if (file == NULL)
 			printf("fopen error\n");
-		else {
+		else
+		{
 			char msg[BUF_LEN];
-			sprintf(msg,"%d", getuid());
+			sprintf(msg, "%d", getuid());
 			bytes = fwrite(msg, strlen(msg), 1, file);
 			fclose(file);
 		}
-
 	}
-
 }
-void appendTest(){
+void appendTest()
+{
 	int i;
 	size_t bytes;
 	FILE *file;
@@ -121,7 +124,7 @@ void appendTest(){
 		"../testFiles/FILE_5.txt",
 		"../testFiles/FILE_6.txt",
 		"../testFiles/FILE_7.txt",
-		"/lnx/sneaky/testFiles/FILE_8.txt",
+		"../testFiles/FILE_8.txt",
 	};
 	char nonPermFiles[8][BUF_LEN] = {
 		"../testFiles/N_FILE_1.txt",
@@ -134,37 +137,42 @@ void appendTest(){
 		"../testFiles/N_FILE_8.txt",
 	};
 
-	for (i = 0; i < files; i++) {
-		file = fopen(filenames[i], "a+");
-		print("Write", info);
-		if (file == NULL) 
-			printf("fopen error\n");
-		else {
-			char msg[BUF_LEN];
-			sprintf(msg," Append my uid %d", getuid());
-			bytes = fwrite(msg, strlen(msg), 1, file);
-			fclose(file);
+	for (i = 0; i < files; i++)
+	{	
+		// append only in odd files
+		if (i % 2 == 0)
+		{
+			file = fopen(filenames[i], "a+");
+			print("Write", info);
+			if (file == NULL)
+				printf("fopen error\n");
+			else
+			{
+				char msg[BUF_LEN];
+				sprintf(msg, " Append my uid %d", getuid());
+				bytes = fwrite(msg, strlen(msg), 1, file);
+				fclose(file);
+			}
 		}
-
 	}
-	for (i = 0; i < files; i++) {
+	for (i = 0; i < files; i++)
+	{
 		file = fopen(nonPermFiles[i], "a+");
 		print("Write", info);
-		if (file == NULL) 
+		if (file == NULL)
 			printf("fopen error\n");
-		else {
+		else
+		{
 			char msg[BUF_LEN];
-			sprintf(msg," Append my uid %d", getuid());
+			sprintf(msg, " Append my uid %d", getuid());
 			bytes = fwrite(msg, strlen(msg), 1, file);
 			fclose(file);
 		}
-
 	}
-
 }
 
-int main() 
-{	
+int main()
+{
 	readFiles();
 	writeFiles();
 	appendTest();
