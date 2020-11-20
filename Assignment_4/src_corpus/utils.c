@@ -187,9 +187,9 @@ filesList *addFile(filesList *head, char *fileName){
             return head;
         print("File not found. Adding file.\n", success);
         // If file not found, add it and increase restFiles 
-        currentFile->nextFile = malloc(sizeof(userList));
+        currentFile->nextFile = malloc(sizeof(filesList));
         strcpy(currentFile->nextFile->fileName, fileName);
-        currentFile->restFiles += 1;
+        head->restFiles += 1;
         currentFile->nextFile->nextFile = NULL;
     }
     return head;
