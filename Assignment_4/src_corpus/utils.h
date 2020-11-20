@@ -23,6 +23,20 @@ typedef struct userList {
     struct userList * nextUser; /** Pointer to the next users of the UserList */
 } userList;
 
+/**
+ * @brief Struct in linked list form for saving Files in the
+ *          Access Control Log Monitoring tool
+ * 
+ */
+typedef struct filesList
+{
+    char fileName[3*BUF_LEN];       /** The current file name*/
+    int restFiles;                  /** The sum of files from list head until the end of the list */
+    struct filesList * nextFile;    /** Pointer to the next file of File list */
+
+} filesList;
+
+
 enum mode{info,error,success};
 
 enum information{all, modifies, nonPermissions};
