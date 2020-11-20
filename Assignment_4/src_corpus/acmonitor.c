@@ -15,7 +15,14 @@ int isHashChanged(char *prevHash, char *newHash)
 
 int isGivenFile(char *givenFile, char *currentFile)
 {
-	return strstr(currentFile, givenFile) == NULL ? 0 : 1;
+	int rvalue = -1; 
+	int curFileLen = strlen(currentFile);
+	int givenFileLen = strlen(givenFile);
+	if(curFileLen > givenFileLen)
+		rvalue = strcmp(givenFile, currentFile + curFileLen - givenFileLen) == 0 ? 1 : 0;
+	else
+		rvalue = strcmp(currentFile, givenFile) == 0 ? 1 : 0;;
+	return rvalue;
 }
 
 logEntry getNextLogEntry(FILE *log)
