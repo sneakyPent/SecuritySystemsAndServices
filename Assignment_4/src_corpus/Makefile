@@ -1,7 +1,8 @@
 NON_ACCESSIBLE_FILES_NUM = 8
 ACCESSIBLE_FILES_NUM = 8
-NON_ACCESSIBLE_FILES = ../testFiles/N_FILE_
-ACCESSIBLE_FILES = ../testFiles/FILE_
+TESTFILESDIR = ../testFiles/
+NON_ACCESSIBLE_FILES = $(TESTFILESDIR)N_FILE_
+ACCESSIBLE_FILES = $(TESTFILESDIR)FILE_
 
 CC = gcc
 DBUG = -g
@@ -26,6 +27,8 @@ test_aclog: test_aclog.c $(OBJFILES)
 
 run: logger.so test_aclog
 	LD_PRELOAD=./logger.so ./test_aclog
+
+test:clean all run checkFiles checkMalicious
 
 clean: cleanObjects cleanLogs cleanFiles
 
@@ -55,3 +58,24 @@ createNonAccessibleFiles:
         ((file = file + 1)) ; \
     done
 	chmod 000 $(NON_ACCESSIBLE_FILES)*
+
+checkFiles:
+	./acmonitor -i $(ACCESSIBLE_FILES)1.txt;
+	./acmonitor -i $(ACCESSIBLE_FILES)2.txt;
+	./acmonitor -i $(ACCESSIBLE_FILES)3.txt;
+	./acmonitor -i $(ACCESSIBLE_FILES)4.txt;
+	./acmonitor -i $(ACCESSIBLE_FILES)5.txt;
+	./acmonitor -i $(ACCESSIBLE_FILES)6.txt;
+	./acmonitor -i $(ACCESSIBLE_FILES)7.txt;
+	./acmonitor -i $(ACCESSIBLE_FILES)8.txt;
+	./acmonitor -i $(NON_ACCESSIBLE_FILES)1.txt;
+	./acmonitor -i $(NON_ACCESSIBLE_FILES)2.txt;
+	./acmonitor -i $(NON_ACCESSIBLE_FILES)3.txt;
+	./acmonitor -i $(NON_ACCESSIBLE_FILES)4.txt;
+	./acmonitor -i $(NON_ACCESSIBLE_FILES)5.txt;
+	./acmonitor -i $(NON_ACCESSIBLE_FILES)6.txt;
+	./acmonitor -i $(NON_ACCESSIBLE_FILES)7.txt;
+	./acmonitor -i $(NON_ACCESSIBLE_FILES)8.txt;
+
+checkMalicious:
+	./acmonitor -m
