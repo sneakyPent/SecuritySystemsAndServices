@@ -69,15 +69,20 @@ void usage(void)
 
 void list_unauthorized_accesses(FILE *log)
 {
-
-	/* add your code here */
-	/* ... */
-	/* ... */
-	/* ... */
-	/* ... */
-
-	return;
-
+	logEntry logt;
+	userList *users = NULL;
+	int modifications = 0;
+	while (1)
+	{
+		logt = getNextLogEntry(log);
+		if (logt.UID == -1)
+			break;
+		if (logt.isActionDenied == 1 && logt.access == opening)
+		{
+			users = addUser(users, logt.UID, 0, 1,logt.filename);
+		}
+	};
+	printUsers(users, nonPermissions);
 }
 
 void list_file_modifications(FILE *log, char *file_to_scan)
@@ -97,7 +102,8 @@ void list_file_modifications(FILE *log, char *file_to_scan)
 				users,
 				logt.UID,
 				(isHashChanged(prevHash, logt.fileFingerprint) && (strlen(prevHash) != 0) && logt.access == writing),
-				0
+				0,
+				""
 			);
 			strcpy(prevHash, logt.fileFingerprint);
 		}
