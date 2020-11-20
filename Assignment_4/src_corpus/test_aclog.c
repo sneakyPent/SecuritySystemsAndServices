@@ -161,5 +161,12 @@ void appendTest(){
 
 	}
 
+}
 
+int main() 
+{	
+	readFiles();
+	writeFiles();
+	appendTest();
+	readFiles();
 }
