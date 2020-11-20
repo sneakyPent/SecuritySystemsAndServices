@@ -13,14 +13,14 @@ char filenames[8][BUF_LEN] = {
 	"FILE_8.txt",
 };
 char nonPermFiles[8][BUF_LEN] = {
-	"N_FILE_1.txt",
-	"N_FILE_2.txt",
-	"N_FILE_3.txt",
-	"N_FILE_4.txt",
-	"N_FILE_5.txt",
-	"N_FILE_6.txt",
-	"N_FILE_7.txt",
-	"N_FILE_8.txt",
+	"FILE_N_1.txt",
+	"FILE_N_2.txt",
+	"FILE_N_3.txt",
+	"FILE_N_4.txt",
+	"FILE_N_5.txt",
+	"FILE_N_6.txt",
+	"FILE_N_7.txt",
+	"FILE_N_8.txt",
 };
 
 void readFiles()

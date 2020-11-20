@@ -1,7 +1,7 @@
 NON_ACCESSIBLE_FILES_NUM = 8
 ACCESSIBLE_FILES_NUM = 8
 TESTFILESDIR = 
-NON_ACCESSIBLE_FILES = $(TESTFILESDIR)N_FILE_
+NON_ACCESSIBLE_FILES = $(TESTFILESDIR)FILE_N_
 ACCESSIBLE_FILES = $(TESTFILESDIR)FILE_
 
 CC = gcc
@@ -28,7 +28,7 @@ test_aclog: test_aclog.c $(OBJFILES)
 run: logger.so test_aclog
 	LD_PRELOAD=./logger.so ./test_aclog
 
-test:clean all run checkFiles checkMalicious
+test: all run checkFiles checkMalicious
 
 clean: cleanObjects cleanLogs cleanFiles
 
