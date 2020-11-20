@@ -2,33 +2,33 @@
 #include <string.h>
 #include "utils.h"
 
+char filenames[8][BUF_LEN] = {
+	"FILE_1.txt",
+	"FILE_2.txt",
+	"FILE_3.txt",
+	"FILE_4.txt",
+	"FILE_5.txt",
+	"FILE_6.txt",
+	"FILE_7.txt",
+	"FILE_8.txt",
+};
+char nonPermFiles[8][BUF_LEN] = {
+	"N_FILE_1.txt",
+	"N_FILE_2.txt",
+	"N_FILE_3.txt",
+	"N_FILE_4.txt",
+	"N_FILE_5.txt",
+	"N_FILE_6.txt",
+	"N_FILE_7.txt",
+	"N_FILE_8.txt",
+};
+
 void readFiles()
 {
 	int i;
 	size_t bytes;
 	FILE *file;
 	int files = 8;
-	char filenames[8][BUF_LEN] = {
-		"../testFiles/FILE_1.txt",
-		"../testFiles/FILE_2.txt",
-		"../testFiles/FILE_3.txt",
-		"../testFiles/FILE_4.txt",
-		"../testFiles/FILE_5.txt",
-		"../testFiles/FILE_6.txt",
-		"../testFiles/FILE_7.txt",
-		"../testFiles/FILE_8.txt",
-	};
-	char nonPermFiles[8][BUF_LEN] = {
-		"../testFiles/N_FILE_1.txt",
-		"../testFiles/N_FILE_2.txt",
-		"../testFiles/N_FILE_3.txt",
-		"../testFiles/N_FILE_4.txt",
-		"../testFiles/N_FILE_5.txt",
-		"../testFiles/N_FILE_6.txt",
-		"../testFiles/N_FILE_7.txt",
-		"../testFiles/N_FILE_8.txt",
-	};
-
 	for (i = 0; i < files; i++)
 	{
 		file = fopen(filenames[i], "r");
@@ -60,27 +60,6 @@ void writeFiles()
 	size_t bytes;
 	FILE *file;
 	int files = 8;
-	char filenames[8][BUF_LEN] = {
-		"../testFiles/FILE_1.txt",
-		"../testFiles/FILE_2.txt",
-		"../testFiles/FILE_3.txt",
-		"../testFiles/FILE_4.txt",
-		"../testFiles/FILE_5.txt",
-		"../testFiles/FILE_6.txt",
-		"../testFiles/FILE_7.txt",
-		"../testFiles/FILE_8.txt",
-	};
-	char nonPermFiles[8][BUF_LEN] = {
-		"../testFiles/N_FILE_1.txt",
-		"../testFiles/N_FILE_2.txt",
-		"../testFiles/N_FILE_3.txt",
-		"../testFiles/N_FILE_4.txt",
-		"../testFiles/N_FILE_5.txt",
-		"../testFiles/N_FILE_6.txt",
-		"../testFiles/N_FILE_7.txt",
-		"../testFiles/N_FILE_8.txt",
-	};
-
 	for (i = 0; i < files; i++)
 	{
 		file = fopen(filenames[i], "w+");
@@ -116,27 +95,6 @@ void appendTest()
 	size_t bytes;
 	FILE *file;
 	int files = 8;
-	char filenames[8][BUF_LEN] = {
-		"../testFiles/FILE_1.txt",
-		"../testFiles/FILE_2.txt",
-		"../testFiles/FILE_3.txt",
-		"../testFiles/FILE_4.txt",
-		"../testFiles/FILE_5.txt",
-		"../testFiles/FILE_6.txt",
-		"../testFiles/FILE_7.txt",
-		"../testFiles/FILE_8.txt",
-	};
-	char nonPermFiles[8][BUF_LEN] = {
-		"../testFiles/N_FILE_1.txt",
-		"../testFiles/N_FILE_2.txt",
-		"../testFiles/N_FILE_3.txt",
-		"../testFiles/N_FILE_4.txt",
-		"../testFiles/N_FILE_5.txt",
-		"../testFiles/N_FILE_6.txt",
-		"../testFiles/N_FILE_7.txt",
-		"../testFiles/N_FILE_8.txt",
-	};
-
 	for (i = 0; i < files; i++)
 	{	
 		// append only in odd files
