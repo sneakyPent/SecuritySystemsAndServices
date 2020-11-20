@@ -7,16 +7,19 @@ char *getLineInfo(char *str)
     return trimwhitespace(ptr);
 }
 
-int is_white_space(char c) {
+int is_white_space(char c)
+{
     return (c == ' ' || c == '\t' || c == '\n');
 }
 
 /**
  * @brief Get the length of a string
  */
-int get_str_len(char const *str) {
+int get_str_len(char const *str)
+{
     int len = 0;
-    while (str[len] != '\0') {
+    while (str[len] != '\0')
+    {
         len += 1;
     }
     return (len);
@@ -25,32 +28,37 @@ int get_str_len(char const *str) {
 /**
  * @brief Returns the correct length of a trimmed string
  */
-int get_trim_len(char const *str) {
+int get_trim_len(char const *str)
+{
     int lastPosition = get_str_len(str) - 1;
-    while (is_white_space(str[lastPosition])) {
+    while (is_white_space(str[lastPosition]))
+    {
         lastPosition -= 1;
     }
     int firstPosition = 0;
-    while (is_white_space(str[firstPosition])) {
+    while (is_white_space(str[firstPosition]))
+    {
         firstPosition += 1;
     }
     return (lastPosition - firstPosition);
 }
-
 
 char *trimwhitespace(char *str)
 {
     char *trim = NULL;
     int i, len, end;
     int start = 0;
-    while (is_white_space(str[start])) {
+    while (is_white_space(str[start]))
+    {
         start += 1;
     }
-    if (str != NULL) {
+    if (str != NULL)
+    {
         i = 0;
         len = get_trim_len(str) + 1;
         trim = (char *)malloc(len);
-        while (i < len) {
+        while (i < len)
+        {
             trim[i] = str[start];
             i += 1;
             start += 1;
@@ -163,7 +171,9 @@ void print(char *str, enum mode md)
         break;
     }
 }
-filesList *addFile(filesList *head, char *fileName){
+
+filesList *addFile(filesList *head, char *fileName)
+{
     filesList *currentFile = head;
     if (currentFile == NULL)
     {
@@ -179,23 +189,21 @@ filesList *addFile(filesList *head, char *fileName){
         while (currentFile->nextFile != NULL)
         {
             // By the time we found the file we return the head and do nothing
-            if (strstr(currentFile->fileName, fileName) != NULL )
+            if (strstr(currentFile->fileName, fileName) != NULL)
                 return head;
             currentFile = currentFile->nextFile;
         }
-        if (strstr(currentFile->fileName, fileName) != NULL )
+        if (strstr(currentFile->fileName, fileName) != NULL)
             return head;
-        print("File not found. Adding file.\n", success);
-        // If file not found, add it and increase restFiles 
+        print("File not found. Adding file.", success);
+        // If file not found, add it and increase restFiles
         currentFile->nextFile = malloc(sizeof(filesList));
         strcpy(currentFile->nextFile->fileName, fileName);
         head->restFiles += 1;
         currentFile->nextFile->nextFile = NULL;
     }
     return head;
-
 }
-
 
 userList *addUser(userList *head, int user, int modification, int notPermission, char *fileName)
 {
@@ -227,10 +235,10 @@ userList *addUser(userList *head, int user, int modification, int notPermission,
             currentUser->mods += modification;
             if (notPermission == 1)
                 currentUser->filesNotAccessed = addFile(currentUser->filesNotAccessed, fileName);
-            
+
             return head;
         }
-    
+
         // If user not found, add him
         currentUser->nextUser = malloc(sizeof(userList));
         currentUser->nextUser->user = user;
@@ -240,26 +248,30 @@ userList *addUser(userList *head, int user, int modification, int notPermission,
     }
     return head;
 }
-void printFiles(filesList *head){
+
+void printFiles(filesList *head)
+{
     filesList *currentFile = head;
     while (currentFile != NULL)
-        {
-            if (currentFile == NULL)
-                print("error",info);
-            printf("|\t filename=%s \t |\n", currentFile->fileName);
-            currentFile = currentFile->nextFile;
-        }
+    {
+        if (currentFile == NULL)
+            print("error", info);
+        printf("|\t filename=%s \t |\n", currentFile->fileName);
+        currentFile = currentFile->nextFile;
+    }
 }
 
-void printUsers(userList *head, enum information printingInfo){
-    userList * currentUser = head;
+void printUsers(userList *head, enum information printingInfo)
+{
+    userList *currentUser = head;
     switch (printingInfo)
     {
     case all:
         printf("-----------------------------------------------USERS----------------------------------------------\n");
         printf("| \t\t\t\t\t\t\t\t\t\t\t\t |\n");
-        while (currentUser != NULL) {
-            printf("|\t UID: %d \t | \t Modifications: %d \t | \t Non permitted Accesses: %d \t |\n", currentUser->user, currentUser-> mods, currentUser->filesNotAccessed);
+        while (currentUser != NULL)
+        {
+            printf("|\t UID: %d \t | \t Modifications: %d \t | \t Non permitted Accesses: %d \t |\n", currentUser->user, currentUser->mods, currentUser->filesNotAccessed);
             currentUser = currentUser->nextUser;
         }
         printf("| \t\t\t\t\t\t\t\t\t\t\t\t |\n");
@@ -268,8 +280,9 @@ void printUsers(userList *head, enum information printingInfo){
     case modifies:
         printf("---------------------------USERS--------------------------\n");
         printf("| \t\t\t\t\t\t\t |\n");
-        while (currentUser != NULL) {
-            printf("|\t UID=%d \t | \t Modifications: %d \t |\n", currentUser->user, currentUser-> mods);
+        while (currentUser != NULL)
+        {
+            printf("|\t UID=%d \t | \t Modifications: %d \t |\n", currentUser->user, currentUser->mods);
             currentUser = currentUser->nextUser;
         }
         printf("| \t\t\t\t\t\t\t |\n");
@@ -278,7 +291,9 @@ void printUsers(userList *head, enum information printingInfo){
     case nonPermissions:
         printf("-----------USERS----------\n");
         printf("| \t\t\t |\n");
-        while (currentUser != NULL) {            
+        while (currentUser != NULL)
+        {
+            printFiles(currentUser->filesNotAccessed);
             if (currentUser->filesNotAccessed->restFiles > NON_PERMISSION_LIMIT)
                 printf("|\t UID=%d \t |\n", currentUser->user);
             currentUser = currentUser->nextUser;
@@ -288,12 +303,12 @@ void printUsers(userList *head, enum information printingInfo){
         break;
     default:
         printf("-----------------------------------------------USERS----------------------------------------------\n");
-        while (currentUser != NULL) {
-            printf("|\t UID=%d \t | \t Modifications: %d \t | \t Non permitted Accesses: %d \t |\n", currentUser->user, currentUser-> mods, currentUser->filesNotAccessed);
+        while (currentUser != NULL)
+        {
+            printf("|\t UID=%d \t | \t Modifications: %d \t | \t Non permitted Accesses: %d \t |\n", currentUser->user, currentUser->mods, currentUser->filesNotAccessed);
             currentUser = currentUser->nextUser;
         }
         printf("--------------------------------------------------------------------------------------------------\n");
         break;
     }
-    
 }
