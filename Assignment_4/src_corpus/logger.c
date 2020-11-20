@@ -9,30 +9,34 @@ fopen(const char *path, const char *mode)
 
 	FILE *original_fopen_ret;
 	FILE *(*original_fopen)(const char *, const char *);
-	int exists=1;
+	int exists = 1;
 
 	// If file does not exist update log file for file creation
-	if (access(path, F_OK) == -1){
+	if (access(path, F_OK) == -1)
+	{
 		print("File does not exist", info);
-		exists = 0;	
+		exists = 0;
 	}
 	/* call the original fopen function */
 	original_fopen = dlsym(RTLD_NEXT, "fopen");
 	original_fopen_ret = (*original_fopen)(path, mode);
-	
-	if (original_fopen_ret){
-		if (exists == 0){
+
+	if (original_fopen_ret)
+	{
+		if (exists == 0)
+		{
 			print("File creation", info);
-			logFileUpdate(initLogs(path, creation,original_fopen_ret, mode));
+			logFileUpdate(initLogs(path, creation, original_fopen_ret, mode));
 		}
-		else {
+		else
+		{
 			// Update log file for opening file
 			print("File opening", info);
-			logFileUpdate(initLogs(path, opening,original_fopen_ret, mode));
+			logFileUpdate(initLogs(path, opening, original_fopen_ret, mode));
 		}
 	}
 	else
-		logFileUpdate(initLogs(path, opening,original_fopen_ret, mode));
+		logFileUpdate(initLogs(path, opening, original_fopen_ret, mode));
 
 	return original_fopen_ret;
 }
@@ -50,13 +54,13 @@ fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream)
 	original_fwrite = dlsym(RTLD_NEXT, "fwrite");
 	original_fwrite_ret = (*original_fwrite)(ptr, size, nmemb, stream);
 	// Update log file for writing file
-	logFileUpdate(initLogs(filename, writing,stream,"w"));
+	logFileUpdate(initLogs(filename, writing, stream, "w"));
 
 	return original_fwrite_ret;
 }
 
 char **getCurrentDateAndTime()
-{	
+{
 	time_t current = time(NULL); /* Gets GMT time as a time_t. */
 	if (current == -1)
 		print("The time() function failed", error);
@@ -89,26 +93,28 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const cha
 	le.isActionDenied = getAccess(path, mode);
 
 	//get MD5 fingerprint
-	if (file){
+	if (file)
+	{
 		long lSize;
 		fseek(file, 0L, SEEK_SET);
-		fseek(file,0L,SEEK_END);
+		fseek(file, 0L, SEEK_END);
 		lSize = ftell(file);
 		fseek(file, 0L, SEEK_SET);
-		unsigned char *retext=NULL;
+		unsigned char *retext = NULL;
 		retext = malloc(sizeof(char) * lSize);
-		long readlength = fread(retext, sizeof(char), lSize, file); 
-		if (readlength == lSize){
+		long readlength = fread(retext, sizeof(char), lSize, file);
+		if (readlength == lSize)
+		{
 			unsigned char fingerprint[MD5_DIGEST_LENGTH];
 			MD5(retext, readlength, fingerprint);
-			strcpy(le.fileFingerprint,stringToHex(fingerprint, sizeof(fingerprint)));
+			strcpy(le.fileFingerprint, stringToHex(fingerprint, sizeof(fingerprint)));
 		}
 		else
-			strcpy(le.fileFingerprint,"0");	
+			strcpy(le.fileFingerprint, "0");
 	}
 	else
-		strcpy(le.fileFingerprint,"0");
-	
+		strcpy(le.fileFingerprint, "0");
+
 	return le;
 }
 

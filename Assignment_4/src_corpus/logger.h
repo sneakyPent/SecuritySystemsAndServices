@@ -20,7 +20,9 @@
  */
 enum AccessType
 {
-	creation, opening, writing
+	creation,
+	opening,
+	writing
 };
 
 /**
@@ -31,13 +33,13 @@ enum AccessType
 typedef struct logEntry
 {
 	int UID;					   /** The unique user ID assigned by the system to a user */
-	char filename[3*BUF_LEN];		   /** The path and name of the accessed file. */
+	char filename[3 * BUF_LEN];	   /** The path and name of the accessed file. */
 	char date[BUF_LEN];			   /** The date that the action occurred. */
 	char timestamp[BUF_LEN];	   /** The time that the action occurred. */
 	enum AccessType access;		   /** For file creation 0. For file open 1. For file write 2 */
 	int isActionDenied;			   /** Reports if the action was denied to the user with no access privileges */
 	char fileFingerprint[BUF_LEN]; /** ​ The digital fingerprint of the file the time the event occurred. */
-}logEntry;
+} logEntry;
 
 /**
 * @brief Get the Current Date And Time
@@ -45,7 +47,6 @@ typedef struct logEntry
  * @return char** 2D array [2][BUF_LEN] char[0]=time char[1]=date
  */
 char **getCurrentDateAndTime();
-
 
 /**
  * @brief Init the entry logs for current event.
@@ -55,7 +56,6 @@ char **getCurrentDateAndTime();
  * @return struct logEntry 
  */
 logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const char *mode);
-
 
 /**
  * @brief Updates the LOG_FILE_PATH defined in logger.h with the given log entry information
