@@ -195,7 +195,6 @@ filesList *addFile(filesList *head, char *fileName)
         }
         if (strstr(currentFile->fileName, fileName) != NULL)
             return head;
-        print("File not found. Adding file.", success);
         // If file not found, add it and increase restFiles
         currentFile->nextFile = malloc(sizeof(filesList));
         strcpy(currentFile->nextFile->fileName, fileName);
@@ -293,7 +292,6 @@ void printUsers(userList *head, enum information printingInfo)
         printf("| \t\t\t |\n");
         while (currentUser != NULL)
         {
-            printFiles(currentUser->filesNotAccessed);
             if (currentUser->filesNotAccessed->restFiles > NON_PERMISSION_LIMIT)
                 printf("|\t UID=%d \t |\n", currentUser->user);
             currentUser = currentUser->nextUser;
