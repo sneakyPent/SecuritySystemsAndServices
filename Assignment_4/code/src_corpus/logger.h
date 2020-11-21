@@ -16,7 +16,6 @@
 /**
  * @brief Enumerator access type. For file creation, the access type is 0. For file open,
  *  the access type is 1. For file write, the access type is 2.
- * 
  */
 enum AccessType
 {
@@ -27,8 +26,15 @@ enum AccessType
 
 /**
  * @brief Is a struct for all the information a log entry should contain
- *   
  * 
+ * @param UID				   		The unique user ID assigned by the system to a user
+ * @param filename   				The path and name of the accessed file. 
+ * @param date			   			The date that the action occurred. 
+ * @param timestamp			   		The time that the action occurred. 
+ * @param AccessType			   	For file creation 0. For file open 1. For file write 2 
+ * @param isActionDenied		    Reports if the action was denied to the user with no access privileges 
+ * @param fileFingerprint			The digital fingerprint of the file the time the event occurred. 
+ *
  */
 typedef struct logEntry
 {
