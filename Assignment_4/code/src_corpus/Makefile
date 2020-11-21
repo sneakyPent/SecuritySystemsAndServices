@@ -10,7 +10,7 @@ DBUG = -g
 CCFLAGS =  -Wall -fPIC -shared
 
 
-TARGETS = logger acmonitor test_aclog
+TARGETS = logger acmonitor test_aclog createTestingFiles
 OBJFILES = utils.o
 LIBRARY = logger.so
 
@@ -40,7 +40,26 @@ createTestingFiles:
 run: logger.so test_aclog
 	LD_PRELOAD=./logger.so ./test_aclog
 
-test: all createTestingFiles  run step2_2 step2_1
+runmal: logger.so test_aclog
+	LD_PRELOAD=./logger.so ./test_aclog -m
+
+test:
+	${MAKE} all
+	${MAKE} createTestingFiles
+	${MAKE} test1
+	${MAKE} test2
+
+
+test1:
+	${MAKE} run
+	${MAKE} step2_2
+	${MAKE} step2_1
+
+test2:
+	${MAKE} runmal
+	${MAKE} step2_2
+	${MAKE} step2_1
+
 
 step2_1:
 	./acmonitor -m
