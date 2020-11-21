@@ -2,15 +2,11 @@
 #include <string.h>
 #include "utils.h"
 
-char filenames[8][BUF_LEN] = {
+
+char filenames[3][BUF_LEN] = {
 	"FILE_1.txt",
 	"FILE_2.txt",
 	"FILE_3.txt",
-	"FILE_4.txt",
-	"FILE_5.txt",
-	"FILE_6.txt",
-	"FILE_7.txt",
-	"FILE_8.txt",
 };
 char nonPermFiles[8][BUF_LEN] = {
 	"FILE_N_1.txt",
@@ -23,12 +19,13 @@ char nonPermFiles[8][BUF_LEN] = {
 	"FILE_N_8.txt",
 };
 
+static int nonPerFiles, files;
+
 void readFiles()
 {
 	int i;
 	size_t bytes;
 	FILE *file;
-	int files = 8;
 	for (i = 0; i < files; i++)
 	{
 		file = fopen(filenames[i], "r");
@@ -40,7 +37,7 @@ void readFiles()
 			fclose(file);
 		}
 	}
-	for (i = 0; i < files; i++)
+	for (i = 0; i < nonPerFiles; i++)
 	{
 		file = fopen(nonPermFiles[i], "r");
 		print("Read", info);
@@ -59,7 +56,6 @@ void writeFiles()
 	int i;
 	size_t bytes;
 	FILE *file;
-	int files = 8;
 	for (i = 0; i < files; i++)
 	{
 		file = fopen(filenames[i], "w+");
@@ -74,7 +70,7 @@ void writeFiles()
 			fclose(file);
 		}
 	}
-	for (i = 0; i < files; i++)
+	for (i = 0; i < nonPerFiles; i++)
 	{
 		file = fopen(nonPermFiles[i], "w+");
 		print("Write", info);
@@ -94,9 +90,8 @@ void appendTest()
 	int i;
 	size_t bytes;
 	FILE *file;
-	int files = 8;
 	for (i = 0; i < files; i++)
-	{	
+	{
 		// append only in odd files
 		if (i % 2 == 0)
 		{
@@ -113,7 +108,7 @@ void appendTest()
 			}
 		}
 	}
-	for (i = 0; i < files; i++)
+	for (i = 0; i < nonPerFiles; i++)
 	{
 		file = fopen(nonPermFiles[i], "a+");
 		print("Write", info);
@@ -131,8 +126,11 @@ void appendTest()
 
 int main()
 {
+
+	nonPerFiles = sizeof(nonPermFiles) / sizeof(nonPermFiles[0]);
+	files = sizeof(filenames) / sizeof(filenames[0]);
 	readFiles();
 	writeFiles();
 	appendTest();
-	readFiles();
+	// readFiles();
 }
