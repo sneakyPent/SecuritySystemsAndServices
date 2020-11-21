@@ -29,10 +29,7 @@ void readFiles()
 	for (i = 0; i < files; i++)
 	{
 		file = fopen(filenames[i], "r");
-		print("Read", info);
-		if (file == NULL)
-			printf("fopen error\n");
-		else
+		if (file != NULL)
 		{
 			fclose(file);
 		}
@@ -40,10 +37,7 @@ void readFiles()
 	for (i = 0; i < nonPerFiles; i++)
 	{
 		file = fopen(nonPermFiles[i], "r");
-		print("Read", info);
-		if (file == NULL)
-			printf("fopen error\n");
-		else
+		if (file != NULL)
 		{
 			fclose(file);
 		}
@@ -59,10 +53,7 @@ void writeFiles()
 	for (i = 0; i < files; i++)
 	{
 		file = fopen(filenames[i], "w+");
-		print("Write", info);
-		if (file == NULL)
-			printf("fopen error\n");
-		else
+		if (file != NULL)
 		{
 			char msg[BUF_LEN];
 			sprintf(msg, "%d", getuid());
@@ -73,10 +64,7 @@ void writeFiles()
 	for (i = 0; i < nonPerFiles; i++)
 	{
 		file = fopen(nonPermFiles[i], "w+");
-		print("Write", info);
-		if (file == NULL)
-			printf("fopen error\n");
-		else
+		if (file != NULL)
 		{
 			char msg[BUF_LEN];
 			sprintf(msg, "%d", getuid());
@@ -97,11 +85,8 @@ void appendTest()
 		if (i % 2 == 0)
 		{
 			file = fopen(filenames[i], "a+");
-			print("Write", info);
-			if (file == NULL)
-				printf("fopen error\n");
-			else
-			{
+			if (file != NULL)
+			{	
 				char msg[BUF_LEN];
 				sprintf(msg, " Append my uid %d", getuid());
 				bytes = fwrite(msg, strlen(msg), 1, file);
@@ -112,10 +97,7 @@ void appendTest()
 	for (i = 0; i < nonPerFiles; i++)
 	{
 		file = fopen(nonPermFiles[i], "a+");
-		print("Write", info);
-		if (file == NULL)
-			printf("fopen error\n");
-		else
+		if (file != NULL)
 		{
 			char msg[BUF_LEN];
 			sprintf(msg, " Append my uid %d", getuid());

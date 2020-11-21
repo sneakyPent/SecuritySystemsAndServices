@@ -22,19 +22,10 @@ fopen(const char *path, const char *mode)
 	original_fopen_ret = (*original_fopen)(path, mode);
 
 	if (original_fopen_ret)
-	{
-		if (exists == 0)
-		{
-			print("File creation", info);
+		if (exists == 0)	// Update log file for creating file
 			logFileUpdate(initLogs(path, creation, original_fopen_ret, mode));
-		}
-		else
-		{
-			// Update log file for opening file
-			print("File opening", info);
+		else				// Update log file for opening file
 			logFileUpdate(initLogs(path, opening, original_fopen_ret, mode));
-		}
-	}
 	else
 		logFileUpdate(initLogs(path, opening, original_fopen_ret, mode));
 

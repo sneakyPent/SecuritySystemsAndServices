@@ -119,20 +119,11 @@ int getAccess(const char *path, const char *mode)
         return (r_a || w_a);
     }
     if (strstr(mode, "r") != NULL)
-    {
-        print("Read access", info);
         return (access(path, R_OK) == 0) ? 0 : 1;
-    }
     else if (strstr(mode, "w") != NULL)
-    {
-        print("Write access", info);
         return (access(path, W_OK) == 0) ? 0 : 1;
-    }
     else if (strstr(mode, "a") != NULL)
-    {
-        print("Append access", info);
         return (access(path, W_OK) == 0) ? 0 : 1;
-    }
     else
         return -1;
 }
