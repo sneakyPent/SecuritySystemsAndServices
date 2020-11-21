@@ -12,9 +12,6 @@ int is_white_space(char c)
     return (c == ' ' || c == '\t' || c == '\n');
 }
 
-/**
- * @brief Get the length of a string
- */
 int get_str_len(char const *str)
 {
     int len = 0;
@@ -25,9 +22,6 @@ int get_str_len(char const *str)
     return (len);
 }
 
-/**
- * @brief Returns the correct length of a trimmed string
- */
 int get_trim_len(char const *str)
 {
     int lastPosition = get_str_len(str) - 1;
@@ -97,12 +91,6 @@ void print_string(unsigned char *data, size_t len)
     }
 }
 
-/**
- * @brief Get the Files Name from File pointer
- * 
- * @param file File pointer
- * @return char* filenName
- */
 char *getFilesName(FILE *file)
 {
     // Get the filename from File pointer
@@ -175,7 +163,7 @@ void print(char *str, enum mode md)
 filesList *addFile(filesList *head, char *fileName)
 {
     filesList *currentFile = head;
-    if (strcmp(fileName,"") != 0 )
+    if (strcmp(fileName, "") != 0)
         if (currentFile == NULL)
         {
             currentFile = malloc(sizeof(filesList));
@@ -282,19 +270,19 @@ void printUsers(userList *head, enum information printingInfo)
         printf("| \t\t\t\t\t\t\t |\n");
         while (currentUser != NULL)
         {
-            printf("|\t UID: %d \t | \t Modifications: %d \t |\n", currentUser->user, currentUser->mods);
+            printf("|\t UID=%d \t | \t Modifications: %d \t |\n", currentUser->user, currentUser->mods);
             currentUser = currentUser->nextUser;
         }
         printf("| \t\t\t\t\t\t\t |\n");
         printf("----------------------------------------------------------\n");
         break;
-    case nonPermissions:
+    case userName:
         printf("-----------USERS----------\n");
         printf("| \t\t\t |\n");
         while (currentUser != NULL)
         {
             if (currentUser->filesNotAccessed->restFiles > NON_PERMISSION_LIMIT)
-                printf("|\t UID: %d    \t |\n", currentUser->user);
+                printf("|\t UID=%d \t |\n", currentUser->user);
             currentUser = currentUser->nextUser;
         }
         printf("| \t\t\t |\n");
@@ -304,7 +292,7 @@ void printUsers(userList *head, enum information printingInfo)
         printf("-----------------------------------------------USERS----------------------------------------------\n");
         while (currentUser != NULL)
         {
-            printf("|\t UID: %d \t | \t Modifications: %d \t | \t Non permitted Accesses: %d \t |\n", currentUser->user, currentUser->mods, currentUser->filesNotAccessed);
+            printf("|\t UID=%d \t | \t Modifications: %d \t | \t Non permitted Accesses: %d \t |\n", currentUser->user, currentUser->mods, currentUser->filesNotAccessed);
             currentUser = currentUser->nextUser;
         }
         printf("--------------------------------------------------------------------------------------------------\n");
