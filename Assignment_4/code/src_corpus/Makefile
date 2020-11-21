@@ -1,5 +1,5 @@
 NON_ACCESSIBLE_FILES_NUM = 8
-ACCESSIBLE_FILES_NUM = 8
+ACCESSIBLE_FILES_NUM = 3
 TESTFILESDIR = 
 NON_ACCESSIBLE_FILES = $(TESTFILESDIR)FILE_N_
 ACCESSIBLE_FILES = $(TESTFILESDIR)FILE_
@@ -63,11 +63,6 @@ checkFiles:
 	./acmonitor -i $(ACCESSIBLE_FILES)1.txt;
 	./acmonitor -i $(ACCESSIBLE_FILES)2.txt;
 	./acmonitor -i $(ACCESSIBLE_FILES)3.txt;
-	./acmonitor -i $(ACCESSIBLE_FILES)4.txt;
-	./acmonitor -i $(ACCESSIBLE_FILES)5.txt;
-	./acmonitor -i $(ACCESSIBLE_FILES)6.txt;
-	./acmonitor -i $(ACCESSIBLE_FILES)7.txt;
-	./acmonitor -i $(ACCESSIBLE_FILES)8.txt;
 	./acmonitor -i $(NON_ACCESSIBLE_FILES)1.txt;
 	./acmonitor -i $(NON_ACCESSIBLE_FILES)2.txt;
 	./acmonitor -i $(NON_ACCESSIBLE_FILES)3.txt;
