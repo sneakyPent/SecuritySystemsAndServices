@@ -270,7 +270,7 @@ void printUsers(userList *head, enum information printingInfo)
         printf("| \t\t\t\t\t\t\t |\n");
         while (currentUser != NULL)
         {
-            printf("|\t UID=%d \t | \t Modifications: %d \t |\n", currentUser->user, currentUser->mods);
+            printf("|\t UID: %d  \t | \t Modifications: %d \t |\n", currentUser->user, currentUser->mods);
             currentUser = currentUser->nextUser;
         }
         printf("| \t\t\t\t\t\t\t |\n");
@@ -282,7 +282,7 @@ void printUsers(userList *head, enum information printingInfo)
         while (currentUser != NULL)
         {
             if (currentUser->filesNotAccessed->restFiles > NON_PERMISSION_LIMIT)
-                printf("|\t UID=%d \t |\n", currentUser->user);
+                printf("|\t UID: %d \t |\n", currentUser->user);
             currentUser = currentUser->nextUser;
         }
         printf("| \t\t\t |\n");
