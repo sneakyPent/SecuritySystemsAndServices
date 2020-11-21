@@ -107,13 +107,27 @@ void appendTest()
 	}
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-
-	nonPerFiles = sizeof(nonPermFiles) / sizeof(nonPermFiles[0]);
+	int ch;
+	while ((ch = getopt(argc, argv, "m")) != -1)
+	{
+		switch (ch)
+		{
+		case 'm':
+			nonPerFiles = sizeof(nonPermFiles) / sizeof(nonPermFiles[0]);
+			break;
+		default:
+			nonPerFiles = 6;
+			break;
+		}
+	}
 	files = sizeof(filenames) / sizeof(filenames[0]);
 	readFiles();
 	writeFiles();
 	appendTest();
-	// readFiles();
+
+	argc -= optind;
+	argv += optind;
+	return 0;
 }
