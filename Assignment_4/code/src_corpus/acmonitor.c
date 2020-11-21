@@ -81,7 +81,7 @@ void list_unauthorized_accesses(FILE *log)
 			users = addUser(users, logt.UID, 0, 1, logt.filename);
 		}
 	};
-	printUsers(users, nonPermissions);
+	printUsers(users, userName);
 }
 
 void list_file_modifications(FILE *log, char *file_to_scan)
