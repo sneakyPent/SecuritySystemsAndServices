@@ -2,12 +2,12 @@
 #include <string.h>
 #include "utils.h"
 
-
 char filenames[3][BUF_LEN] = {
 	"FILE_1.txt",
 	"FILE_2.txt",
 	"FILE_3.txt",
 };
+
 char nonPermFiles[8][BUF_LEN] = {
 	"FILE_N_1.txt",
 	"FILE_N_2.txt",
@@ -85,6 +85,7 @@ void writeFiles()
 		}
 	}
 }
+
 void appendTest()
 {
 	int i;
