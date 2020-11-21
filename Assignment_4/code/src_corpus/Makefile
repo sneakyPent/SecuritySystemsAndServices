@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 NON_ACCESSIBLE_FILES_NUM = 8
-ACCESSIBLE_FILES_NUM = 3
+ACCESSIBLE_FILES_NUM = 5
 TESTFILESDIR = 
 NON_ACCESSIBLE_FILES = $(TESTFILESDIR)FILE_N_
 ACCESSIBLE_FILES = $(TESTFILESDIR)FILE_
@@ -10,7 +10,7 @@ DBUG = -g
 CCFLAGS =  -Wall -fPIC -shared
 
 
-TARGETS = logger acmonitor test_aclog createNonAccessibleFiles 
+TARGETS = logger acmonitor test_aclog
 OBJFILES = utils.o
 LIBRARY = logger.so
 
@@ -26,12 +26,36 @@ acmonitor: acmonitor.c $(OBJFILES)
 test_aclog: test_aclog.c $(OBJFILES)
 	$(CC) test_aclog.c -o test_aclog $(OBJFILES)
 
+createTestingFiles:
+	file=1 ; while [[ $$file -le $(NON_ACCESSIBLE_FILES_NUM) ]] ; do \
+        touch $(NON_ACCESSIBLE_FILES)$$file.txt; \
+        ((file = file + 1)) ; \
+    done
+	file=1 ; while [[ $$file -le $(ACCESSIBLE_FILES_NUM) ]] ; do \
+        touch $(ACCESSIBLE_FILES)$$file.txt; \
+        ((file = file + 1)) ; \
+    done
+	chmod 000 $(NON_ACCESSIBLE_FILES)*
+
 run: logger.so test_aclog
 	LD_PRELOAD=./logger.so ./test_aclog
 
-test: all run checkFiles checkMalicious
+test: all createTestingFiles  run step2_2 step2_1
 
-clean: cleanObjects cleanLogs cleanFiles
+step2_1:
+	./acmonitor -m
+
+step2_2:
+	file=1 ; while [[ $$file -le $(ACCESSIBLE_FILES_NUM) ]] ; do \
+		echo "./acmonitor -i $(ACCESSIBLE_FILES)$$file.txt"; \
+		./acmonitor -i $(ACCESSIBLE_FILES)$$file.txt; \
+        ((file = file + 1)) ; \
+    done
+	file=1 ; while [[ $$file -le $(NON_ACCESSIBLE_FILES_NUM) ]] ; do \
+		echo "./acmonitor -i $(NON_ACCESSIBLE_FILES)$$file.txt"; \
+        ./acmonitor -i $(NON_ACCESSIBLE_FILES)$$file.txt; \
+        ((file = file + 1)) ; \
+    done
 
 cleanObjects:
 	rm -rf logger.so
@@ -43,35 +67,7 @@ cleanLogs:
 	rm -rf ../logs/file_logging.log
 
 cleanFiles:
-	rm -f /lnx/sneaky/test.txt
-	rm -f /home/zn/Desktop/test.txt
-	rm -rf file_*
 	rm -rf $(NON_ACCESSIBLE_FILES)*
 	rm -rf $(ACCESSIBLE_FILES)*
 
-createNonAccessibleFiles:
-	file=1 ; while [[ $$file -le $(NON_ACCESSIBLE_FILES_NUM) ]] ; do \
-        touch $(NON_ACCESSIBLE_FILES)$$file.txt; \
-        ((file = file + 1)) ; \
-    done
-	file=1 ; while [[ $$file -le $(ACCESSIBLE_FILES_NUM) ]] ; do \
-        touch $(ACCESSIBLE_FILES)$$file.txt; \
-        ((file = file + 1)) ; \
-    done
-	chmod 000 $(NON_ACCESSIBLE_FILES)*
-
-checkFiles:
-	./acmonitor -i $(ACCESSIBLE_FILES)1.txt;
-	./acmonitor -i $(ACCESSIBLE_FILES)2.txt;
-	./acmonitor -i $(ACCESSIBLE_FILES)3.txt;
-	./acmonitor -i $(NON_ACCESSIBLE_FILES)1.txt;
-	./acmonitor -i $(NON_ACCESSIBLE_FILES)2.txt;
-	./acmonitor -i $(NON_ACCESSIBLE_FILES)3.txt;
-	./acmonitor -i $(NON_ACCESSIBLE_FILES)4.txt;
-	./acmonitor -i $(NON_ACCESSIBLE_FILES)5.txt;
-	./acmonitor -i $(NON_ACCESSIBLE_FILES)6.txt;
-	./acmonitor -i $(NON_ACCESSIBLE_FILES)7.txt;
-	./acmonitor -i $(NON_ACCESSIBLE_FILES)8.txt;
-
-checkMalicious:
-	./acmonitor -m
+clean: cleanObjects cleanLogs cleanFiles
