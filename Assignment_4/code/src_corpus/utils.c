@@ -175,32 +175,33 @@ void print(char *str, enum mode md)
 filesList *addFile(filesList *head, char *fileName)
 {
     filesList *currentFile = head;
-    if (currentFile == NULL)
-    {
-        currentFile = malloc(sizeof(filesList));
-        strcpy(currentFile->fileName, fileName);
-        currentFile->restFiles = 1;
-        currentFile->nextFile = NULL;
-        return currentFile;
-    }
-    else
-    {
-        // Parse the list to check if fil exists
-        while (currentFile->nextFile != NULL)
+    if (strcmp(fileName,"") != 0 )
+        if (currentFile == NULL)
         {
-            // By the time we found the file we return the head and do nothing
+            currentFile = malloc(sizeof(filesList));
+            strcpy(currentFile->fileName, fileName);
+            currentFile->restFiles = 1;
+            currentFile->nextFile = NULL;
+            return currentFile;
+        }
+        else
+        {
+            // Parse the list to check if fil exists
+            while (currentFile->nextFile != NULL)
+            {
+                // By the time we found the file we return the head and do nothing
+                if (strstr(currentFile->fileName, fileName) != NULL)
+                    return head;
+                currentFile = currentFile->nextFile;
+            }
             if (strstr(currentFile->fileName, fileName) != NULL)
                 return head;
-            currentFile = currentFile->nextFile;
+            // If file not found, add it and increase restFiles
+            currentFile->nextFile = malloc(sizeof(filesList));
+            strcpy(currentFile->nextFile->fileName, fileName);
+            head->restFiles += 1;
+            currentFile->nextFile->nextFile = NULL;
         }
-        if (strstr(currentFile->fileName, fileName) != NULL)
-            return head;
-        // If file not found, add it and increase restFiles
-        currentFile->nextFile = malloc(sizeof(filesList));
-        strcpy(currentFile->nextFile->fileName, fileName);
-        head->restFiles += 1;
-        currentFile->nextFile->nextFile = NULL;
-    }
     return head;
 }
 
