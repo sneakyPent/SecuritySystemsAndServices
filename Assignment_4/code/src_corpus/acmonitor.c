@@ -13,15 +13,14 @@ int isHashChanged(char *prevHash, char *newHash)
 
 int isGivenFile(char *givenFile, char *currentFile)
 {
-	int rvalue = -1;
-	int curFileLen = strlen(currentFile);
-	int givenFileLen = strlen(givenFile);
-	if (curFileLen > givenFileLen)
-		rvalue = strcmp(givenFile, currentFile + curFileLen - givenFileLen) == 0 ? 1 : 0;
-	else
-		rvalue = strcmp(currentFile, givenFile) == 0 ? 1 : 0;
-	;
-	return rvalue;
+	// Get the absolute path of the given file and compare it with the log filename
+	char absolutePath[BUF_LEN];
+   	char * res = realpath(givenFile, absolutePath);
+	if (!res) 
+        print("realpath",error);
+	// print(currentFile,info);
+	// print(absolutePath, info);
+	return strcmp(currentFile, absolutePath) == 0 ? 1 : 0;
 }
 
 logEntry getNextLogEntry(FILE *log)
