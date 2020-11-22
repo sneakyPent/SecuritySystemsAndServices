@@ -3,20 +3,20 @@
 #include "utils.h"
 
 char filenames[3][BUF_LEN] = {
-	"../accessibleFiles/afile_1.txt",
-	"../accessibleFiles/afile_2.txt",
-	"../accessibleFiles/afile_3.txt",
+	"../Accessible files/afile_1.txt",
+	"../Accessible files/afile_2.txt",
+	"../Accessible files/afile_3.txt",
 };
 
 char nonPermFiles[8][BUF_LEN] = {
-	"../inaccessibleFiles/nfile_1.txt",
-	"../inaccessibleFiles/nfile_2.txt",
-	"../inaccessibleFiles/nfile_3.txt",
-	"../inaccessibleFiles/nfile_4.txt",
-	"../inaccessibleFiles/nfile_5.txt",
-	"../inaccessibleFiles/nfile_6.txt",
-	"../inaccessibleFiles/nfile_7.txt",
-	"../inaccessibleFiles/nfile_8.txt",
+	"../Inaccessible files/nfile_1.txt",
+	"../Inaccessible files/nfile_2.txt",
+	"../Inaccessible files/nfile_3.txt",
+	"../Inaccessible files/nfile_4.txt",
+	"../Inaccessible files/nfile_5.txt",
+	"../Inaccessible files/nfile_6.txt",
+	"../Inaccessible files/nfile_7.txt",
+	"../Inaccessible files/nfile_8.txt",
 };
 
 static int nonPerFiles, files;
