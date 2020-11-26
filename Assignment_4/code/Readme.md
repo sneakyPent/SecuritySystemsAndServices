@@ -41,3 +41,5 @@ make cleanFiles                 # Remove the files created for testing.
 ## INFO FOR ASSIGNMENT'S FILES
 
 * Log file is located in logs directory.
+* Inaccessible test files are located in Inaccessible files directory.
+* Accessible test files are located in Accessible files directory.

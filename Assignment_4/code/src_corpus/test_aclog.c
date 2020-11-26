@@ -3,20 +3,20 @@
 #include "utils.h"
 
 char filenames[3][BUF_LEN] = {
-	"FILE_1.txt",
-	"FILE_2.txt",
-	"FILE_3.txt",
+	"../Accessible files/afile_1.txt",
+	"../Accessible files/afile_2.txt",
+	"../Accessible files/afile_3.txt",
 };
 
 char nonPermFiles[8][BUF_LEN] = {
-	"FILE_N_1.txt",
-	"FILE_N_2.txt",
-	"FILE_N_3.txt",
-	"FILE_N_4.txt",
-	"FILE_N_5.txt",
-	"FILE_N_6.txt",
-	"FILE_N_7.txt",
-	"FILE_N_8.txt",
+	"../Inaccessible files/nfile_1.txt",
+	"../Inaccessible files/nfile_2.txt",
+	"../Inaccessible files/nfile_3.txt",
+	"../Inaccessible files/nfile_4.txt",
+	"../Inaccessible files/nfile_5.txt",
+	"../Inaccessible files/nfile_6.txt",
+	"../Inaccessible files/nfile_7.txt",
+	"../Inaccessible files/nfile_8.txt",
 };
 
 static int nonPerFiles, files;
@@ -110,15 +110,16 @@ void appendTest()
 int main(int argc, char *argv[])
 {
 	int ch;
+	nonPerFiles = 2;
 	while ((ch = getopt(argc, argv, "m")) != -1)
 	{
 		switch (ch)
 		{
 		case 'm':
-			nonPerFiles = sizeof(nonPermFiles) / sizeof(nonPermFiles[0]);
+			nonPerFiles = 8;
 			break;
 		default:
-			nonPerFiles = 6;
+			nonPerFiles = 2;
 			break;
 		}
 	}

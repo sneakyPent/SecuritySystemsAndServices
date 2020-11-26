@@ -10,24 +10,26 @@ fopen(const char *path, const char *mode)
 	FILE *original_fopen_ret;
 	FILE *(*original_fopen)(const char *, const char *);
 	int exists = 1;
+	// Get the absolute path of the given file
+	char absolutePath[BUF_LEN];
+   	char * res = realpath(path, absolutePath);
+	if (!res)
+        print("realpath",error);
 
 	// If file does not exist update log file for file creation
-	if (access(path, F_OK) == -1)
-	{
-		print("File does not exist", info);
+	if (access(absolutePath, F_OK) == -1)
 		exists = 0;
-	}
 	/* call the original fopen function */
 	original_fopen = dlsym(RTLD_NEXT, "fopen");
-	original_fopen_ret = (*original_fopen)(path, mode);
+	original_fopen_ret = (*original_fopen)(absolutePath, mode);
 
 	if (original_fopen_ret)
 		if (exists == 0)	// Update log file for creating file
-			logFileUpdate(initLogs(path, creation, original_fopen_ret, mode));
+			logFileUpdate(initLogs(absolutePath, creation, original_fopen_ret, mode));
 		else				// Update log file for opening file
-			logFileUpdate(initLogs(path, opening, original_fopen_ret, mode));
+			logFileUpdate(initLogs(absolutePath, opening, original_fopen_ret, mode));
 	else
-		logFileUpdate(initLogs(path, opening, original_fopen_ret, mode));
+		logFileUpdate(initLogs(absolutePath, opening, original_fopen_ret, mode));
 
 	return original_fopen_ret;
 }
