@@ -99,7 +99,9 @@ encrypt_x_files () {
     create_x_files $ENCRYPT_FILES
     for file in "${CREATED_FILES_ARRAY[@]}";
     do 
-        openssl enc -$ENCRUPTION_METHOD -pbkdf2 -in $file -out $file.encrypt -k $ENCRYPTION_KEY
+        OPENSSL_INPUT_FILE=$file
+        OPENSSL_OUTPUT_FILE=$file.encrypt
+        openssl enc -$ENCRUPTION_METHOD -pbkdf2 -in $OPENSSL_INPUT_FILE -out $OPENSSL_OUTPUT_FILE -k $ENCRYPTION_KEY
         rm -f $file
     done
 }
@@ -107,9 +109,11 @@ encrypt_x_files () {
 decrypt_files() {
     local decrypted_files=()
     find $DIRPATH -name "*.encrypt" -print0 > tmpfile
-    while IFS=  read -r -d $'\0'; do
-        output=$(sed 's/.encrypt//' <<< "$REPLY")
-        openssl $ENCRUPTION_METHOD -pbkdf2 -in $REPLY -out $output -d -k $ENCRYPTION_KEY
+    while IFS=  read -r -d $'\0';
+    do  
+        OPENSSL_INPUT_FILE=$REPLY
+        OPENSSL_OUTPUT_FILE=$(sed 's/.encrypt//' <<< "$REPLY")
+        openssl $ENCRUPTION_METHOD -d -pbkdf2 -in $OPENSSL_INPUT_FILE -out $OPENSSL_OUTPUT_FILE -k $ENCRYPTION_KEY
         rm -f $REPLY 
     done < tmpfile
     rm -f tmpfile
