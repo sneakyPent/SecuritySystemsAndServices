@@ -73,6 +73,8 @@ char **getCurrentDateAndTime()
 logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const char *mode)
 {
 
+	FILE *(*original_fopen)(const char *, const char *);
+	original_fopen = dlsym(RTLD_NEXT,"fopen");
 	char **dateAndTime = getCurrentDateAndTime();
 	logEntry le;
 
@@ -82,30 +84,36 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const cha
 	strcpy(le.date, dateAndTime[1]);
 	le.access = aType;
 	le.isActionDenied = getAccess(path, mode);
+	
+	// get MD5 fingerprint
+	if (getAccess(path, "r") == 0){
+		char *filename;
+		filename = getFilesName(file);
+		fflush(file);
 
-	//get MD5 fingerprint
-	if (file)
-	{
-		long lSize;
-		fseek(file, 0L, SEEK_SET);
-		fseek(file, 0L, SEEK_END);
-		lSize = ftell(file);
-		fseek(file, 0L, SEEK_SET);
-		unsigned char *retext = NULL;
-		retext = malloc(sizeof(char) * lSize);
-		long readlength = fread(retext, sizeof(char), lSize, file);
-		if (readlength == lSize)
-		{
+		FILE *fwrite_text = original_fopen(filename,"r");
+		
+		if (fwrite_text)
+		{	
+			long lSize;
+			fseek(fwrite_text, 0L, SEEK_END);
+			lSize = ftell(fwrite_text);
+			rewind(fwrite_text);
+			unsigned char *retext = NULL;
+			retext = malloc(sizeof(char) * lSize);
+
+			long readlength = fread(retext, sizeof(char), lSize , fwrite_text);
 			unsigned char fingerprint[MD5_DIGEST_LENGTH];
 			MD5(retext, readlength, fingerprint);
 			strcpy(le.fileFingerprint, stringToHex(fingerprint, sizeof(fingerprint)));
 		}
 		else
 			strcpy(le.fileFingerprint, "00000000000000000000000000000000");
+		fclose(fwrite_text);
 	}
 	else
 		strcpy(le.fileFingerprint, "00000000000000000000000000000000");
-
+		
 	return le;
 }
 
