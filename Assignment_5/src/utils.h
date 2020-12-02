@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <time.h>
 
-#define DELIM ":" /** The delimeter for log file line */
+#define DELIM "·" /** The delimeter for log file line */
 #define BUF_LEN 256
 #define NON_PERMISSION_LIMIT 7 /** The files limit, defines the malicious user*/
 

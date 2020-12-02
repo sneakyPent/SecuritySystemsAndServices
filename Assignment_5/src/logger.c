@@ -112,13 +112,13 @@ int logFileUpdate(logEntry log)
 
 	sprintf(logMessage,
 			"\n"
-			"UID: %d\n"
-			"File name: %s\n"
-			"Date: %s\n"
-			"Timestamp: %s\n"
-			"Access t​ype: %d \n"
-			"Action denied: %d\n"
-			"File fingerprint: %s \n"
+			"UID· %d\n"
+			"File name· %s\n"
+			"Date· %s\n"
+			"Timestamp· %s\n"
+			"Access t​ype· %d \n"
+			"Action denied· %d\n"
+			"File fingerprint· %s \n"
 			"\n------------------------------------------------------------------------\n",
 			log.UID, log.filename, log.date, log.timestamp, log.access, log.isActionDenied, log.fileFingerprint);
 
