@@ -89,7 +89,7 @@ create_x_files () {
             echo existing
             fl=$DIRPATH'file_'$RANDOM.txt
         done
-        echo $NEW_FILES_INPUT$rnd. > $fl
+        ./createFile -p $fl -m "$NEW_FILES_INPUT$rnd."
         CREATED_FILES_ARRAY+=($fl)
         ((files = files + 1))
     done
