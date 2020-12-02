@@ -119,25 +119,43 @@ int main(int argc, char *argv[])
 	if (argc < 2)
 		usage();
 
-	log = fopen(LOG_FILE_PATH, "r");
-	if (log == NULL)
-	{
-		printf("Error opening log file \"%s\"\n", "./log");
-		return 1;
-	}
 	while ((ch = getopt(argc, argv, "hi:mv:e")) != -1)
 	{
 		switch (ch)
 		{
 		case 'i':
+			log = fopen(LOG_FILE_PATH, "r");
+			if (log == NULL)
+			{
+				printf("Error opening log file \"%s\"\n", "./log");
+				return 1;
+			}
 			list_file_modifications(log, optarg);
 			break;
 		case 'm':
+			log = fopen(LOG_FILE_PATH, "r");
+			if (log == NULL)
+			{
+				printf("Error opening log file \"%s\"\n", "./log");
+				return 1;
+			}
 			list_unauthorized_accesses(log);
 			break;
 		case 'v':
+			log = fopen(LOG_FILE_PATH, "r");
+			if (log == NULL)
+			{
+				printf("Error opening log file \"%s\"\n", "./log");
+				return 1;
+			}
 			break;
 		case 'e':
+			log = fopen(LOG_FILE_PATH, "r");
+			if (log == NULL)
+			{
+				printf("Error opening log file \"%s\"\n", "./log");
+				return 1;
+			}
 			break;
 		case 'h':
 			usage();
