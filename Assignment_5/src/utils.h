@@ -204,4 +204,12 @@ void printUsers(userList *head, enum information printingInfo);
 char **getCurrentDateAndTime();
 
 
+/**
+ * @brief Get the date and time, X minutes ago. 
+ * 
+ * @param limit The X minutes
+ */
+char **getDateTimeLimit(int limit);
+
+
 #endif /* _UTILS_H */
