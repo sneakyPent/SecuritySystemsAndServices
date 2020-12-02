@@ -1,6 +1,8 @@
 SHELL := /bin/bash
 NON_ACCESSIBLE_FILES_NUM = 8
 ACCESSIBLE_FILES_NUM = 5
+FILES_DIR=../files
+LOGS_DIR=../logs
 NON_ACCESSIBLE_TESTFILES_DIR = ../Inaccessible\ files/
 ACCESSIBLE_TESTFILES_DIR = ../Accessible\ files/
 NON_ACCESSIBLE_FILES = $(NON_ACCESSIBLE_TESTFILES_DIR)nfile_
@@ -11,7 +13,7 @@ DBUG = -g
 CCFLAGS =  -Wall -fPIC -shared
 
 
-TARGETS = logger acmonitor test_aclog createTestingFiles
+TARGETS = mkdirs logger acmonitor test_aclog createTestingFiles
 OBJFILES = utils.o
 LIBRARY = logger.so
 
@@ -87,7 +89,15 @@ cleanLogs:
 	rm -rf ../logs/file_logging.log
 
 cleanFiles:
-	rm -rf $(NON_ACCESSIBLE_TESTFILES_DIR)*
-	rm -rf $(ACCESSIBLE_TESTFILES_DIR)*
+	rm -rf $(FILES_DIR)
+	rm -rf $(LOGS_DIR)
+	rm -rf $(NON_ACCESSIBLE_TESTFILES_DIR)
+	rm -rf $(ACCESSIBLE_TESTFILES_DIR)
 
 clean: cleanObjects cleanLogs cleanFiles
+
+mkdirs:
+	mkdir $(FILES_DIR)
+	mkdir $(LOGS_DIR)
+	mkdir $(NON_ACCESSIBLE_TESTFILES_DIR)
+	mkdir $(ACCESSIBLE_TESTFILES_DIR)
