@@ -13,12 +13,15 @@ DBUG = -g
 CCFLAGS =  -Wall -fPIC -shared
 
 
-TARGETS = mkdirs logger acmonitor test_aclog createTestingFiles
+TARGETS = logger mkdirs acmonitor test_aclog createTestingFiles fileCreator
 OBJFILES = utils.o
 LIBRARY = logger.so
 
 
 all: $(TARGETS)
+
+fileCreator: createFile.c $(OBJFILES)
+	$(CC) createFile.c -o createFile $(OBJFILES)
 
 logger: logger.c $(OBJFILES)
 	$(CC) $(CCFLAGS) -o logger.so logger.c -lcrypto -ldl $(OBJFILES)
@@ -83,6 +86,7 @@ cleanObjects:
 	rm -rf logger.so
 	rm -rf test_aclog
 	rm -rf acmonitor
+	rm -rf createFile
 	rm -rf *.o
 		
 cleanLogs: 
@@ -93,6 +97,8 @@ cleanFiles:
 	rm -rf $(LOGS_DIR)
 	rm -rf $(NON_ACCESSIBLE_TESTFILES_DIR)
 	rm -rf $(ACCESSIBLE_TESTFILES_DIR)
+	rm -f *.encrypt
+	rm -f *.txt
 
 clean: cleanObjects cleanLogs cleanFiles
 
