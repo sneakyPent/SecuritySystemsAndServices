@@ -1,6 +1,7 @@
 #ifndef _UTILS_H
 #define _UTILS_H
 
+#define _XOPEN_SOURCE 700
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +9,7 @@
 #include <unistd.h>
 #include <time.h>
 
+#define AC_MONITOR_MINUTES_LIMIT 20
 #define DELIM "·" /** The delimeter for log file line */
 #define BUF_LEN 256
 #define NON_PERMISSION_LIMIT 7 /** The files limit, defines the malicious user*/
@@ -203,7 +205,6 @@ void printUsers(userList *head, enum information printingInfo);
  */
 char **getCurrentDateAndTime();
 
-
 /**
  * @brief Get the date and time, X minutes ago. 
  * 
@@ -219,6 +220,16 @@ char **getDateTimeLimit(int limit);
  * 
  */
 void strigsToDatetime(char **given_dateTime, struct tm* timestamp );
+
+/**
+ * @brief Check if the given timestamp is later than a specific limit timestamp
+ * 
+ * @param given_dateTime  char** 2D array [2][BUF_LEN] char[0]=time char[1]=date
+ * @param limit  char** 2D array [2][BUF_LEN] char[0]=time char[1]=date
+ * 
+ * @return int 1 if later 0 if not
+ */
+int isDateTimeInLimit(char **given_dateTime, char **limit );
 
 
 #endif /* _UTILS_H */

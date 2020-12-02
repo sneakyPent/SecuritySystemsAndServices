@@ -341,3 +341,19 @@ void strigsToDatetime(char **given_dateTime, struct tm* timestamp )
     strptime(dt,"%d/%m/%Y %H:%M:%S", timestamp);
 }
 
+int isDateTimeInLimit(char **given_dateTime, char **limit ){
+
+    struct tm *gtm;
+    struct tm *ltm;
+    gtm = (struct tm *)malloc(sizeof(*gtm));
+    ltm = (struct tm *)malloc(sizeof(*ltm));
+    strigsToDatetime(given_dateTime, gtm);
+    strigsToDatetime(limit, ltm);
+    time_t givenDate=mktime(gtm);
+    time_t limitDate=mktime(ltm);
+
+    if(givenDate>=limitDate)
+        return 1;
+    else
+        return 0;
+}
