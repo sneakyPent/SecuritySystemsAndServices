@@ -56,11 +56,13 @@ void usage(void)
 		"\n"
 		"usage:\n"
 		"\t./acmonitor \n"
-		"Options:\n"
-		"-m, Prints malicious users\n"
-		"-i <filename>, Prints table of users that modified "
+		"\n\tOptions:\n"
+		"-m, \t\t \tPrints malicious users\n"
+		"-i <filename>,\t\tPrints table of users that modified "
 		"the file <filename> and the number of modifications\n"
-		"-h, Help message\n\n");
+		"-v <number of files>,\tPrints the total number of files created in the last 20 minute\n"
+		"-e, \t \t \tPrints all the files that were encrypted by the ransomware\n"
+		"-h, \t \t \tHelp message\n\n");
 
 	exit(1);
 }
