@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 		printf("Error opening log file \"%s\"\n", "./log");
 		return 1;
 	}
-	while ((ch = getopt(argc, argv, "hi:m")) != -1)
+	while ((ch = getopt(argc, argv, "hi:mv:e")) != -1)
 	{
 		switch (ch)
 		{
@@ -134,6 +134,13 @@ int main(int argc, char *argv[])
 			break;
 		case 'm':
 			list_unauthorized_accesses(log);
+			break;
+		case 'v':
+			break;
+		case 'e':
+			break;
+		case 'h':
+			usage();
 			break;
 		default:
 			usage();
