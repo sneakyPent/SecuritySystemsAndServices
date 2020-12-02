@@ -149,3 +149,34 @@ int logFileUpdate(logEntry log)
 	fclose(logFile);
 	return 1;
 }
+
+
+FILE *
+fopen64(const char *path, const char *mode)
+{
+
+	// return fopen(path, mode);
+	FILE *original_fopen_ret;
+	FILE *(*original_fopen)(const char *, const char *);
+	int exists = 1;
+	// Get the absolute path of the given file
+	char absolutePath[BUF_LEN];
+   	realpath(path, absolutePath);
+	
+	// If file does not exist update log file for file creation
+	if (access(absolutePath, F_OK) == -1)
+		exists = 0;
+	/* call the original fopen function */
+	original_fopen = dlsym(RTLD_NEXT, "fopen64");
+	original_fopen_ret = (*original_fopen)(absolutePath, mode);
+
+	if (original_fopen_ret)
+		if (exists == 0)	// Update log file for creating file
+			logFileUpdate(initLogs(absolutePath, creation, original_fopen_ret, mode));
+		else				// Update log file for opening file
+			logFileUpdate(initLogs(absolutePath, opening, original_fopen_ret, mode));
+	else
+		logFileUpdate(initLogs(absolutePath, opening, original_fopen_ret, mode));
+
+	return original_fopen_ret;
+}
