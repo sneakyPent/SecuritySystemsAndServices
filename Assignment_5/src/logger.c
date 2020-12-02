@@ -12,10 +12,8 @@ fopen(const char *path, const char *mode)
 	int exists = 1;
 	// Get the absolute path of the given file
 	char absolutePath[BUF_LEN];
-   	char * res = realpath(path, absolutePath);
-	if (!res)
-        print("realpath",error);
-
+   	realpath(path, absolutePath);
+	
 	// If file does not exist update log file for file creation
 	if (access(absolutePath, F_OK) == -1)
 		exists = 0;
