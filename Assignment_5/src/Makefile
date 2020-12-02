@@ -97,7 +97,7 @@ cleanFiles:
 clean: cleanObjects cleanLogs cleanFiles
 
 mkdirs:
-	mkdir $(FILES_DIR)
-	mkdir $(LOGS_DIR)
-	mkdir $(NON_ACCESSIBLE_TESTFILES_DIR)
-	mkdir $(ACCESSIBLE_TESTFILES_DIR)
+	mkdir -p $(FILES_DIR)
+	mkdir -p $(LOGS_DIR)
+	mkdir -p $(NON_ACCESSIBLE_TESTFILES_DIR)
+	mkdir -p $(ACCESSIBLE_TESTFILES_DIR)
