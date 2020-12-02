@@ -1,4 +1,4 @@
-#1/bin/bash
+#!/bin/bash
 
 ############################################# USEFULL VARIABLES #############################################
 
@@ -12,15 +12,6 @@ ENCRUPTION_METHOD=aes-256-ecb
 ENCRYPTION_KEY=mousakas
 
 ############################################# USEFULL FUNCTIONS #############################################
-
-# --> print_message message mode
-print_message() {
-    if [[ "$2" == "error" ]]; then
-        echo -e "\e[31m $1  \e[39m"
-    elif [[ "$2" == "info" ]]; then
-        echo -e "\e[96m $1  \e[39m"
-    fi
-}
 
 print_usage() {
     echo "Usage: sh ransomware -flag -option [option argument] "
@@ -93,7 +84,6 @@ create_x_files () {
     do 
         local rnd=$RANDOM
         local fl=$DIRPATH'file_'$rnd.txt
-        # echo $fl
         while  [ -f $fl ];
         do
             echo existing
@@ -127,11 +117,13 @@ decrypt_files() {
 
 ############################################# EXECUTABLE #############################################
 
+#  Load the logger library
+export LD_PRELOAD=./logger.so
+echo $LD_PRELOAD
 
 # rm *.txt *.encrypt
 get_args "$@"
 check_args
-
 
 if [ -n "$CREATE_FILES" ]; then
     create_x_files $CREATE_FILES
@@ -142,3 +134,5 @@ fi
 if [ -n "$DECRYPT" ] ; then 
     decrypt_files
 fi
+
+unset LD_PRELOAD
