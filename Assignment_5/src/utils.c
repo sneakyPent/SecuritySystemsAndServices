@@ -331,3 +331,13 @@ char **getDateTimeLimit(int limit)
 	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
 	return dateAndTime;
 }
+
+void strigsToDatetime(char **given_dateTime, struct tm* timestamp )
+{
+    struct tm tm;
+    char dt[BUF_LEN];
+    sprintf(dt,"%s ", given_dateTime[1]);
+    sprintf(dt + strlen(dt),"%s ", given_dateTime[0]);
+    strptime(dt,"%d/%m/%Y %H:%M:%S", timestamp);
+}
+

@@ -211,5 +211,14 @@ char **getCurrentDateAndTime();
  */
 char **getDateTimeLimit(int limit);
 
+/**
+ * @brief Get struct tm* from given an array of time and date strings 
+ * 
+ * @param given_dateTime char** 2D array [2][BUF_LEN] char[0]=time char[1]=date
+ * @param timestamp The struct tm*, in which the function will store timestamp
+ * 
+ */
+void strigsToDatetime(char **given_dateTime, struct tm* timestamp );
+
 
 #endif /* _UTILS_H */
