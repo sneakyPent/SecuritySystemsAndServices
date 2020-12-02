@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <time.h>
 
 #define DELIM ":" /** The delimeter for log file line */
 #define BUF_LEN 256
@@ -194,5 +195,13 @@ void printFiles(filesList *head);
  * - "all" for the user, his modifications on specific file and his non permitted accesses
  */
 void printUsers(userList *head, enum information printingInfo);
+
+/**
+* @brief Get the Current Date And Time
+ * 
+ * @return char** 2D array [2][BUF_LEN] char[0]=time char[1]=date
+ */
+char **getCurrentDateAndTime();
+
 
 #endif /* _UTILS_H */

@@ -1,7 +1,6 @@
 #ifndef _LOGGER_H
 #define _LOGGER_H
 
-#include <time.h>
 #include <stdio.h>
 #include <dlfcn.h>
 #include <stdlib.h>
@@ -46,13 +45,6 @@ typedef struct logEntry
 	int isActionDenied;			   /** Reports if the action was denied to the user with no access privileges */
 	char fileFingerprint[BUF_LEN]; /** ​ The digital fingerprint of the file the time the event occurred. */
 } logEntry;
-
-/**
-* @brief Get the Current Date And Time
- * 
- * @return char** 2D array [2][BUF_LEN] char[0]=time char[1]=date
- */
-char **getCurrentDateAndTime();
 
 /**
  * @brief Init the entry logs for current event.

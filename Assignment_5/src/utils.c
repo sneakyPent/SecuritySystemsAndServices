@@ -290,3 +290,25 @@ void printUsers(userList *head, enum information printingInfo)
         break;
     }
 }
+
+
+char **getCurrentDateAndTime()
+{
+	time_t current = time(NULL); /* Gets GMT time as a time_t. */
+	if (current == -1)
+		print("The time() function failed", error);
+	struct tm *pLocal = localtime(&current); /* Converts to local time in broken down format. */
+	if (pLocal == NULL)
+		print("The localtime() function failed", error);
+	char **dateAndTime;
+
+	dateAndTime = malloc(sizeof(char *) * 2);
+
+	for (int i = 0; i < 2; i++)
+		dateAndTime[i] = malloc(BUF_LEN);
+
+	strftime(dateAndTime[0], BUF_LEN, "%T", pLocal);
+	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
+	return dateAndTime;
+}
+
