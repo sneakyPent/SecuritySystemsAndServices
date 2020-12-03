@@ -231,13 +231,17 @@ userList *addUser(userList *head, int user, int modification, int notPermission,
 void printFiles(filesList *head)
 {
     filesList *currentFile = head;
+    printf("------------------------------------------------------FILES-------------------------------------------------------\n");
+    printf("| \t\t\t\t\t\t\t\t\t\t\t\t\t\t |\n");
     while (currentFile != NULL)
     {
         if (currentFile == NULL)
             print("error", info);
-        printf("|\t filename=%s \t |\n", currentFile->fileName);
+        printf("|\t filename: %s  \t\t |\n", currentFile->fileName);
         currentFile = currentFile->nextFile;
     }
+    printf("| \t\t\t\t\t\t\t\t\t\t\t\t\t\t |\n");
+    printf("------------------------------------------------------------------------------------------------------------------\n");
 }
 
 void printUsers(userList *head, enum information printingInfo)

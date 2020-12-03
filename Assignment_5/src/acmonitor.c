@@ -138,6 +138,24 @@ void getNumberOfFilesLast20(FILE *log, int limit)
 		print("Normal behavior.", info);
 }
 
+void printEncryptedFiles(FILE *log)
+{
+	filesList *files=NULL;
+	logEntry logt;
+	int filesInTime = 0;
+	while (1)
+	{
+		logt = getNextLogEntry(log);
+		if (logt.UID == -1)
+			break;
+		char *filename = logt.filename;
+
+		if (logt.access == creation && checkFileExtension(filename, "encrypt"))
+			files = addFile(files, removeExtension(filename, "encrypt"));
+	};
+	printFiles(files);
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -191,6 +209,7 @@ int main(int argc, char *argv[])
 				printf("Error opening log file \"%s\"\n", "./log");
 				return 1;
 			}
+			printEncryptedFiles(log);
 			break;
 		case 'h':
 			usage();
