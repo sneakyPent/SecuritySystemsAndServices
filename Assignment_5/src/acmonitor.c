@@ -158,9 +158,9 @@ void getNumberOfFilesLast20(FILE *log, int limit)
 		}
 	};
 	if (filesInTime >= limit)
-		print("Suspicious behavior observed.", info);
+		printf("Suspicious behavior observed. %d files created in the last 20 minutes.", filesInTime);
 	else
-		print("Normal behavior.", info);
+		printf("Normal behavior. %d files created in the last 20 minutes.", filesInTime);
 }
 
 void printEncryptedFiles(FILE *log)
