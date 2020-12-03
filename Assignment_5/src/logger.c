@@ -12,8 +12,8 @@ fopen(const char *path, const char *mode)
 	int exists = 1;
 	// Get the absolute path of the given file
 	char absolutePath[BUF_LEN];
-   	realpath(path, absolutePath);
-	
+	realpath(path, absolutePath);
+
 	// If file does not exist update log file for file creation
 	if (access(absolutePath, F_OK) == -1)
 		exists = 0;
@@ -22,9 +22,9 @@ fopen(const char *path, const char *mode)
 	original_fopen_ret = (*original_fopen)(absolutePath, mode);
 
 	if (original_fopen_ret)
-		if (exists == 0)	// Update log file for creating file
+		if (exists == 0) // Update log file for creating file
 			logFileUpdate(initLogs(absolutePath, creation, original_fopen_ret, mode));
-		else				// Update log file for opening file
+		else // Update log file for opening file
 			logFileUpdate(initLogs(absolutePath, opening, original_fopen_ret, mode));
 	else
 		logFileUpdate(initLogs(absolutePath, opening, original_fopen_ret, mode));
@@ -60,8 +60,8 @@ fopen64(const char *path, const char *mode)
 	int exists = 1;
 	// Get the absolute path of the given file
 	char absolutePath[BUF_LEN];
-   	realpath(path, absolutePath);
-	
+	realpath(path, absolutePath);
+
 	// If file does not exist update log file for file creation
 	if (access(absolutePath, F_OK) == -1)
 		exists = 0;
@@ -70,9 +70,9 @@ fopen64(const char *path, const char *mode)
 	original_fopen_ret = (*original_fopen)(absolutePath, mode);
 
 	if (original_fopen_ret)
-		if (exists == 0)	// Update log file for creating file
+		if (exists == 0) // Update log file for creating file
 			logFileUpdate(initLogs(absolutePath, creation, original_fopen_ret, mode));
-		else				// Update log file for opening file
+		else // Update log file for opening file
 			logFileUpdate(initLogs(absolutePath, opening, original_fopen_ret, mode));
 	else
 		logFileUpdate(initLogs(absolutePath, opening, original_fopen_ret, mode));
@@ -84,7 +84,7 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const cha
 {
 
 	FILE *(*original_fopen)(const char *, const char *);
-	original_fopen = dlsym(RTLD_NEXT,"fopen");
+	original_fopen = dlsym(RTLD_NEXT, "fopen");
 	char **dateAndTime = getCurrentDateAndTime();
 	logEntry le;
 
@@ -94,17 +94,17 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const cha
 	strcpy(le.date, dateAndTime[1]);
 	le.access = aType;
 	le.isActionDenied = getAccess(path, mode);
-	
+
 	// get MD5 fingerprint
-	if (getAccess(path, "r") == 0){
+	if (getAccess(path, "r") == 0)
+	{
 		char *filename;
 		filename = getFilesName(file);
 		fflush(file);
 
-		FILE *fwrite_text = original_fopen(filename,"r");
-		
+		FILE *fwrite_text = original_fopen(filename, "r");
 		if (fwrite_text)
-		{	
+		{
 			long lSize;
 			fseek(fwrite_text, 0L, SEEK_END);
 			lSize = ftell(fwrite_text);
@@ -112,7 +112,7 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const cha
 			unsigned char *retext = NULL;
 			retext = malloc(sizeof(char) * lSize);
 
-			long readlength = fread(retext, sizeof(char), lSize , fwrite_text);
+			long readlength = fread(retext, sizeof(char), lSize, fwrite_text);
 			unsigned char fingerprint[MD5_DIGEST_LENGTH];
 			MD5(retext, readlength, fingerprint);
 			strcpy(le.fileFingerprint, stringToHex(fingerprint, sizeof(fingerprint)));
@@ -123,7 +123,7 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const cha
 	}
 	else
 		strcpy(le.fileFingerprint, "00000000000000000000000000000000");
-		
+
 	return le;
 }
 
