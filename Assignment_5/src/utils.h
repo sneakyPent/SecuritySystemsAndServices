@@ -231,5 +231,13 @@ void strigsToDatetime(char **given_dateTime, struct tm* timestamp );
  */
 int isDateTimeInLimit(char **given_dateTime, char **limit );
 
+/**
+ * @brief Check whether the given File has the given extension or not
+ * 
+ * @param fileName 
+ * @param extension 
+ * @return int 
+ */
+int checkFileExtension(char * fileName, char * extension);
 
 #endif /* _UTILS_H */

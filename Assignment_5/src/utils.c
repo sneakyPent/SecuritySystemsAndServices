@@ -357,3 +357,14 @@ int isDateTimeInLimit(char **given_dateTime, char **limit ){
     else
         return 0;
 }
+
+int checkFileExtension(char *fileName, char *extension)
+{
+    if (strlen(fileName) > strlen(extension) + 2)
+    {
+        char ext[BUF_LEN];
+        sprintf(ext, ".%s", extension);
+        return strcmp(fileName + strlen(fileName) - strlen(ext), ext) == 0 ? 1 : 0;
+    }
+    return 0;
+}
