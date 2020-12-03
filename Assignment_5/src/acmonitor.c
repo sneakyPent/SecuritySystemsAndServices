@@ -15,11 +15,9 @@ int isGivenFile(char *givenFile, char *currentFile)
 {
 	// Get the absolute path of the given file and compare it with the log filename
 	char absolutePath[BUF_LEN];
-   	char * res = realpath(givenFile, absolutePath);
-	if (!res) 
-        print("realpath",error);
-	// print(currentFile,info);
-	// print(absolutePath, info);
+	char *res = realpath(givenFile, absolutePath);
+	if (!res)
+		print("realpath", error);
 	return strcmp(currentFile, absolutePath) == 0 ? 1 : 0;
 }
 
