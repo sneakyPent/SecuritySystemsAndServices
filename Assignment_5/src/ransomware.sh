@@ -39,16 +39,10 @@ check_args(){
     # checking if directory defined, if not print usage
     if ! [ -n "$dir" ] ; then
 	    print_usage
-    # else
-    #     echo "direction = $dir"
     fi
     # checking if any of the available actions defined, if not print usage
     if ! [ -n "$cFiles" ] && ! [ -n "$eFiles" ] && ! [ -n "$dec" ] && ! [ -n "$enc" ] ; then 
 		print_usage
-    # else
-    #     echo "Number of encrypted files = $eFiles"
-    #     echo "Number of created files = $cFiles"
-    #     echo "DECRYPT = $dec" 
     fi
 }
 
