@@ -125,8 +125,7 @@ encrypt_all_files () {
 }
 
 decrypt_files() {
-    local decrypted_files=()
-    find $DIRPATH -name "*.encrypt" -print0 > tmpfile
+    find $DIRPATH -name "*.encrypt" -not -type d -print0 > tmpfile
     while IFS=  read -r -d $'\0';
     do  
         OPENSSL_INPUT_FILE=$REPLY
