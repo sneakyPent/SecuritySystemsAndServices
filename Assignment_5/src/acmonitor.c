@@ -1,4 +1,4 @@
-#include <time.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -110,12 +110,42 @@ void list_file_modifications(FILE *log, char *file_to_scan)
 	printUsers(users, modifies);
 }
 
+void getNumberOfFilesLast20(FILE *log, int limit)
+{
+	logEntry logt;
+	int filesInTime = 0;
+	while (1)
+	{
+		logt = getNextLogEntry(log);
+		if (logt.UID == -1)
+			break;
+		char *filename = logt.filename;
+
+		if (logt.access == creation && !checkFileExtension(filename, "encrypt"))
+		{
+			char **dateAndTime = malloc(sizeof(char *) * 2);
+
+			for (int i = 0; i < 2; i++)
+				dateAndTime[i] = malloc(BUF_LEN);
+
+			strcpy(dateAndTime[0], logt.timestamp);
+			strcpy(dateAndTime[1], logt.date);
+			if (isDateTimeInLimit(dateAndTime, getDateTimeLimit(AC_MONITOR_MINUTES_LIMIT)))
+				filesInTime++;
+		}
+	};
+	if (filesInTime >= limit)
+		print("Suspicious behavior observed.", info);
+	else
+		print("Normal behavior.", info);
+}
+
 int main(int argc, char *argv[])
 {
 
 	int ch;
 	FILE *log;
-
+	int limit;
 	if (argc < 2)
 		usage();
 
@@ -142,12 +172,19 @@ int main(int argc, char *argv[])
 			list_unauthorized_accesses(log);
 			break;
 		case 'v':
+			limit = atoi(optarg);
+			if (limit == 0)
+			{
+				printf("Not accepted argument.");
+				usage();
+			}
 			log = fopen(LOG_FILE_PATH, "r");
 			if (log == NULL)
 			{
 				printf("Error opening log file \"%s\"\n", "./log");
 				return 1;
 			}
+			getNumberOfFilesLast20(log, limit);
 			break;
 		case 'e':
 			log = fopen(LOG_FILE_PATH, "r");
