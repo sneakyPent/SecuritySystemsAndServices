@@ -8,6 +8,7 @@ CREATE_FILES=
 ENCRYPT_FILES=
 DECRYPT=
 ENCRYPT=
+PRELOADING=
 CREATED_FILES_ARRAY=()
 ENCRUPTION_METHOD=aes-256-ecb
 ENCRYPTION_KEY=mousakas
@@ -21,10 +22,11 @@ print_usage() {
     echo "    p     The action's directory"
     echo "    c     The number of files the user wants to create"
     echo "    e     The number of files the user wants to create and encrypt"
-    echo "    n     Encrypt all the files (not .encrypt) of the given directory "
     echo ""
     echo "flag:"
+    echo "    l     Loads the logger.so library "
     echo "    h     Prints the help menu"
+    echo "    n     Encrypt all the files (not .encrypt) of the given directory "
     echo "    d     Decrypts all the .encrypt files of the given directory"
     exit 1
 }
@@ -47,7 +49,7 @@ check_args(){
 }
 
 get_args(){
-    while getopts "p:e:c:dnh" opt; do
+    while getopts "p:e:c:dnhl" opt; do
         case $opt in
             p)
                 DIRPATH=$OPTARG/
@@ -63,6 +65,9 @@ get_args(){
                 ;;
             n)
                 ENCRYPT=1
+                ;;
+            l)
+                PRELOADING==1
                 ;;
             h) 
                 print_usage
@@ -131,14 +136,15 @@ decrypt_files() {
 
 ############################################# EXECUTABLE #############################################
 
-#  Load the logger library
-export LD_PRELOAD=./logger.so
-echo $LD_PRELOAD
 
 # rm *.txt *.encrypt
 get_args "$@"
 check_args
 
+if [ -n "$PRELOADING" ]; then
+    export LD_PRELOAD=./logger.so
+fi
+echo $LD_PRELOAD
 if [ -n "$CREATE_FILES" ]; then
     create_x_files $CREATE_FILES
 fi
@@ -151,5 +157,7 @@ fi
 if [ -n "$ENCRYPT" ] ; then 
     encrypt_all_files
 fi
+if [ -n "$PRELOADING" ]; then
+    unset LD_PRELOAD
+fi
 
-unset LD_PRELOAD
