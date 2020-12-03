@@ -372,3 +372,14 @@ int checkFileExtension(char *fileName, char *extension)
     }
     return 0;
 }
+
+char *removeExtension(char *fileName, char *extension)
+{
+    if (checkFileExtension(fileName, extension))
+    {
+        char *tmpfl = malloc((sizeof(char) * BUF_LEN));
+        sprintf(tmpfl, "%.*s", strlen(fileName) - strlen(extension) - 1, fileName);
+        return tmpfl;
+    }
+    return fileName;
+}

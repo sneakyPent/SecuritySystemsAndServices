@@ -219,7 +219,7 @@ char **getDateTimeLimit(int limit);
  * @param timestamp The struct tm*, in which the function will store timestamp
  * 
  */
-void strigsToDatetime(char **given_dateTime, struct tm* timestamp );
+void strigsToDatetime(char **given_dateTime, struct tm *timestamp);
 
 /**
  * @brief Check if the given timestamp is later than a specific limit timestamp
@@ -229,7 +229,7 @@ void strigsToDatetime(char **given_dateTime, struct tm* timestamp );
  * 
  * @return int 1 if later 0 if not
  */
-int isDateTimeInLimit(char **given_dateTime, char **limit );
+int isDateTimeInLimit(char **given_dateTime, char **limit);
 
 /**
  * @brief Check whether the given File has the given extension or not
@@ -238,6 +238,15 @@ int isDateTimeInLimit(char **given_dateTime, char **limit );
  * @param extension 
  * @return int 
  */
-int checkFileExtension(char * fileName, char * extension);
+int checkFileExtension(char *fileName, char *extension);
+
+/**
+ * @brief Get the filename without the extension suffix
+ * 
+ * @param fileName 
+ * @param extension 
+ * @return char* 
+ */
+char *removeExtension(char *fileName, char *extension);
 
 #endif /* _UTILS_H */
