@@ -138,19 +138,9 @@ int logFileUpdate(logEntry log)
 	/* call the original fwrite function */
 	original_fwrite = dlsym(RTLD_NEXT, "fwrite");
 
-	char logMessage[4096];
+	char *logMessage;
 
-	sprintf(logMessage,
-			"\n"
-			"UID· %d\n"
-			"File name· %s\n"
-			"Date· %s\n"
-			"Timestamp· %s\n"
-			"Access t​ype· %d \n"
-			"Action denied· %d\n"
-			"File fingerprint· %s \n"
-			"\n------------------------------------------------------------------------\n",
-			log.UID, log.filename, log.date, log.timestamp, log.access, log.isActionDenied, log.fileFingerprint);
+	logMessage = getLogMessage(log);
 
 	FILE *logFile = original_fopen(LOG_FILE_PATH, "a");
 	if (logFile == NULL)
@@ -168,5 +158,35 @@ int logFileUpdate(logEntry log)
 	return 1;
 }
 
-
-
+char *getLogMessage(logEntry log)
+{
+	if (ONE_LINE_LOGS == 0)
+	{
+		char *tmpfl = malloc((sizeof(char) * 20 * BUF_LEN));
+		sprintf(tmpfl,
+				"\n"
+				"UID· %d\n"
+				"File name· %s\n"
+				"Date· %s\n"
+				"Timestamp· %s\n"
+				"Access t​ype· %d \n"
+				"Action denied· %d\n"
+				"File fingerprint· %s \n"
+				"\n------------------------------------------------------------------------\n",
+				log.UID, log.filename, log.date, log.timestamp, log.access, log.isActionDenied, log.fileFingerprint);
+		return tmpfl;
+		return NULL;
+	}
+	else if (ONE_LINE_LOGS)
+	{
+		char *tmpfl = malloc((sizeof(char) * 20 * BUF_LEN));
+		sprintf(tmpfl,
+				"%d\t%s\t%s\t%s\t%d\t%d\t%s\n",
+				log.UID, log.filename, log.date, log.timestamp, log.access, log.isActionDenied, log.fileFingerprint);
+		return tmpfl;
+	}
+	else
+	{
+		return NULL;
+	}
+}

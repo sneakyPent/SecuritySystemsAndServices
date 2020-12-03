@@ -10,6 +10,7 @@
 #include <openssl/md5.h>
 #include "utils.h"
 
+#define ONE_LINE_LOGS 1
 #define LOG_FILE_PATH "../logs/file_logging.log"
 
 /**
@@ -61,4 +62,13 @@ logEntry initLogs(const char *path, enum AccessType aType, FILE *file, const cha
  * @return int 1 for success 0 for error
  */
 int logFileUpdate(logEntry);
+
+/**
+ * @brief Creates and returns the log message depending on the predefined ONE_LINE_LOGS
+ * 
+ * @param log The logEntry want to write on file
+ * @return char* The logentry in string format 
+ */
+char * getLogMessage(logEntry log);
+
 #endif /* _LOGGER_H */
