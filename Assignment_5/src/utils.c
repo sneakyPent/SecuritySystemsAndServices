@@ -291,57 +291,57 @@ void printUsers(userList *head, enum information printingInfo)
     }
 }
 
-
 char **getCurrentDateAndTime()
 {
-	time_t current = time(NULL); /* Gets GMT time as a time_t. */
-	if (current == -1)
-		print("The time() function failed", error);
-	struct tm *pLocal = localtime(&current); /* Converts to local time in broken down format. */
-	if (pLocal == NULL)
-		print("The localtime() function failed", error);
-	char **dateAndTime;
+    time_t current = time(NULL); /* Gets GMT time as a time_t. */
+    if (current == -1)
+        print("The time() function failed", error);
+    struct tm *pLocal = localtime(&current); /* Converts to local time in broken down format. */
+    if (pLocal == NULL)
+        print("The localtime() function failed", error);
+    char **dateAndTime;
 
-	dateAndTime = malloc(sizeof(char *) * 2);
+    dateAndTime = malloc(sizeof(char *) * 2);
 
-	for (int i = 0; i < 2; i++)
-		dateAndTime[i] = malloc(BUF_LEN);
+    for (int i = 0; i < 2; i++)
+        dateAndTime[i] = malloc(BUF_LEN);
 
-	strftime(dateAndTime[0], BUF_LEN, "%T", pLocal);
-	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
-	return dateAndTime;
+    strftime(dateAndTime[0], BUF_LEN, "%T", pLocal);
+    strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
+    return dateAndTime;
 }
 
 char **getDateTimeLimit(int limit)
 {
-	time_t current = time(NULL)- limit*60; /* Gets GMT time as a time_t. */
-	if (current == -1)
-		print("The time() function failed", error);
-	struct tm *pLocal = localtime(&current); /* Converts to local time in broken down format. */
-	if (pLocal == NULL)
-		print("The localtime() function failed", error);
-	char **dateAndTime;
+    time_t current = time(NULL) - limit * 60; /* Gets GMT time as a time_t. */
+    if (current == -1)
+        print("The time() function failed", error);
+    struct tm *pLocal = localtime(&current); /* Converts to local time in broken down format. */
+    if (pLocal == NULL)
+        print("The localtime() function failed", error);
+    char **dateAndTime;
 
-	dateAndTime = malloc(sizeof(char *) * 2);
+    dateAndTime = malloc(sizeof(char *) * 2);
 
-	for (int i = 0; i < 2; i++)
-		dateAndTime[i] = malloc(BUF_LEN);
+    for (int i = 0; i < 2; i++)
+        dateAndTime[i] = malloc(BUF_LEN);
 
-	strftime(dateAndTime[0], BUF_LEN, "%T", pLocal);
-	strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
-	return dateAndTime;
+    strftime(dateAndTime[0], BUF_LEN, "%T", pLocal);
+    strftime(dateAndTime[1], BUF_LEN, "%d/%m/%Y", pLocal);
+    return dateAndTime;
 }
 
-void strigsToDatetime(char **given_dateTime, struct tm* timestamp )
+void strigsToDatetime(char **given_dateTime, struct tm *timestamp)
 {
     struct tm tm;
     char dt[BUF_LEN];
-    sprintf(dt,"%s ", given_dateTime[1]);
-    sprintf(dt + strlen(dt),"%s ", given_dateTime[0]);
-    strptime(dt,"%d/%m/%Y %H:%M:%S", timestamp);
+    sprintf(dt, "%s ", given_dateTime[1]);
+    sprintf(dt + strlen(dt), "%s ", given_dateTime[0]);
+    strptime(dt, "%d/%m/%Y %H:%M:%S", timestamp);
 }
 
-int isDateTimeInLimit(char **given_dateTime, char **limit ){
+int isDateTimeInLimit(char **given_dateTime, char **limit)
+{
 
     struct tm *gtm;
     struct tm *ltm;
@@ -349,10 +349,10 @@ int isDateTimeInLimit(char **given_dateTime, char **limit ){
     ltm = (struct tm *)malloc(sizeof(*ltm));
     strigsToDatetime(given_dateTime, gtm);
     strigsToDatetime(limit, ltm);
-    time_t givenDate=mktime(gtm);
-    time_t limitDate=mktime(ltm);
+    time_t givenDate = mktime(gtm);
+    time_t limitDate = mktime(ltm);
 
-    if(givenDate>=limitDate)
+    if (givenDate >= limitDate)
         return 1;
     else
         return 0;
