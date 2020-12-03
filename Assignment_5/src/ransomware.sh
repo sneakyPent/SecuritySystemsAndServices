@@ -92,7 +92,6 @@ create_x_files () {
         local fl=$DIRPATH'file_'$rnd.txt
         while  [ -f $fl ];
         do
-            echo existing
             fl=$DIRPATH'file_'$RANDOM.txt
         done
         ./createFile -p $fl -m "$NEW_FILES_INPUT$rnd."
