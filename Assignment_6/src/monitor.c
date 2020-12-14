@@ -110,31 +110,40 @@ networkFlowList *pushFlow(networkFlowList *head, networkFlow *newFlow)
     struct tcphdr *tcph = (struct tcphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
     int header_size = sizeof(struct ethhdr) + iphdrlen + tcph->doff * 4;
 
-    printf("\n");
-    printf("|TCP Header\n");
-    printf("-> |-Source Port      : %u\n", ntohs(tcph->source));
-    printf("   |-Destination Port : %u\n", ntohs(tcph->dest));
-    printf("   |-Header Length      : %d BYTES\n", (unsigned int)tcph->doff * 4);
-    printf("   |-Payload Length     : %d BYTES\n", size - header_size);
-    printf("\n###########################################################\n\n");
+void live_capture(const char *device)
+{
+
+    char error_buffer[PCAP_ERRBUF_SIZE]; /** Error buffer */
+    pcap_t *handle;                      /** The device handle from where we want to capture */
+    int packet_count_limit = 0;          /** The number of packets we want to capture ( 0 for unlimited packets) */
+    int timeout_limit = 1 * 1000;        /** In milliseconds */
+
+    // use pcap_open_live for opening device for receiving packets
+    handle = pcap_open_live(device, BUFSIZ, packet_count_limit, timeout_limit, error_buffer);
+
+    // if handle is Null then error happend and exit program
+    if (handle == NULL)
+        print(error_buffer, error);
+
+    // Use pcap_loop to get packets and handle packets with packetHandler function
+    pcap_loop(handle, packet_count_limit, packetHandler, NULL);
 }
 
-
-
-void decode_UDP(const u_char *packet, int size)
+void offline_capture(const char *fname)
 {
-    unsigned short iphdrlen;
-    struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
-    iphdrlen = iph->ihl * 4;
-    struct udphdr *udph = (struct udphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
-    int header_size = sizeof(struct ethhdr) + iphdrlen + sizeof udph;
+    char error_buffer[PCAP_ERRBUF_SIZE]; /** Error buffer */
+    pcap_t *handle;                      /** The device handle from where we want to capture */
+    int packet_count_limit = 0;          /** The number of packets we want to capture ( 0 for unlimited packets) */
 
-    printf("\n|UDP Header\n");
-    printf("-> |-Source Port      : %d\n", ntohs(udph->source));
-    printf("   |-Destination Port : %d\n", ntohs(udph->dest));
-    printf("   |-Header Length    : %d\n", ntohs(udph->len));
-    printf("   |-Payload Length   : %d BYTES\n", size - header_size);
-    printf("\n###########################################################\n\n");
+    // use pcap_open_offline for receiving packets form pcap file
+    handle = pcap_open_offline(fname, error_buffer);
+
+    // if handle is Null then error happend and exit program
+    if (handle == NULL)
+        print(error_buffer, error);
+
+    /* Our function to output some info */
+    pcap_loop(handle, packet_count_limit, packetHandler, NULL);
 }
 
 void my_packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
