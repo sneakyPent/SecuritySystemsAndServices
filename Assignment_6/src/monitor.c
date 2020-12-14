@@ -14,6 +14,8 @@ void usage(void)
     exit(1);
 }
 
+int tcpPackets = 0, udpPackets = 0, tcpBytes = 0, udpBytes = 0, restPackets = 0;
+
 int main(int argc, char *argv[])
 {
     signal(SIGINT, handle_sigint);
@@ -130,6 +132,15 @@ void my_packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_c
         restPackets++;
         break;
     }
+}
+
+void printStatistics(){
+    printf("\n\n");
+    printf("Total number of packets received:  %d\n", restPackets + udpPackets + tcpPackets);
+    printf("Total number of TCP packets received: %d\n", tcpPackets);
+    printf("Total number of UDP packets received: %d\n", udpPackets);
+    printf("Total bytes of TCP packets received : %d\n", tcpBytes);
+    printf("Total bytes of UDP packets received : %d\n", udpBytes);
 }
 
 
