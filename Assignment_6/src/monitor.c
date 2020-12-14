@@ -179,25 +179,28 @@ void handle_sigint(int sig)
 }
 
 
-void decode_TCP(const u_char *packet, int packetSize, networkFlow *newFlow, packetInfo *pInfo)
+void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pInfo)
 {
-    unsigned short iphdrlen;
+    struct ethhdr *eth = (struct ethhdr *)packet;
+    // get the ip header from the packet
+    struct iphdr *ip_header = (struct iphdr *)(packet + sizeof(struct ethhdr));
+   
+    // create 2 sockaddr_in to get destination and source addresses
+    struct sockaddr_in source, dest;
+    memset(&source, 0, sizeof(source));
+    memset(&dest, 0, sizeof(dest));
+    source.sin_addr.s_addr = ip_header->saddr;
+    dest.sin_addr.s_addr = ip_header->daddr;
 
-    struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
-    iphdrlen = iph->ihl * 4;
-    struct tcphdr *tcph = (struct tcphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
-    int otherHeadersSize = sizeof(struct ethhdr) + iphdrlen + tcph->doff * 4;
-
-    // add info to packet Info
-    printf("------- %u\n", tcph->th_seq);
-    printf("------- %u\n", tcph->th_ack);
-    pInfo->sourcePort = ntohs(tcph->source);
-    pInfo->destinationPort = ntohs(tcph->dest);
-    pInfo->headerLenght = (unsigned int)tcph->doff * 4;
-    pInfo->payloadLenght = packetSize - otherHeadersSize;
+    char *prt = ((unsigned int)ip_header->protocol) == 6 ? "TCP" : "UDP";
+    
+    strcpy(pInfo->protocol, prt);
+    strcpy(pInfo->sourceAddr, inet_ntoa(source.sin_addr));
+    strcpy(pInfo->destinationAddr, inet_ntoa(dest.sin_addr));
     // add info to network flow
-    newFlow->destinationPort = ntohs(tcph->dest);
-    newFlow->sourcePort = ntohs(tcph->source);
+    newFlow->protocol = ip_header->protocol;
+    strcpy(newFlow->sourceAddr, inet_ntoa(source.sin_addr));
+    strcpy(newFlow->destinationAddr, inet_ntoa(dest.sin_addr));
 }
 
 void live_capture(const char *device)
