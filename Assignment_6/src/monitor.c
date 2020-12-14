@@ -49,6 +49,25 @@ int main(int argc, char *argv[])
 }
 
 
+void decode_TCP(const u_char *packet, int size)
+{
+    unsigned short iphdrlen;
+
+    struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
+    iphdrlen = iph->ihl * 4;
+    struct tcphdr *tcph = (struct tcphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
+    int header_size = sizeof(struct ethhdr) + iphdrlen + tcph->doff * 4;
+
+    printf("\n");
+    printf("|TCP Header\n");
+    printf("-> |-Source Port      : %u\n", ntohs(tcph->source));
+    printf("   |-Destination Port : %u\n", ntohs(tcph->dest));
+    printf("   |-Header Length      : %d BYTES\n", (unsigned int)tcph->doff * 4);
+    printf("   |-Payload Length     : %d BYTES\n", size - header_size);
+    printf("\n###########################################################\n\n");
+}
+
+
 
 void decode_UDP(const u_char *packet, int size)
 {
