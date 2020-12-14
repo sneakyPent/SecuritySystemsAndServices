@@ -137,30 +137,42 @@ void decode_UDP(const u_char *packet, int size)
     printf("\n###########################################################\n\n");
 }
 
-void my_packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
+void packetHandler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
 {
+    // packet layers --  ethernet Header -> ip Header -> TCP/UCP Header ->data
     int size = header->len;
-    //Get the IP Header part of this packet , excluding the ethernet header
+
     struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
-    switch (iph->protocol) //Check the Protocol and do accordingly...
-    {
-    case 6: //TCP Protocol
-        tcpPackets++;
-        tcpBytes += size;
-        decode_ip_header(packet, size);
-        decode_TCP(packet, size);
-        break;
-    case 17: //UDP Protocol
-        udpPackets++;
-        udpBytes += size;
-        decode_ip_header(packet, size);
-        decode_UDP(packet, size);
-        break;
-    default: //Every other protocol apart from tcp udp
-        restPackets++;
-        break;
+    if (iph->version == 4){
+        switch (iph->protocol)
+        {
+        case 6: //TCP Protocol
+            // print_ethernet_header(packet, size);
+            tcpPackets++;
+            tcpBytes += size;
+            newFlow = malloc(sizeof(networkFlow));
+            pInfo = malloc(sizeof(packetInfo));
+            decode_ip_header(packet, newFlow, pInfo);
+            decode_TCP(packet, size, newFlow, pInfo);
+            TCPList = pushFlow(TCPList, newFlow);
+            printPacketInfo(pInfo);
+            break;
+        case 17: //UDP Protocol
+            // print_ethernet_header(packet, size);
+            udpPackets++;
+            udpBytes += size;
+            newFlow = malloc(sizeof(networkFlow));
+            pInfo = malloc(sizeof(packetInfo));
+            decode_ip_header(packet, newFlow, pInfo);
+            decode_UDP(packet, size, newFlow, pInfo);
+            UDPList = pushFlow(UDPList, newFlow);
+            printPacketInfo(pInfo);
+            break;
+        default: //Every other protocol apart from tcp udp
+            restPackets++;
+            break;
+        }
     }
-}
 
 void printStatistics()
 {
