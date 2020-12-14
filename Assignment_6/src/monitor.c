@@ -70,9 +70,40 @@ void decode_ip_header(const u_char *packet, int size)
     printf("   |-Destination IP     : %s\n", inet_ntoa(dest.sin_addr));
 }
 
-void decode_TCP(const u_char *packet, int size)
+networkFlowList *pushFlow(networkFlowList *head, networkFlow *newFlow)
 {
-    unsigned short iphdrlen;
+    networkFlowList *list = head;
+    networkFlowLinkedList *currentFlow;
+    // If list does not exists init one, else get the current flow.
+    if (list == NULL)
+    {
+        list = malloc(sizeof(networkFlowList));
+        list->sum = 1;
+        list->flows = malloc(sizeof(networkFlowLinkedList));
+        list->flows->flow = newFlow;
+        list->flows->nextFlow = NULL;
+        return list;
+    }
+    else
+        currentFlow = list->flows;
+    // Parse the list to check if flow exists
+    while (currentFlow->nextFlow != NULL)
+    {
+        // By the time we found the flow we return the head and do nothing
+        if (isFlowsame(currentFlow->flow, newFlow))
+            return head;
+        // get the next flow
+        currentFlow = currentFlow->nextFlow;
+    }
+    if (isFlowsame(currentFlow->flow, newFlow))
+        return head;
+    // If flow not found, add it and increase list->sum
+    currentFlow->nextFlow = malloc(sizeof(networkFlowLinkedList));
+    currentFlow->nextFlow->flow = newFlow;
+    currentFlow->nextFlow->nextFlow = NULL;
+    list->sum++;
+    return head;
+}
 
     struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
     iphdrlen = iph->ihl * 4;
