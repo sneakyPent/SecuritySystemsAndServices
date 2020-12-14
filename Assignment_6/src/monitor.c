@@ -49,6 +49,25 @@ int main(int argc, char *argv[])
 }
 
 
+
+void decode_UDP(const u_char *packet, int size)
+{
+    unsigned short iphdrlen;
+	struct iphdr *iph = (struct iphdr *)(packet +  sizeof(struct ethhdr));
+	iphdrlen = iph->ihl*4;
+	struct udphdr *udph = (struct udphdr*)(packet + iphdrlen  + sizeof(struct ethhdr));
+	int header_size =  sizeof(struct ethhdr) + iphdrlen + sizeof udph;
+			
+	
+	printf("\n|UDP Header\n");
+	printf("-> |-Source Port      : %d\n" , ntohs(udph->source));
+	printf("   |-Destination Port : %d\n" , ntohs(udph->dest));
+	printf("   |-Header Length    : %d\n" ,  ntohs(udph->len));
+    printf("   |-Payload Length   : %d BYTES\n", size - header_size);
+
+	printf("\n###########################################################\n\n");
+}
+
 void my_packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
 {
     int size = header->len;
