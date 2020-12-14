@@ -49,6 +49,32 @@ int main(int argc, char *argv[])
 }
 
 
+void my_packet_handler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
+{
+    int size = header->len;
+    //Get the IP Header part of this packet , excluding the ethernet header
+    struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
+    switch (iph->protocol) //Check the Protocol and do accordingly...
+    {
+    case 6: //TCP Protocol
+        tcpPackets++;
+        tcpBytes += size;
+        decode_ip_header(packet, size);
+        decode_TCP(packet, size);
+        break;
+    case 17: //UDP Protocol
+        udpPackets++;
+        udpBytes += size;
+        decode_ip_header(packet, size);
+        decode_UDP(packet, size);
+        break;
+    default: //Every other protocol apart from tcp udp
+        restPackets++;
+        break;
+    }
+}
+
+
 void live_capture(const char *device)
 {
 
