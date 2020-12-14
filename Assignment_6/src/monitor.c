@@ -203,7 +203,27 @@ void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pI
     strcpy(newFlow->destinationAddr, inet_ntoa(dest.sin_addr));
 }
 
-void live_capture(const char *device)
+void decode_TCP(const u_char *packet, int packetSize, networkFlow *newFlow, packetInfo *pInfo)
+{
+    unsigned short iphdrlen;
+
+    struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
+    iphdrlen = iph->ihl * 4;
+    struct tcphdr *tcph = (struct tcphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
+    int otherHeadersSize = sizeof(struct ethhdr) + iphdrlen + tcph->doff * 4;
+
+    // add info to packet Info
+    printf("------- %u\n", tcph->th_seq);
+    printf("------- %u\n", tcph->th_ack);
+    pInfo->sourcePort = ntohs(tcph->source);
+    pInfo->destinationPort = ntohs(tcph->dest);
+    pInfo->headerLenght = (unsigned int)tcph->doff * 4;
+    pInfo->payloadLenght = packetSize - otherHeadersSize;
+    // add info to network flow
+    newFlow->destinationPort = ntohs(tcph->dest);
+    newFlow->sourcePort = ntohs(tcph->source);
+}
+
 {
 
     char error_buffer[PCAP_ERRBUF_SIZE]; /** Error buffer */
