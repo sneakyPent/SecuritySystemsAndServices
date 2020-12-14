@@ -49,6 +49,41 @@ typedef struct nFlowList
 
 } networkFlowList;
 
+/* **************************** Flow list methods **************************** */
 
+int isFlowsame(networkFlow *currentFlow, networkFlow *givenFlow);
+
+networkFlowList *pushFlow(networkFlowList *head, networkFlow *newFlow);
+
+
+/* **************************** PCAP methods **************************** */
+
+void live_capture(const char *device);
+
+void offline_capture(const char *fname);
+
+void packetHandler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet);
+
+void handle_sigint(int sig);
+
+/* **************************** Decoding Headers methods **************************** */
+
+void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pInfo);
+
+void decode_TCP(const u_char *packet, int size, networkFlow *newFlow, packetInfo *pInfo);
+
+void decode_UDP(const u_char *packet, int size, networkFlow *newFlow, packetInfo *pInfo);
+
+/* **************************** Print methods **************************** */
+
+void printPacketInfo(packetInfo *pInfo);
+
+void printStatistics();
+
+void printFlow(networkFlow *givenFlow);
+
+void printFlowList(networkFlowList *);
+
+void printEthernetHeader(const u_char *packet);
 
 #endif /* _MONITOR_H */
