@@ -145,7 +145,8 @@ void packetHandler(u_char *args, const struct pcap_pkthdr *header, const u_char 
     int size = header->len;
 
     struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
-    if (iph->version == 4){
+    if (iph->version == 4)
+    {
         switch (iph->protocol)
         {
         case 6: //TCP Protocol
@@ -192,13 +193,14 @@ void handle_sigint(int sig)
     exit(1);
 }
 
+/* **************************** Decoding Headers methods **************************** */
 
 void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pInfo)
 {
     struct ethhdr *eth = (struct ethhdr *)packet;
     // get the ip header from the packet
     struct iphdr *ip_header = (struct iphdr *)(packet + sizeof(struct ethhdr));
-   
+
     // create 2 sockaddr_in to get destination and source addresses
     struct sockaddr_in source, dest;
     memset(&source, 0, sizeof(source));
@@ -207,7 +209,7 @@ void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pI
     dest.sin_addr.s_addr = ip_header->daddr;
 
     char *prt = ((unsigned int)ip_header->protocol) == 6 ? "TCP" : "UDP";
-    
+
     strcpy(pInfo->protocol, prt);
     strcpy(pInfo->sourceAddr, inet_ntoa(source.sin_addr));
     strcpy(pInfo->destinationAddr, inet_ntoa(dest.sin_addr));
@@ -273,11 +275,11 @@ void printPacketInfo(packetInfo *pInfo)
 void printStatistics()
 {
     printf("\n\n");
-    int tcpPacks=0, udpPacks=0;
-    if ( TCPList != NULL)
+    int tcpPacks = 0, udpPacks = 0;
+    if (TCPList != NULL)
         tcpPacks = TCPList->sum;
     if (UDPList != NULL)
-        udpPacks = UDPList->sum;    
+        udpPacks = UDPList->sum;
     printf("Total number of network flows captured:  %d\n", tcpPacks + udpPacks);
     printf("Number of TCP network flows captured:  %d\n", tcpPacks);
     printf("Number of UDP network flows captured:  %d\n", udpPacks);
