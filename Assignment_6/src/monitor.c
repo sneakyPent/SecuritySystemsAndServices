@@ -49,6 +49,26 @@ int main(int argc, char *argv[])
 }
 
 
+
+void decode_ip_header(const u_char *packet, int size)
+{
+    unsigned short iphdrlen;
+    struct iphdr *ip_header = (struct iphdr *)(packet + sizeof(struct ethhdr));
+    iphdrlen = ip_header->ihl * 4;
+    struct sockaddr_in source, dest;
+    memset(&source, 0, sizeof(source));
+    source.sin_addr.s_addr = ip_header->saddr;
+    memset(&dest, 0, sizeof(dest));
+    dest.sin_addr.s_addr = ip_header->daddr;
+    
+    printf("| IP Header\n");
+    printf("-> |-IP Version         : %d\n", (unsigned int)ip_header->version);
+    printf("   |-IP Header Length   : %d Bytes\n", ((unsigned int)(ip_header->ihl)) * 4);
+    printf("   |-Protocol           : %d\n", ((unsigned int)ip_header->protocol));
+    printf("   |-Source IP          : %s\n", inet_ntoa(source.sin_addr));
+    printf("   |-Destination IP     : %s\n", inet_ntoa(dest.sin_addr));
+}
+
 void decode_TCP(const u_char *packet, int size)
 {
     unsigned short iphdrlen;
