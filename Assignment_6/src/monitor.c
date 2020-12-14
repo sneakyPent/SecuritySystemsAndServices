@@ -143,6 +143,12 @@ void printStatistics(){
     printf("Total bytes of UDP packets received : %d\n", udpBytes);
 }
 
+void handle_sigint(int sig)
+{
+    printStatistics();    
+    exit(1);
+}
+
 
 void live_capture(const char *device)
 {
