@@ -15,6 +15,9 @@ void usage(void)
 }
 
 int tcpPackets = 0, udpPackets = 0, tcpBytes = 0, udpBytes = 0, restPackets = 0;
+networkFlowList *TCPList, *UDPList;
+networkFlow *newFlow;
+packetInfo *pInfo;
 
 int main(int argc, char *argv[])
 {
