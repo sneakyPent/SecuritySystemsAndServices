@@ -26,6 +26,29 @@ typedef struct packet{
     int retransmitted;
 }packetInfo;
 
+typedef struct nflow
+{
+    int protocol;
+    char destinationAddr[64];
+    char sourceAddr[64];
+    uint16_t destinationPort;
+    uint16_t sourcePort;
+} networkFlow;
+
+typedef struct nflowLinkedList
+{
+    networkFlow *flow;                /** The current file name*/
+    struct nflowLinkedList *nextFlow; /** Pointer to the next file of File list */
+
+} networkFlowLinkedList;
+
+typedef struct nFlowList
+{
+    int sum;                      /** The sum of files from list head until the end of the list */
+    networkFlowLinkedList *flows; /** Pointer to the next file of File list */
+
+} networkFlowList;
+
 
 
 #endif /* _MONITOR_H */
