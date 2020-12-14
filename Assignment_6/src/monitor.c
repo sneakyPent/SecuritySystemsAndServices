@@ -53,24 +53,17 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+/* **************************** Flow list methods **************************** */
 
-void decode_ip_header(const u_char *packet, int size)
+int isFlowsame(networkFlow *currentFlow, networkFlow *givenFlow)
 {
-    unsigned short iphdrlen;
-    struct iphdr *ip_header = (struct iphdr *)(packet + sizeof(struct ethhdr));
-    iphdrlen = ip_header->ihl * 4;
-    struct sockaddr_in source, dest;
-    memset(&source, 0, sizeof(source));
-    source.sin_addr.s_addr = ip_header->saddr;
-    memset(&dest, 0, sizeof(dest));
-    dest.sin_addr.s_addr = ip_header->daddr;
+    int sameProtocol = currentFlow->protocol == givenFlow->protocol;
+    int sameDestAddr = strcmp(currentFlow->destinationAddr, givenFlow->destinationAddr) == 0 ? 1 : 0;
+    int sameSourceAddr = strcmp(currentFlow->sourceAddr, givenFlow->sourceAddr) == 0 ? 1 : 0;
+    int sameDestPort = (unsigned long)currentFlow->destinationPort == (unsigned long)givenFlow->destinationPort;
+    int sameSourcePort = (unsigned long)currentFlow->sourcePort == (unsigned long)givenFlow->sourcePort;
 
-    printf("| IP Header\n");
-    printf("-> |-IP Version         : %d\n", (unsigned int)ip_header->version);
-    printf("   |-IP Header Length   : %d Bytes\n", ((unsigned int)(ip_header->ihl)) * 4);
-    printf("   |-Protocol           : %d\n", ((unsigned int)ip_header->protocol));
-    printf("   |-Source IP          : %s\n", inet_ntoa(source.sin_addr));
-    printf("   |-Destination IP     : %s\n", inet_ntoa(dest.sin_addr));
+    return sameDestAddr && sameSourceAddr && sameDestPort && sameSourcePort && sameProtocol;
 }
 
 networkFlowList *pushFlow(networkFlowList *head, networkFlow *newFlow)
