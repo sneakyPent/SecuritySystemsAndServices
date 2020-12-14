@@ -179,23 +179,34 @@ void handle_sigint(int sig)
 }
 
 
-void decode_UDP(const u_char *packet, int packetSize, networkFlow *newFlow, packetInfo *pInfo)
+void decode_TCP(const u_char *packet, int packetSize, networkFlow *newFlow, packetInfo *pInfo)
 {
     unsigned short iphdrlen;
+
     struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
     iphdrlen = iph->ihl * 4;
-    struct udphdr *udph = (struct udphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
-    int otherHeadersSize = sizeof(struct ethhdr) + iphdrlen + sizeof(udph);
+    struct tcphdr *tcph = (struct tcphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
+    int otherHeadersSize = sizeof(struct ethhdr) + iphdrlen + tcph->doff * 4;
 
     // add info to packet Info
-    pInfo->sourcePort = ntohs(udph->source);
-    pInfo->destinationPort = ntohs(udph->dest);
-    pInfo->headerLenght = sizeof(udph);
+    printf("------- %u\n", tcph->th_seq);
+    printf("------- %u\n", tcph->th_ack);
+    pInfo->sourcePort = ntohs(tcph->source);
+    pInfo->destinationPort = ntohs(tcph->dest);
+    pInfo->headerLenght = (unsigned int)tcph->doff * 4;
     pInfo->payloadLenght = packetSize - otherHeadersSize;
     // add info to network flow
-    newFlow->destinationPort = ntohs(udph->dest);
-    newFlow->sourcePort = ntohs(udph->source);
+    newFlow->destinationPort = ntohs(tcph->dest);
+    newFlow->sourcePort = ntohs(tcph->source);
 }
+
+void live_capture(const char *device)
+{
+
+    char error_buffer[PCAP_ERRBUF_SIZE]; /** Error buffer */
+    pcap_t *handle;                      /** The device handle from where we want to capture */
+    int packet_count_limit = 0;          /** The number of packets we want to capture ( 0 for unlimited packets) */
+    int timeout_limit = 1 * 1000;        /** In milliseconds */
 
     /* Open device for live capture */
     handle = pcap_open_live(device, BUFSIZ, packet_count_limit, timeout_limit, error_buffer);
