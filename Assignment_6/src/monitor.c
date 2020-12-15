@@ -337,7 +337,7 @@ void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pI
     strcpy(newFlow->destinationAddr, inet_ntoa(dest.sin_addr));
 }
 
-void decode_TCP(const u_char *packet, int packetSize, networkFlow *newFlow, packetInfo *pInfo)
+void decodeTcpHeader(const struct tcphdr * header, int tcpAndPayloadSize, networkFlow *newFlow, packetInfo *pInfo)
 {
     unsigned short iphdrlen;
 
@@ -347,15 +347,13 @@ void decode_TCP(const u_char *packet, int packetSize, networkFlow *newFlow, pack
     int otherHeadersSize = sizeof(struct ethhdr) + iphdrlen + tcph->doff * 4;
 
     // add info to packet Info
-    printf("------- %u\n", tcph->th_seq);
-    printf("------- %u\n", tcph->th_ack);
-    pInfo->sourcePort = ntohs(tcph->source);
-    pInfo->destinationPort = ntohs(tcph->dest);
-    pInfo->headerLenght = (unsigned int)tcph->doff * 4;
-    pInfo->payloadLenght = packetSize - otherHeadersSize;
+    pInfo->sourcePort = ntohs(header->source);
+    pInfo->destinationPort = ntohs(header->dest);
+    pInfo->headerLenght = (unsigned int)header->doff * 4;
+    pInfo->payloadLenght = tcpAndPayloadSize - pInfo->headerLenght;
     // add info to network flow
-    newFlow->destinationPort = ntohs(tcph->dest);
-    newFlow->sourcePort = ntohs(tcph->source);
+    newFlow->destinationPort = ntohs(header->dest);
+    newFlow->sourcePort = ntohs(header->source);
 }
 
 void decodeUdpHeader(const struct udphdr *udph, int udpAndPayloadSize, networkFlow *newFlow, packetInfo *pInfo)
