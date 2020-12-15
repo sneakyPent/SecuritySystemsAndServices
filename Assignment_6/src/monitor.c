@@ -109,7 +109,7 @@ void live_capture(const char *device)
     char error_buffer[PCAP_ERRBUF_SIZE]; /** Error buffer */
     pcap_t *handle;                      /** The device handle from where we want to capture */
     int packet_count_limit = 0;          /** The number of packets we want to capture ( 0 for unlimited packets) */
-    int timeout_limit = 1 * 1000;        /** In milliseconds */
+    int timeout_limit = 0.5 * 1000;        /** In milliseconds */
 
     // use pcap_open_live for opening device for receiving packets
     handle = pcap_open_live(device, BUFSIZ, packet_count_limit, timeout_limit, error_buffer);
