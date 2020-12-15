@@ -358,19 +358,13 @@ void decode_TCP(const u_char *packet, int packetSize, networkFlow *newFlow, pack
     newFlow->sourcePort = ntohs(tcph->source);
 }
 
-void decode_UDP(const u_char *packet, int packetSize, networkFlow *newFlow, packetInfo *pInfo)
+void decodeUdpHeader(const struct udphdr *udph, int udpAndPayloadSize, networkFlow *newFlow, packetInfo *pInfo)
 {
-    unsigned short iphdrlen;
-    struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
-    iphdrlen = iph->ihl * 4;
-    struct udphdr *udph = (struct udphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
-    int otherHeadersSize = sizeof(struct ethhdr) + iphdrlen + sizeof(udph);
-
     // add info to packet Info
     pInfo->sourcePort = ntohs(udph->source);
     pInfo->destinationPort = ntohs(udph->dest);
     pInfo->headerLenght = sizeof(udph);
-    pInfo->payloadLenght = packetSize - otherHeadersSize;
+    pInfo->payloadLenght = udpAndPayloadSize - pInfo->headerLenght;
     // add info to network flow
     newFlow->destinationPort = ntohs(udph->dest);
     newFlow->sourcePort = ntohs(udph->source);
