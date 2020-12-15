@@ -383,7 +383,3 @@ void printFlowList(networkFlowList *list)
     if (currentFlow != NULL)
         printFlow(currentFlow->flow);
 }
-
-    /* Our function to output some info */
-    pcap_loop(handle, packet_count_limit, my_packet_handler, NULL);
-}
