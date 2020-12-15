@@ -319,20 +319,30 @@ void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pI
     // get the ip header from the packet
     struct iphdr *ip_header = (struct iphdr *)(packet + sizeof(struct ethhdr));
 
+void decodeIpv4Header(const struct iphdr *ipHeader, networkFlow *newFlow, packetInfo *pInfo)
+{
     // create 2 sockaddr_in to get destination and source addresses
     struct sockaddr_in source, dest;
     memset(&source, 0, sizeof(source));
     memset(&dest, 0, sizeof(dest));
-    source.sin_addr.s_addr = ip_header->saddr;
-    dest.sin_addr.s_addr = ip_header->daddr;
+    source.sin_addr.s_addr = ipHeader->saddr;
+    dest.sin_addr.s_addr = ipHeader->daddr;
 
-    char *prt = ((unsigned int)ip_header->protocol) == 6 ? "TCP" : "UDP";
+    // Translate protocol to TCP/UDP/OTHER
+    char *prt ;
+    if ((unsigned int)ipHeader->protocol == 6)
+        prt = "TCP";
+    else if ((unsigned int)ipHeader->protocol  == 17)
+        prt = "UDP";
+    else 
+        prt = "OTHER";
 
+    // add info to packet Info
     strcpy(pInfo->protocol, prt);
     strcpy(pInfo->sourceAddr, inet_ntoa(source.sin_addr));
     strcpy(pInfo->destinationAddr, inet_ntoa(dest.sin_addr));
     // add info to network flow
-    newFlow->protocol = ip_header->protocol;
+    newFlow->protocol = ipHeader->protocol;
     strcpy(newFlow->sourceAddr, inet_ntoa(source.sin_addr));
     strcpy(newFlow->destinationAddr, inet_ntoa(dest.sin_addr));
 }
