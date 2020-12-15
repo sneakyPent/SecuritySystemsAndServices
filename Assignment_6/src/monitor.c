@@ -142,155 +142,89 @@ void offline_capture(const char *fname)
 void packetHandler(u_char *args, const struct pcap_pkthdr *header, const u_char *packet)
 {
     // packet layers --  ethernet Header -> ip Header -> TCP/UCP Header ->data
+
     int size = header->len;
-    // printf("packetSize = %d", size);
     newFlow = malloc(sizeof(networkFlow));
     pInfo = malloc(sizeof(packetInfo));
 
+    // Getting the ethernet header and to get the the ethernet type 
     struct ether_header *eth = (struct ether_header *)packet;
+    // check if ip version is 4 or 6 or any ither
     if (ntohs(eth->ether_type) == ETHERTYPE_IP)
-    {
+    {   
+        // Getting the ipv4 header and passing it in decodeIpv4Header function
         struct iphdr *ip_header = (struct iphdr *)(packet + sizeof(struct ether_header));
-        // create 2 sockaddr_in to get destination and source addresses
-        struct sockaddr_in source, dest;
-        memset(&source, 0, sizeof(source));
-        memset(&dest, 0, sizeof(dest));
-        source.sin_addr.s_addr = ip_header->saddr;
-        dest.sin_addr.s_addr = ip_header->daddr;
-
-        char *prt = ((unsigned int)ip_header->protocol) == 6 ? "TCP" : "UDP";
-
-        strcpy(pInfo->protocol, prt);
-        strcpy(pInfo->sourceAddr, inet_ntoa(source.sin_addr));
-        strcpy(pInfo->destinationAddr, inet_ntoa(dest.sin_addr));
-        // add info to network flow
-        newFlow->protocol = ip_header->protocol;
-        strcpy(newFlow->sourceAddr, inet_ntoa(source.sin_addr));
-        strcpy(newFlow->destinationAddr, inet_ntoa(dest.sin_addr));
-
-        // ------------------------------ next header decode -------------------
-        unsigned short iphdrlen;
-        int otherHeadersSize;
+        // decoding the ipv4 header to collect every info needed 
+        decodeIpv4Header(ip_header, newFlow, pInfo);
+        
+        // ----------------------- next header -----------------------
+        unsigned short iphdrlen = ip_header->ihl * 4;
+        int protocolAndPayloadSize = size - sizeof(struct ether_header) - iphdrlen;
         switch (ip_header->protocol)
         {
         case 6: //TCP Protocol
-            tcpPackets++;
-            tcpBytes += size;
-            // ----
-
-            iphdrlen = ip_header->ihl * 4;
+            tcpPackets++;           // increase tcp packet counter by 1
+            tcpBytes += size;       // increase tcp bytes counter by the total package size
+            // Getting the tcp header and passing it in decodeTcpHeader function
             struct tcphdr *tcph = (struct tcphdr *)(packet + iphdrlen + sizeof(struct ether_header));
-            otherHeadersSize = sizeof(struct ether_header) + iphdrlen + tcph->doff * 4;
-
-            // add info to packet Info
-            // printf("------- %u\n", tcph->th_seq);
-            // printf("------- %u\n", tcph->th_ack);
-            pInfo->sourcePort = ntohs(tcph->source);
-            pInfo->destinationPort = ntohs(tcph->dest);
-            pInfo->headerLenght = (unsigned int)tcph->doff * 4;
-            pInfo->payloadLenght = size - otherHeadersSize;
-            // add info to network flow
-            newFlow->destinationPort = ntohs(tcph->dest);
-            newFlow->sourcePort = ntohs(tcph->source);
-
-            // ---
-
+            // decoding the tcp header to collect every info needed
+            decodeTcpHeader(tcph,protocolAndPayloadSize, newFlow,pInfo);
+            // Add the specific network flow in the TCP network flows list if not already exist
             TCPList = pushFlow(TCPList, newFlow);
+            // Print the collected packet's info
             printPacketInfo(pInfo);
             break;
         case 17: //UDP Protocol
-            udpPackets++;
-            udpBytes += size;
-            
-            iphdrlen = ip_header->ihl * 4;
+            udpPackets++;                   // increase tcp packet counter by 1
+            udpBytes += size;               // increase tcp bytes counter by the total package size
+            // Getting the udp header and passing it in decodeUdpHeader function
             struct udphdr *udph = (struct udphdr *)(packet + iphdrlen + sizeof(struct ether_header));
-            otherHeadersSize = sizeof(struct ether_header) + iphdrlen + sizeof(udph);
-
-            // add info to packet Info
-            pInfo->sourcePort = ntohs(udph->source);
-            pInfo->destinationPort = ntohs(udph->dest);
-            pInfo->headerLenght = sizeof(udph);
-            pInfo->payloadLenght = size - otherHeadersSize;
-            // add info to network flow
-            newFlow->destinationPort = ntohs(udph->dest);
-            newFlow->sourcePort = ntohs(udph->source);
-
+            // decoding the udp header to collect every info needed
+            decodeUdpHeader(udph, protocolAndPayloadSize, newFlow, pInfo);
+            // Add the specific network flow in the UDP network flows list if not already exist
             UDPList = pushFlow(UDPList, newFlow);
+            // Print the collected packet's info
             printPacketInfo(pInfo);
             break;
         default: //Every other protocol apart from tcp udp
-            restPackets++;
+            restPackets++;                  // increase rest packet counter by 1
             break;
         }
         
     }
     else if (ntohs(eth->ether_type) == ETHERTYPE_IPV6)
     {
+        // Getting the ipv6 header and passing it in decodeIpv6Header function
         struct ip6_hdr *ipv6_h = (struct ip6_hdr*)(packet + sizeof(struct ethhdr));
-        char buffer[INET6_ADDRSTRLEN];
-        struct in6_addr source = ipv6_h->ip6_src;
-        struct in6_addr dest  = ipv6_h->ip6_dst;
-        char src[INET6_ADDRSTRLEN];
-        inet_ntop(AF_INET6, &source, src, INET6_ADDRSTRLEN);
-        char dst[INET6_ADDRSTRLEN];
-        inet_ntop(AF_INET6, &dest, dst, INET6_ADDRSTRLEN);
-        char *prt;
-        if (ipv6_h->ip6_ctlun.ip6_un1.ip6_un1_nxt == 6)
-            prt = "TCP";
-        else if (ipv6_h->ip6_ctlun.ip6_un1.ip6_un1_nxt == 17)
-            prt = "UDP";
-        else 
-            prt = "OTHER";
-        // printf("address = %s",src);
-        // printf("address = %s",dst);
-        // printf("protocol = %d", ipv6_h->ip6_ctlun.ip6_un1.ip6_un1_nxt );
-        strcpy(pInfo->protocol, prt);
-        strcpy(pInfo->sourceAddr, src);
-        strcpy(pInfo->destinationAddr, dst);
-        // // add info to network flow
-        newFlow->protocol = ipv6_h->ip6_ctlun.ip6_un1.ip6_un1_nxt;
-        strcpy(newFlow->sourceAddr, src);
-        strcpy(newFlow->destinationAddr, dst);
+        // decoding the ipv6 header to collect every info needed 
+        decodeIpv6Header(ipv6_h, newFlow, pInfo);
 
-        // ------------------------------ next header decode -------------------
-        unsigned short iphdrlen;
-        int otherHeadersSize;
+        // ----------------------- next header -----------------------
+        int protocolAndPayloadSize = size - sizeof(struct ether_header) - sizeof(struct ip6_hdr);
         switch (ipv6_h->ip6_ctlun.ip6_un1.ip6_un1_nxt)
         {
         case 6: //TCP Protocol
-            tcpPackets++;
-            tcpBytes += size;
+            tcpPackets++;           // increase tcp packet counter by 1
+            tcpBytes += size;       // increase tcp bytes counter by the total package size
+            // Getting the tcp header and passing it in decodeTcpHeader function
             struct tcphdr *tcph = (struct tcphdr *)(packet + sizeof(struct ip6_hdr) + sizeof(struct ether_header));
-            otherHeadersSize = sizeof(struct ether_header) + sizeof(struct ip6_hdr) + (unsigned int)tcph->doff * 4;
-
-            // add info to packet Info
-            // printf("------- %u\n", tcph->th_seq);
-            // printf("------- %u\n", tcph->th_ack);
-            pInfo->sourcePort = ntohs(tcph->source);
-            pInfo->destinationPort = ntohs(tcph->dest);
-            pInfo->headerLenght = (unsigned int)tcph->doff * 4;
-            pInfo->payloadLenght = size - otherHeadersSize;
-            // add info to network flow
-            newFlow->destinationPort = ntohs(tcph->dest);
-            newFlow->sourcePort = ntohs(tcph->source);
+            // decoding the tcp header to collect every info needed
+            decodeTcpHeader(tcph,protocolAndPayloadSize, newFlow,pInfo);
+            // Add the specific network flow in the TCP network flows list if not already exist
             TCPList = pushFlow(TCPList, newFlow);
+            // Print the collected packet's info
             printPacketInfo(pInfo);
             break;
         case 17: //UDP Protocol
-            udpPackets++;
-            udpBytes += size;
+            udpPackets++;                   // increase tcp packet counter by 1
+            udpBytes += size;               // increase tcp bytes counter by the total package size
+            // Getting the udp header and passing it in decodeUdpHeader function
             struct udphdr *udph = (struct udphdr *)(packet + sizeof(struct ip6_hdr) + sizeof(struct ether_header));
-            otherHeadersSize = sizeof(struct ether_header) + sizeof(struct ip6_hdr) + sizeof(udph);
-
-            // add info to packet Info
-            pInfo->sourcePort = ntohs(udph->source);
-            pInfo->destinationPort = ntohs(udph->dest);
-            pInfo->headerLenght = sizeof(udph);
-            pInfo->payloadLenght = size - otherHeadersSize;
-            // add info to network flow
-            newFlow->destinationPort = ntohs(udph->dest);
-            newFlow->sourcePort = ntohs(udph->source);
+            // decoding the udp header to collect every info needed
+            decodeUdpHeader(udph, protocolAndPayloadSize, newFlow, pInfo);
+            // Add the specific network flow in the UDP network flows list if not already exist
             UDPList = pushFlow(UDPList, newFlow);
+            // Print the collected packet's info
             printPacketInfo(pInfo);
             break;
         default: //Every other protocol apart from tcp udp
@@ -299,10 +233,7 @@ void packetHandler(u_char *args, const struct pcap_pkthdr *header, const u_char 
         }
     }
     else
-    {
-        restPackets++;
-    }
-    
+        restPackets++;              // increase rest packet counter by 1
 }
 
 void handle_sigint(int sig)
@@ -313,11 +244,33 @@ void handle_sigint(int sig)
 
 /* **************************** Decoding Headers methods **************************** */
 
-void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pInfo)
+void decodeIpv6Header(const struct ip6_hdr *ipv6Header, networkFlow *newFlow, packetInfo *pInfo)
 {
-    struct ethhdr *eth = (struct ethhdr *)packet;
-    // get the ip header from the packet
-    struct iphdr *ip_header = (struct iphdr *)(packet + sizeof(struct ethhdr));
+    // create 2 sockaddr_in to get destination and source addresses
+    char buffer[INET6_ADDRSTRLEN];
+    struct in6_addr source = ipv6Header->ip6_src;
+    struct in6_addr dest  = ipv6Header->ip6_dst;
+    char src[INET6_ADDRSTRLEN];
+    inet_ntop(AF_INET6, &source, src, INET6_ADDRSTRLEN);
+    char dst[INET6_ADDRSTRLEN];
+    inet_ntop(AF_INET6, &dest, dst, INET6_ADDRSTRLEN);
+    char *prt;
+    if (ipv6Header->ip6_ctlun.ip6_un1.ip6_un1_nxt == 6)
+        prt = "TCP";
+    else if (ipv6Header->ip6_ctlun.ip6_un1.ip6_un1_nxt == 17)
+        prt = "UDP";
+    else 
+        prt = "OTHER";
+        
+    // add info to packet Info
+    strcpy(pInfo->protocol, prt);
+    strcpy(pInfo->sourceAddr, src);
+    strcpy(pInfo->destinationAddr, dst);
+    // // add info to network flow
+    newFlow->protocol = ipv6Header->ip6_ctlun.ip6_un1.ip6_un1_nxt;
+    strcpy(newFlow->sourceAddr, src);
+    strcpy(newFlow->destinationAddr, dst);
+}
 
 void decodeIpv4Header(const struct iphdr *ipHeader, networkFlow *newFlow, packetInfo *pInfo)
 {
