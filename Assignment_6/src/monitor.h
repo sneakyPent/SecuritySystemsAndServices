@@ -16,6 +16,9 @@
 #include <netinet/ip.h>
 #include <netinet/ip6.h>
 #include <arpa/inet.h>
+
+#include "utils.h"
+
 typedef struct packet{
     char protocol[6];
     char destinationAddr[64];
@@ -69,11 +72,13 @@ void handle_sigint(int sig);
 
 /* **************************** Decoding Headers methods **************************** */
 
-void decode_ip_header(const u_char *packet, networkFlow *newFlow, packetInfo *pInfo);
+void decodeIpv6Header(const struct ip6_hdr *ipv6Header, networkFlow *newFlow, packetInfo *pInfo);
 
-void decode_TCP(const u_char *packet, int size, networkFlow *newFlow, packetInfo *pInfo);
+void decodeIpv4Header(const struct iphdr *ipHeader, networkFlow *newFlow, packetInfo *pInfo);
 
-void decode_UDP(const u_char *packet, int size, networkFlow *newFlow, packetInfo *pInfo);
+void decodeTcpHeader(const  struct tcphdr * header, int packetSize, networkFlow *newFlow, packetInfo *pInfo);
+
+void decodeUdpHeader(const struct udphdr *udph, int udpAndPayloadSize, networkFlow *newFlow, packetInfo *pInfo);
 
 /* **************************** Print methods **************************** */
 
