@@ -302,13 +302,6 @@ void decodeIpv4Header(const struct iphdr *ipHeader, networkFlow *newFlow, packet
 
 void decodeTcpHeader(const struct tcphdr * header, int tcpAndPayloadSize, networkFlow *newFlow, packetInfo *pInfo)
 {
-    unsigned short iphdrlen;
-
-    struct iphdr *iph = (struct iphdr *)(packet + sizeof(struct ethhdr));
-    iphdrlen = iph->ihl * 4;
-    struct tcphdr *tcph = (struct tcphdr *)(packet + iphdrlen + sizeof(struct ethhdr));
-    int otherHeadersSize = sizeof(struct ethhdr) + iphdrlen + tcph->doff * 4;
-
     // add info to packet Info
     pInfo->sourcePort = ntohs(header->source);
     pInfo->destinationPort = ntohs(header->dest);
@@ -365,11 +358,11 @@ void printStatistics()
 
 void printFlow(networkFlow *givenFlow)
 {
-    printf("%d\t", givenFlow->protocol);
-    printf("%s\t", givenFlow->destinationAddr);
-    printf("%s\t", givenFlow->sourceAddr);
-    printf("%lu\t", givenFlow->destinationPort);
-    printf("%lu\n", givenFlow->sourcePort);
+    printf("%s  \t\t\t", givenFlow->sourceAddr);
+    printf("%lu  \t\t\t", givenFlow->sourcePort);
+    printf("%s\t\t\t", givenFlow->destinationAddr);
+    printf("%lu\t\t\t", givenFlow->destinationPort);
+    printf("%d\n", givenFlow->protocol);
 }
 
 void printFlowList(networkFlowList *list)
