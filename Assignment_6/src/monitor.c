@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
         case 'r':
             offline_capture(optarg);
             printStatistics();
+            // printFlowList(UDPList);
+            // printFlowList(TCPList);
             break;
         case 'h':
             usage();
@@ -238,6 +240,8 @@ void packetHandler(u_char *args, const struct pcap_pkthdr *header, const u_char 
 void handle_sigint(int sig)
 {
     printStatistics();
+    // printFlowList(UDPList);
+    // printFlowList(TCPList);
     exit(1);
 }
 
