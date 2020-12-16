@@ -60,6 +60,7 @@ typedef struct nflow
     char sourceAddr[64];
     uint16_t destinationPort;
     uint16_t sourcePort;
+    uint32_t expectedAck;
 } networkFlow;
 
 /**

@@ -14,7 +14,7 @@ void usage(void)
     exit(1);
 }
 
-int tcpPackets = 0, udpPackets = 0, tcpBytes = 0, udpBytes = 0, restPackets = 0;
+int tcpPackets = 0, udpPackets = 0, tcpBytes = 0, udpBytes = 0, restPackets = 0, retransmissions = 0;
 networkFlowList *TCPList, *UDPList;
 networkFlow *newFlow;
 packetInfo *pInfo;
@@ -88,13 +88,17 @@ networkFlowList *pushFlow(networkFlowList *head, networkFlow *newFlow)
     while (currentFlow->nextFlow != NULL)
     {
         // By the time we found the flow we return the head and do nothing
-        if (isFlowsame(currentFlow->flow, newFlow))
+        if (isFlowsame(currentFlow->flow, newFlow)){
+            currentFlow->flow->expectedAck = newFlow->expectedAck;
             return head;
+        }
         // get the next flow
         currentFlow = currentFlow->nextFlow;
     }
-    if (isFlowsame(currentFlow->flow, newFlow))
+    if (isFlowsame(currentFlow->flow, newFlow)){
+        currentFlow->flow->expectedAck = newFlow->expectedAck;
         return head;
+    }
     // If flow not found, add it and increase list->sum
     currentFlow->nextFlow = malloc(sizeof(networkFlowLinkedList));
     currentFlow->nextFlow->flow = newFlow;
@@ -161,7 +165,7 @@ void packetHandler(u_char *args, const struct pcap_pkthdr *header, const u_char 
 
         // ----------------------- next header -----------------------
         unsigned short iphdrlen = ip_header->ihl * 4;
-        int protocolAndPayloadSize = size - sizeof(struct ether_header) - iphdrlen;
+        int protocolAndPayloadSize = ntohs(ip_header->tot_len) - iphdrlen;
         switch (ip_header->protocol)
         {
         case 6:               //TCP Protocol
@@ -170,6 +174,8 @@ void packetHandler(u_char *args, const struct pcap_pkthdr *header, const u_char 
             // Getting the tcp header and passing it in decodeTcpHeader function
             struct tcphdr *tcph = (struct tcphdr *)(packet + iphdrlen + sizeof(struct ether_header));
             // decoding the tcp header to collect every info needed
+            // printf("size = %d", size);
+            // printf("eth size = %d", sizeof(struct ether_header));
             decodeTcpHeader(tcph, protocolAndPayloadSize, newFlow, pInfo);
             // Add the specific network flow in the TCP network flows list if not already exist
             TCPList = pushFlow(TCPList, newFlow);
@@ -303,6 +309,56 @@ void decodeIpv4Header(const struct iphdr *ipHeader, networkFlow *newFlow, packet
     strcpy(newFlow->destinationAddr, inet_ntoa(dest.sin_addr));
 }
 
+networkFlow * findconversationOtherPart( networkFlow *newFlow){
+    networkFlowList *list = TCPList;
+    networkFlowLinkedList *currentFlow;
+    // printFlow(newFlow);
+    // If list does not exists init one, else get the current flow.
+    if (list == NULL)
+    {
+        list = malloc(sizeof(networkFlowList));
+        list->sum = 1;
+        list->flows = malloc(sizeof(networkFlowLinkedList));
+        list->flows->flow = newFlow;
+        list->flows->nextFlow = NULL;
+        return NULL;
+    }
+    else
+        currentFlow = list->flows;
+    // Parse the list to check if flow exists
+    while (currentFlow->nextFlow != NULL)
+    {
+        // By the time we found the flow we return the head and do nothing
+        if (isFlowsame(currentFlow->flow, newFlow))
+            return currentFlow->flow;
+        // get the next flow
+        currentFlow = currentFlow->nextFlow;
+    }
+    if (isFlowsame(currentFlow->flow, newFlow))
+        return currentFlow->flow;
+    // If flow not found, add it and increase list->sum
+    return NULL;
+}
+
+int isRetransmitted(const struct tcphdr *header, networkFlow *newFlow){
+    networkFlow *otherFlow = malloc(sizeof(networkFlow));
+    strcpy(otherFlow->destinationAddr, newFlow->sourceAddr);
+    strcpy(otherFlow->sourceAddr, newFlow->destinationAddr);
+    otherFlow->destinationPort = newFlow->sourcePort;
+    otherFlow->sourcePort = newFlow->destinationPort;
+    otherFlow->protocol = newFlow->protocol;
+    if (header->th_flags == TH_ACK){
+        networkFlow *found = findconversationOtherPart(otherFlow); 
+        if ( found != NULL){
+            if (ntohl(header->th_ack) != found->expectedAck){
+                retransmissions++ ;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 void decodeTcpHeader(const struct tcphdr *header, int tcpAndPayloadSize, networkFlow *newFlow, packetInfo *pInfo)
 {
     // add info to packet Info
@@ -313,6 +369,10 @@ void decodeTcpHeader(const struct tcphdr *header, int tcpAndPayloadSize, network
     // add info to network flow
     newFlow->destinationPort = ntohs(header->dest);
     newFlow->sourcePort = ntohs(header->source);
+    newFlow->expectedAck = ntohl(header->seq) + pInfo->payloadLenght;
+    if (((header->th_flags>>1)&1) == 1)
+        newFlow->expectedAck++;
+    pInfo->retransmitted = isRetransmitted(header, newFlow);
 }
 
 void decodeUdpHeader(const struct udphdr *udph, int udpAndPayloadSize, networkFlow *newFlow, packetInfo *pInfo)
@@ -339,6 +399,8 @@ void printPacketInfo(packetInfo *pInfo)
     printf("    |-Protocol          : %s\n", pInfo->protocol);
     printf("    |-Header Length     : %d BYTES\n", pInfo->headerLenght);
     printf("    |-Payload Length    : %d BYTES\n", pInfo->payloadLenght);
+    if (strcmp(pInfo->protocol, "TCP") == 0)
+        printf("    |-Retransmitted     : %d \n", pInfo->retransmitted);
 }
 
 void printStatistics()
@@ -357,6 +419,7 @@ void printStatistics()
     printf("Total number of UDP packets received: %d\n", udpPackets);
     printf("Total bytes of TCP packets received : %d\n", tcpBytes);
     printf("Total bytes of UDP packets received : %d\n", udpBytes);
+    printf("Retransmissions : %d\n", retransmissions);
 }
 
 void printFlow(networkFlow *givenFlow)
@@ -365,7 +428,8 @@ void printFlow(networkFlow *givenFlow)
     printf("%lu  \t\t\t", givenFlow->sourcePort);
     printf("%s\t\t\t", givenFlow->destinationAddr);
     printf("%lu\t\t\t", givenFlow->destinationPort);
-    printf("%d\n", givenFlow->protocol);
+    printf("%d\t", givenFlow->protocol);
+    printf("%lu\n", givenFlow->expectedAck);
 }
 
 void printFlowList(networkFlowList *list)
