@@ -1,6 +1,8 @@
 #ifndef _MONITOR_H
 #define _MONITOR_H
 
+
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,7 +19,20 @@
 #include <netinet/ip6.h>
 #include <arpa/inet.h>
 
-#include "utils.h"
+/**
+ * @brief Enumerator for the print function mode
+ * 
+ * @param info 0
+ * @param error 1
+ * @param success 2
+ * 
+ */
+enum mode
+{
+    info,
+    error,
+    success
+};
 
 typedef struct packet{
     char protocol[6];
@@ -91,5 +106,13 @@ void printFlow(networkFlow *givenFlow);
 void printFlowList(networkFlowList *);
 
 void printEthernetHeader(const u_char *packet);
+
+/**
+ * @brief Prints the given string with specific color depends on given mode (used for debugging)
+ * 
+ * @param str 
+ * @param md info, error, success
+ */
+void print(char *str, enum mode md);
 
 #endif /* _MONITOR_H */
