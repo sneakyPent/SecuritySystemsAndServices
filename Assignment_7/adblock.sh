@@ -10,47 +10,57 @@ function adBlock() {
         exit 1
     fi
     if [ "$1" = "-domains"  ]; then
-        # Configure adblock rules based on the domain names of $domainNames file.
-        # Write your code here...
-        # ...
-        # ...
+        n=1    
+        while IFS= read -r line
+        do
+            if iptables -A OUTPUT -d $line -j REJECT  > /dev/null 2>&1; then
+               : $((n++))
+            else
+                if ! ip6tables -A OUTPUT -d $line -j REJECT  > /dev/null 2>&1; then
+                    echo "Domain name \"$line\" not found and forced from the list deleted."
+                    sed -i "$n d" $input
+                fi
+            fi
+            # nslookup $line | grep ^Name -A1| awk '{print $2}' | awk 'NR%2==0' >> $IPAddresses
+        done < "$domainNames"
+
+        while IFS= read -r line
+        do
+            nslookup $line | grep ^Name -A1| awk '{print $2}' | awk 'NR%2==0' >> $IPAddresses
+        done < "$domainNames"
         true
             
     elif [ "$1" = "-ips"  ]; then
-        # Configure adblock rules based on the IP addresses of $IPAddresses file.
-        # Write your code here...
-        # ...
-        # ...
+        while IFS= read -r line
+        do
+            if ! iptables -A OUTPUT -d $line -j REJECT  > /dev/null 2>&1; then
+                ip6tables -A OUTPUT -d $line -j REJECT
+            fi
+        done < "$IPAddresses"
         true
         
     elif [ "$1" = "-save"  ]; then
         # Save rules to $adblockRules file.
-        # Write your code here...
-        # ...
-        # ...
+        iptables-save > $adblockRules
         true
         
     elif [ "$1" = "-load"  ]; then
         # Load rules from $adblockRules file.
-        # Write your code here...
-        # ...
-        # ...
+        iptables-restore < $adblockRules
         true
 
         
     elif [ "$1" = "-reset"  ]; then
         # Reset rules to default settings (i.e. accept all).
-        # Write your code here...
-        # ...
-        # ...
+        iptables -F OUTPUT
+        ip6tables -F OUTPUT
         true
 
         
     elif [ "$1" = "-list"  ]; then
         # List current rules.
-        # Write your code here...
-        # ...
-        # ...
+        iptables -L OUTPUT -n
+        ip6tables -L OUTPUT -n
         true
         
     elif [ "$1" = "-help"  ]; then
