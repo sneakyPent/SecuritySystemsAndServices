@@ -22,6 +22,7 @@ function adBlock() {
                 fi
             fi
             # nslookup $line | grep ^Name -A1| awk '{print $2}' | awk 'NR%2==0' >> $IPAddresses
+            host $line | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|([a-f0-9:]+:+)+[a-f0-9]+" >> $IPAddresses
         done < "$domainNames"
 
         while IFS= read -r line
