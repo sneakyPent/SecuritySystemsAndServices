@@ -3,7 +3,9 @@
 domainNames="domainNames.txt"
 IPAddresses="IPAddresses.txt"
 adblockRules="adblockRules"
-ipv6_reg=([a-f0-9:]+:+)+[a-f0-9]+
+# create a regular expression for catching ipv6 from host response
+ipv6_reg="([a-f0-9:]+:+)+[a-f0-9]+"
+# create a regular expression for catching ipv4 from host response
 ipv4_reg="[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
 
 function adBlock() {
@@ -17,11 +19,14 @@ function adBlock() {
             (host $line | egrep -o "$ipv4_reg|$ipv6_reg") &
             sleep 0.3
         done < "$domainNames" > $IPAddresses
+        # wait for background processes to finish before continue to the next commands
         wait
+        # adding ipv4 address from IPAddresses file in iptables
         egrep -o "$ipv4_reg" $IPAddresses | while read -r line
         do
             iptables -A OUTPUT -d $line -j REJECT
         done
+        # adding ipv6 address from IPAddresses file in ip6tables
         egrep -o "$ipv6_reg" $IPAddresses | while read -r line
         do
             ip6tables -A OUTPUT -d $line -j REJECT
@@ -29,10 +34,12 @@ function adBlock() {
         true
         
     elif [ "$1" = "-ips"  ]; then
+    # adding ipv4 address from IPAddresses file in iptables
         egrep -o "$ipv4_reg" $IPAddresses | while read -r line
         do
             iptables -A OUTPUT -d $line -j REJECT
         done
+        # adding ipv6 address from IPAddresses file in ip6tables
         egrep -o "$ipv6_reg" $IPAddresses | while read -r line
         do
             ip6tables -A OUTPUT -d $line -j REJECT
@@ -51,14 +58,12 @@ function adBlock() {
         
         
     elif [ "$1" = "-reset"  ]; then
-        # Reset rules to default settings (i.e. accept all).
         iptables -F OUTPUT
         ip6tables -F OUTPUT
         true
         
         
     elif [ "$1" = "-list"  ]; then
-        # List current rules.
         iptables -L OUTPUT -n
         ip6tables -L OUTPUT -n
         true
