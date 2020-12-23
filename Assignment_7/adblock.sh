@@ -3,6 +3,8 @@
 domainNames="domainNames.txt"
 IPAddresses="IPAddresses.txt"
 adblockRules="adblockRules"
+ipv6_reg=([a-f0-9:]+:+)+[a-f0-9]+
+ipv4_reg="[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"
 
 function adBlock() {
     if [ "$EUID" -ne 0 ];then
@@ -10,34 +12,31 @@ function adBlock() {
         exit 1
     fi
     if [ "$1" = "-domains"  ]; then
-        n=1    
         while IFS= read -r line
         do
-            if iptables -A OUTPUT -d $line -j REJECT  > /dev/null 2>&1; then
-               : $((n++))
-            else
-                if ! ip6tables -A OUTPUT -d $line -j REJECT  > /dev/null 2>&1; then
-                    echo "Domain name \"$line\" not found and forced from the list deleted."
-                    sed -i "$n d" $input
-                fi
-            fi
-            # nslookup $line | grep ^Name -A1| awk '{print $2}' | awk 'NR%2==0' >> $IPAddresses
-            host $line | egrep -o "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|([a-f0-9:]+:+)+[a-f0-9]+" >> $IPAddresses
-        done < "$domainNames"
-
-        while IFS= read -r line
+            (host $line | egrep -o "$ipv4_reg|$ipv6_reg") &
+            sleep 0.3
+        done < "$domainNames" > $IPAddresses
+        wait
+        egrep -o "$ipv4_reg" $IPAddresses | while read -r line
         do
-            nslookup $line | grep ^Name -A1| awk '{print $2}' | awk 'NR%2==0' >> $IPAddresses
-        done < "$domainNames"
+            iptables -A OUTPUT -d $line -j REJECT
+        done
+        egrep -o "$ipv6_reg" $IPAddresses | while read -r line
+        do
+            ip6tables -A OUTPUT -d $line -j REJECT
+        done
         true
-            
+        
     elif [ "$1" = "-ips"  ]; then
-        while IFS= read -r line
+        egrep -o "$ipv4_reg" $IPAddresses | while read -r line
         do
-            if ! iptables -A OUTPUT -d $line -j REJECT  > /dev/null 2>&1; then
-                ip6tables -A OUTPUT -d $line -j REJECT
-            fi
-        done < "$IPAddresses"
+            iptables -A OUTPUT -d $line -j REJECT
+        done
+        egrep -o "$ipv6_reg" $IPAddresses | while read -r line
+        do
+            ip6tables -A OUTPUT -d $line -j REJECT
+        done
         true
         
     elif [ "$1" = "-save"  ]; then
@@ -49,14 +48,14 @@ function adBlock() {
         # Load rules from $adblockRules file.
         iptables-restore < $adblockRules
         true
-
+        
         
     elif [ "$1" = "-reset"  ]; then
         # Reset rules to default settings (i.e. accept all).
         iptables -F OUTPUT
         ip6tables -F OUTPUT
         true
-
+        
         
     elif [ "$1" = "-list"  ]; then
         # List current rules.
