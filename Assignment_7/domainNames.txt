@@ -229,3 +229,4 @@ xcelsiusadserver.com
 ymads.com
 yourquickads.com
 zeads.com
+adclick.g.doubleclick.net
