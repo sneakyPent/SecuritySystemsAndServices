@@ -9,13 +9,11 @@
 void usage(void)
 {
 	printf(
-		"\n"
 		"usage:\n"
 		"\t./test \n"
 		"\nOptions:\n\n"
-		"-p <payload>,\t\t The payload in hex form\n"
-		"-h, \t\t\t Help message\n\n");
-
+		"\t-p <payload>,\t\t The payload in hex form\n"
+		"\t-h, \t\t\t Help message\n\n");
 	exit(1);
 }
 
@@ -25,7 +23,7 @@ int main(int argc, char **argv)
 	int ch;
 	if (argc < 2 || argc > 3)
 		usage();
-	while ((ch = getopt(argc, argv, "p:")) != -1)
+	while ((ch = getopt(argc, argv, "p:h")) != -1)
 	{
 		switch (ch)
 		{
@@ -33,7 +31,8 @@ int main(int argc, char **argv)
 			strcpy(payload,optarg);
 			break;
 		case 'h':
-			break;
+			usage();
+			return ;
 		default:
 			usage();
 		}
@@ -44,6 +43,6 @@ int main(int argc, char **argv)
 	
 	int (*foo)() = (int (*)())payload;
 	foo();
-	return 0;
+	return ;
 
 }
